@@ -328,7 +328,7 @@
         <div class="table-wrap">
           <table id="referralsTable">
             <thead>
-              <tr><th>Guest</th><th>Booking</th><th>Date</th><th>Total</th><th>Your 7%</th><th>Status</th></tr>
+              <tr><th>Guest</th><th>Booking</th><th>Date</th><th>Total</th><th>Your 5%</th><th>Status</th></tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -371,7 +371,7 @@
     <!-- ============ LINK ============ -->
     <div class="tab-pane" data-pane="link">
       <div class="topbar">
-        <div><h1>Your referral link</h1><div class="sub">Share anywhere — every booking earns you 7%.</div></div>
+        <div><h1>Your referral link</h1><div class="sub">Share anywhere — every booking earns you 5%.</div></div>
       </div>
 
       <div class="link-card">
@@ -629,7 +629,7 @@ function renderReferrals() {
     const fn = pick(firstNames), ln = pick(lastNames), nm = fn + ' ' + ln;
     const ct = pick(cities); const nights = 2 + Math.floor(Math.random() * 7);
     const total = 80 + Math.floor(Math.random() * 900);
-    const earn = Math.round(total * 0.07);
+    const earn = Math.round(total * 0.05);
     const statuses = ['paid','paid','paid','pending','pending','confirmed'];
     const st = pick(statuses);
     const badge = { paid: 'b-green', pending: 'b-yellow', confirmed: 'b-blue' }[st];
