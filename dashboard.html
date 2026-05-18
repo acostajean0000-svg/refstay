@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — Hostlink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+<!-- Plausible Analytics — replace YOUR_DOMAIN.com with your real domain -->
+<script defer data-domain="YOUR_DOMAIN.com" src="https://plausible.io/js/script.tagged-events.js"></script>
+<script>window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments) };</script>
+
+<style>
+  :root {
+    --primary: #FF385C;
+    --primary-2: #7C3AED;
+    --accent: #00D97E;
+    --accent-2: #FFB800;
+    --warn: #FB923C;
+    --ink: #0B1020;
+    --ink-2: #334155;
+    --muted: #64748B;
+    --bg: #F7F8FB;
+    --bg-card: #FFFFFF;
+    --border: #E2E8F0;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06), 0 1px 3px rgba(15, 23, 42, .04);
+    --shadow-md: 0 8px 24px rgba(15, 23, 42, .08);
+    --shadow-lg: 0 24px 60px rgba(15, 23, 42, .12);
+    --grad-hero: linear-gradient(135deg, #FF385C 0%, #FF7A45 35%, #7C3AED 100%);
+    --radius-sm: 10px;
+    --radius: 16px;
+    --radius-lg: 24px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.55; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+  h1, h2, h3, h4, h5 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.02em; line-height: 1.15; margin: 0; }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; font-family: 'Space Grotesk'; }
+  .logo-mark { width: 36px; height: 36px; border-radius: 10px; background: var(--grad-hero); display: grid; place-items: center; color: white; font-weight: 900; box-shadow: 0 8px 20px rgba(255, 56, 92, .35); }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 15px; cursor: pointer; border: none; transition: all .2s ease; }
+  .btn-primary { background: var(--grad-hero); color: white; box-shadow: 0 10px 30px rgba(255, 56, 92, .35); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(255, 56, 92, .45); }
+  .btn-outline { background: white; color: var(--ink); border: 1px solid var(--border); }
+  .btn-outline:hover { border-color: var(--ink); }
+  .btn-ghost { background: transparent; color: var(--ink-2); }
+  .btn-ghost:hover { color: var(--ink); }
+  .btn-danger { background: rgba(239, 68, 68, 0.1); color: #DC2626; }
+  .btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+
+  /* ============ LOGIN SCREEN ============ */
+  .login-wrap { display: none; min-height: 100vh; align-items: center; justify-content: center; padding: 24px; position: relative; overflow: hidden; }
+  .login-wrap.show { display: flex; }
+  .login-wrap::before { content: ''; position: absolute; inset: 0; background: radial-gradient(at 20% 30%, #FFE2EC 0px, transparent 50%), radial-gradient(at 80% 70%, #E0E7FF 0px, transparent 50%); z-index: -1; }
+
+  .login-card { background: white; max-width: 460px; width: 100%; border-radius: var(--radius-lg); padding: 48px 40px; box-shadow: var(--shadow-lg); }
+  .login-card .logo { margin: 0 auto 28px; justify-content: center; }
+  .login-card h1 { font-size: 28px; text-align: center; margin-bottom: 6px; }
+  .login-card .sub { text-align: center; color: var(--muted); font-size: 15px; margin-bottom: 32px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--ink); }
+  .field input { width: 100%; padding: 14px 18px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); color: var(--ink); font-size: 15px; font-family: inherit; outline: none; transition: border-color .2s, background .2s; }
+  .field input:focus { border-color: var(--primary); background: white; }
+  .field-error { color: #DC2626; font-size: 13px; margin-top: 6px; display: none; }
+  .field.error input { border-color: #DC2626; }
+  .field.error .field-error { display: block; }
+  .login-card .btn { width: 100%; justify-content: center; padding: 15px; margin-top: 8px; }
+  .login-card .sep { text-align: center; color: var(--muted); margin: 22px 0 16px; font-size: 13px; position: relative; }
+  .login-card .sep::before, .login-card .sep::after { content: ''; position: absolute; top: 50%; width: 35%; height: 1px; background: var(--border); }
+  .login-card .sep::before { left: 0; } .login-card .sep::after { right: 0; }
+  .login-card .demo-btn { width: 100%; padding: 12px; background: var(--bg); border: 1px dashed var(--border); color: var(--ink-2); border-radius: 12px; font-size: 14px; cursor: pointer; }
+  .login-card .demo-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .login-card .signup-link { text-align: center; margin-top: 24px; font-size: 14px; color: var(--muted); }
+  .login-card .signup-link a { color: var(--primary); font-weight: 600; }
+
+  /* ============ DASHBOARD SHELL ============ */
+  .dash { display: none; min-height: 100vh; }
+  .dash.show { display: grid; grid-template-columns: 260px 1fr; }
+
+  .sidebar { background: var(--ink); color: white; padding: 24px 18px; display: flex; flex-direction: column; }
+  .sidebar .logo { color: white; margin-bottom: 28px; padding: 0 6px; }
+  .sidebar .me { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 22px; }
+  .sidebar .me .av { width: 40px; height: 40px; border-radius: 50%; background: var(--grad-hero); display: grid; place-items: center; font-weight: 700; }
+  .sidebar .me .nm { font-size: 14px; font-weight: 700; line-height: 1.2; }
+  .sidebar .me .em { font-size: 12px; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+  .sidebar nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+  .sidebar nav button { background: transparent; border: none; color: rgba(255,255,255,0.65); padding: 12px 14px; border-radius: 10px; font-size: 14px; font-weight: 500; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all .15s; }
+  .sidebar nav button:hover { background: rgba(255,255,255,0.06); color: white; }
+  .sidebar nav button.active { background: var(--grad-hero); color: white; box-shadow: 0 8px 20px rgba(255, 56, 92, .3); }
+  .sidebar nav .ic { width: 18px; text-align: center; }
+  .sidebar .bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; margin-top: 16px; }
+  .sidebar .bottom button { width: 100%; }
+
+  .main { padding: 32px 36px; max-width: 1240px; width: 100%; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 14px; }
+  .topbar h1 { font-size: 28px; font-weight: 800; }
+  .topbar .sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .topbar-right { display: flex; gap: 10px; align-items: center; }
+
+  .balance-pill { background: var(--ink); color: white; padding: 10px 16px; border-radius: 999px; font-size: 13px; display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  .balance-pill .amt { color: var(--accent); font-family: 'Space Grotesk'; }
+
+  /* ============ KPIs ============ */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi { background: white; border-radius: var(--radius); padding: 22px; border: 1px solid var(--border); position: relative; overflow: hidden; }
+  .kpi-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .kpi .lbl { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .kpi .ic-bg { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 16px; }
+  .kpi .ic-bg.a { background: #FFE2EC; color: var(--primary); }
+  .kpi .ic-bg.b { background: #E0E7FF; color: var(--primary-2); }
+  .kpi .ic-bg.c { background: #FEF3C7; color: #B45309; }
+  .kpi .ic-bg.d { background: #DCFCE7; color: #047857; }
+  .kpi .val { font-size: 30px; font-weight: 800; font-family: 'Space Grotesk'; letter-spacing: -0.02em; line-height: 1; }
+  .kpi .delta { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; margin-top: 8px; color: var(--accent); }
+  .kpi .delta.down { color: #DC2626; }
+
+  /* ============ CARD ============ */
+  .card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+  .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+  .card-head h3 { font-size: 18px; font-weight: 700; }
+  .card-head .sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .tabs { display: inline-flex; gap: 4px; background: var(--bg); padding: 4px; border-radius: 999px; }
+  .tabs button { background: transparent; border: none; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); }
+  .tabs button.on { background: var(--ink); color: white; }
+
+  /* ============ CHART ============ */
+  .chart { width: 100%; height: 220px; }
+
+  /* ============ REFERRAL LINK BOX ============ */
+  .link-card { background: linear-gradient(135deg, #0B1020 0%, #1E1B4B 100%); color: white; border-radius: var(--radius); padding: 28px; position: relative; overflow: hidden; margin-bottom: 24px; }
+  .link-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 220px; height: 220px; border-radius: 50%; background: var(--grad-hero); opacity: 0.25; filter: blur(40px); }
+  .link-card .lbl { font-size: 13px; opacity: 0.7; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; position: relative; }
+  .link-card h3 { font-size: 22px; margin-bottom: 18px; position: relative; }
+  .link-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; align-items: center; position: relative; margin-bottom: 16px; }
+  .link-box input { flex: 1; background: transparent; border: none; color: var(--accent); font-weight: 600; font-family: 'Space Grotesk'; font-size: 15px; outline: none; }
+  .link-box button { background: var(--grad-hero); color: white; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .share-row { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
+  .share-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 9px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .share-btn:hover { background: rgba(255,255,255,0.15); }
+
+  /* ============ TABLES ============ */
+  .table-wrap { overflow-x: auto; border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 12px; font-weight: 700; color: var(--muted); padding: 10px 14px; background: var(--bg); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+  td { padding: 14px; border-top: 1px solid var(--border); vertical-align: middle; }
+  tr:hover td { background: var(--bg); }
+  .av-sm { width: 32px; height: 32px; border-radius: 50%; background: var(--grad-hero); color: white; display: inline-grid; place-items: center; font-weight: 700; font-size: 13px; margin-right: 10px; vertical-align: middle; }
+  .name-cell { display: flex; align-items: center; gap: 10px; }
+  .name-cell .nm { font-weight: 600; }
+  .name-cell .em { font-size: 12px; color: var(--muted); }
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .badge.b-green { background: #DCFCE7; color: #047857; }
+  .badge.b-yellow { background: #FEF3C7; color: #B45309; }
+  .badge.b-gray { background: #E5E7EB; color: #374151; }
+  .badge.b-blue { background: #DBEAFE; color: #1E40AF; }
+  .earn { font-weight: 700; color: var(--accent); }
+
+  /* ============ ACTIVITY FEED ============ */
+  .feed { display: flex; flex-direction: column; gap: 12px; }
+  .feed-row { display: flex; gap: 14px; padding: 12px; border-radius: 12px; transition: background .15s; }
+  .feed-row:hover { background: var(--bg); }
+  .feed-ic { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; display: grid; place-items: center; font-size: 16px; }
+  .feed-ic.green { background: #DCFCE7; color: #047857; }
+  .feed-ic.purple { background: #E0E7FF; color: var(--primary-2); }
+  .feed-ic.orange { background: #FEF3C7; color: #B45309; }
+  .feed-content .lead { font-size: 14px; font-weight: 600; }
+  .feed-content .when { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ============ SETTINGS ============ */
+  .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .toggle { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .toggle:last-child { border-bottom: none; }
+  .toggle .info { flex: 1; }
+  .toggle .info .lead { font-weight: 600; font-size: 14px; }
+  .toggle .info .desc { font-size: 13px; color: var(--muted); }
+  .switch { position: relative; width: 44px; height: 26px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .slider-tg { position: absolute; cursor: pointer; inset: 0; background: var(--border); border-radius: 999px; transition: .25s; }
+  .switch .slider-tg::before { content: ''; position: absolute; height: 20px; width: 20px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: .25s; box-shadow: var(--shadow-sm); }
+  .switch input:checked + .slider-tg { background: var(--primary); }
+  .switch input:checked + .slider-tg::before { transform: translateX(18px); }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 900px) {
+    .dash.show { grid-template-columns: 1fr; }
+    .sidebar { padding: 14px; }
+    .sidebar nav { flex-direction: row; overflow-x: auto; flex: none; }
+    .sidebar .bottom { display: none; }
+    .main { padding: 20px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .settings-grid { grid-template-columns: 1fr; }
+    .kpi .val { font-size: 24px; }
+  }
+
+  /* tab content */
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; z-index: 200; background: var(--ink); color: white; padding: 14px 20px; border-radius: 12px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px; transform: translateY(100px); opacity: 0; transition: all .35s cubic-bezier(.2,.8,.2,1); }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast .ic { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div class="login-wrap" id="loginScreen">
+  <div class="login-card">
+    <a class="logo" href="index.html">
+      <span class="logo-mark">H</span>
+      <span>Hostlink</span>
+    </a>
+    <h1>Welcome back</h1>
+    <p class="sub">Log in to track your referrals and earnings.</p>
+
+    <form id="loginForm" novalidate>
+      <div class="field" id="lf-email">
+        <label for="li-email">Email address</label>
+        <input type="email" id="li-email" placeholder="you@example.com" autocomplete="email" />
+        <div class="field-error">Please enter a valid email.</div>
+      </div>
+      <div class="field" id="lf-pw">
+        <label for="li-pw">Password</label>
+        <input type="password" id="li-pw" placeholder="••••••••" autocomplete="current-password" />
+        <div class="field-error">Password is required.</div>
+      </div>
+      <button class="btn btn-primary" type="submit">Log in →</button>
+    </form>
+
+    <div class="sep">or</div>
+    <button class="demo-btn" id="demoBtn">⚡ Continue with demo account</button>
+
+    <p class="signup-link">Don't have an account? <a href="index.html#signup">Sign up</a></p>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div class="dash" id="dashboard">
+  <aside class="sidebar">
+    <a class="logo" href="index.html">
+      <span class="logo-mark">H</span>
+      <span>Hostlink</span>
+    </a>
+    <div class="me">
+      <div class="av" id="userAv">H</div>
+      <div>
+        <div class="nm" id="userName">Host</div>
+        <div class="em" id="userEmail">host@example.com</div>
+      </div>
+    </div>
+    <nav>
+      <button class="active" data-tab="overview"><span class="ic">📊</span> Overview</button>
+      <button data-tab="referrals"><span class="ic">👥</span> Referrals</button>
+      <button data-tab="payouts"><span class="ic">💰</span> Payouts</button>
+      <button data-tab="link"><span class="ic">🔗</span> Your link</button>
+      <button data-tab="settings"><span class="ic">⚙️</span> Settings</button>
+    </nav>
+    <div class="bottom">
+      <button class="btn btn-danger" id="logoutBtn">🚪 Log out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- ============ OVERVIEW ============ -->
+    <div class="tab-pane active" data-pane="overview">
+      <div class="topbar">
+        <div>
+          <h1>Welcome back, <span id="firstName">friend</span> 👋</h1>
+          <div class="sub" id="memberSince">Member since today</div>
+        </div>
+        <div class="topbar-right">
+          <div class="balance-pill">Pending balance · <span class="amt" id="pendingBalance">$847.50</span></div>
+          <button class="btn btn-primary" id="overviewShare">Share my link →</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-head"><div class="lbl">Total earned</div><div class="ic-bg d">💰</div></div><div class="val" id="kpi-earned">$2,847</div><div class="delta">↑ $612 vs last month</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="lbl">Bookings</div><div class="ic-bg a">📅</div></div><div class="val" id="kpi-bookings">42</div><div class="delta">↑ 24% MoM</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="lbl">Link clicks</div><div class="ic-bg b">👆</div></div><div class="val" id="kpi-clicks">1,247</div><div class="delta">↑ 18% MoM</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="lbl">Conversion</div><div class="ic-bg c">🎯</div></div><div class="val">3.4%</div><div class="delta">↑ 0.6 pts</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>Earnings over time</h3>
+            <div class="sub">Confirmed payouts (excludes pending)</div>
+          </div>
+          <div class="tabs">
+            <button class="on" data-range="30">30D</button>
+            <button data-range="90">90D</button>
+            <button data-range="365">1Y</button>
+          </div>
+        </div>
+        <svg class="chart" id="earningsChart" viewBox="0 0 700 220" preserveAspectRatio="none"></svg>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Recent activity</h3><div class="sub">Bookings, clicks, and payouts</div></div>
+        </div>
+        <div class="feed" id="activityFeed"></div>
+      </div>
+    </div>
+
+    <!-- ============ REFERRALS ============ -->
+    <div class="tab-pane" data-pane="referrals">
+      <div class="topbar">
+        <div>
+          <h1>Your referrals</h1>
+          <div class="sub">Every guest who booked through your link.</div>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-outline" id="exportBtn">⬇ Export CSV</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 0">
+        <div class="table-wrap">
+          <table id="referralsTable">
+            <thead>
+              <tr><th>Guest</th><th>Booking</th><th>Date</th><th>Total</th><th>Your 7%</th><th>Status</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PAYOUTS ============ -->
+    <div class="tab-pane" data-pane="payouts">
+      <div class="topbar">
+        <div><h1>Payouts</h1><div class="sub">Paid out on the 1st of every month.</div></div>
+      </div>
+
+      <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="kpi"><div class="kpi-head"><div class="lbl">Pending balance</div><div class="ic-bg c">⏳</div></div><div class="val">$847.50</div><div class="delta">Releases Jun 1</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="lbl">Paid this year</div><div class="ic-bg d">✅</div></div><div class="val">$2,000.00</div><div class="delta">5 payouts</div></div>
+        <div class="kpi"><div class="kpi-head"><div class="lbl">Lifetime</div><div class="ic-bg b">📈</div></div><div class="val">$2,847.00</div><div class="delta">Since joining</div></div>
+      </div>
+
+      <div class="card" style="padding: 0">
+        <div class="table-wrap">
+          <table id="payoutsTable">
+            <thead><tr><th>Date</th><th>Method</th><th>Amount</th><th>Status</th><th>Reference</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><h3>Payout method</h3><div class="sub">Choose how you want to be paid.</div></div></div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <button class="btn btn-outline" style="border: 2px solid var(--primary); color: var(--primary);">✓ Stripe</button>
+          <button class="btn btn-outline">PayPal</button>
+          <button class="btn btn-outline">Wise</button>
+          <button class="btn btn-outline">+ Bank transfer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ LINK ============ -->
+    <div class="tab-pane" data-pane="link">
+      <div class="topbar">
+        <div><h1>Your referral link</h1><div class="sub">Share anywhere — every booking earns you 7%.</div></div>
+      </div>
+
+      <div class="link-card">
+        <div class="lbl">Your unique link</div>
+        <h3>One link, every channel.</h3>
+        <div class="link-box">
+          <input type="text" id="linkInput" readonly />
+          <button id="copyMainLink">Copy</button>
+        </div>
+        <div class="share-row">
+          <button class="share-btn" data-share="whatsapp">📱 WhatsApp</button>
+          <button class="share-btn" data-share="email">✉️ Email</button>
+          <button class="share-btn" data-share="x">𝕏 Post on X</button>
+          <button class="share-btn" data-share="facebook">📘 Facebook</button>
+          <button class="share-btn" data-share="qr">📷 Show QR code</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><h3>Customize your link</h3><div class="sub">Replace the random suffix with something memorable.</div></div></div>
+        <div class="field" style="display: flex; align-items: end; gap: 12px; margin: 0;">
+          <div style="flex: 1; margin: 0;">
+            <label>Custom slug</label>
+            <div style="display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 12px; padding: 12px; background: var(--bg);">
+              <span style="color: var(--muted); font-family: 'Space Grotesk';">hostlink.com/r/</span>
+              <input id="customSlug" type="text" style="border: none; background: transparent; outline: none; flex: 1; font-family: 'Space Grotesk'; font-weight: 600; color: var(--ink); font-size: 15px;" placeholder="your-name" />
+            </div>
+          </div>
+          <button class="btn btn-primary" id="saveSlug">Save</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><h3>Top sources</h3><div class="sub">Where your clicks are coming from.</div></div></div>
+        <div id="sourcesList"></div>
+      </div>
+    </div>
+
+    <!-- ============ SETTINGS ============ -->
+    <div class="tab-pane" data-pane="settings">
+      <div class="topbar"><div><h1>Settings</h1><div class="sub">Profile, payouts, and notifications.</div></div></div>
+
+      <div class="settings-grid">
+        <div class="card">
+          <div class="card-head"><h3>Profile</h3></div>
+          <div class="field"><label>Full name</label><input id="setName" type="text" /></div>
+          <div class="field"><label>Email</label><input id="setEmail" type="email" /></div>
+          <div class="field"><label>Airbnb listing URL</label><input id="setListing" type="url" placeholder="https://airbnb.com/rooms/..." /></div>
+          <button class="btn btn-primary" id="saveProfile">Save changes</button>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Notifications</h3></div>
+          <div class="toggle">
+            <div class="info"><div class="lead">New booking alerts</div><div class="desc">Email me when a guest books through my link.</div></div>
+            <label class="switch"><input type="checkbox" checked><span class="slider-tg"></span></label>
+          </div>
+          <div class="toggle">
+            <div class="info"><div class="lead">Weekly summary</div><div class="desc">Mondays, 9am — bookings + earnings recap.</div></div>
+            <label class="switch"><input type="checkbox" checked><span class="slider-tg"></span></label>
+          </div>
+          <div class="toggle">
+            <div class="info"><div class="lead">Payout confirmations</div><div class="desc">When your monthly payout hits your account.</div></div>
+            <label class="switch"><input type="checkbox" checked><span class="slider-tg"></span></label>
+          </div>
+          <div class="toggle">
+            <div class="info"><div class="lead">Marketing emails</div><div class="desc">Occasional tips for hosts. No spam.</div></div>
+            <label class="switch"><input type="checkbox"><span class="slider-tg"></span></label>
+          </div>
+        </div>
+
+        <div class="card" style="grid-column: 1 / -1;">
+          <div class="card-head"><h3 style="color: #DC2626;">Danger zone</h3></div>
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+            <div><div style="font-weight: 600;">Delete account</div><div style="font-size: 13px; color: var(--muted);">Permanently delete your profile and referral history. This can't be undone.</div></div>
+            <button class="btn btn-danger" id="deleteAcc">Delete account</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"><div class="ic">✓</div><span id="toastMsg">Done!</span></div>
+
+<script>
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const fmtMoney = n => '$' + Math.round(n).toLocaleString();
+
+function track(name, props) { try { window.plausible && window.plausible(name, props ? { props } : undefined); } catch (e) {} }
+function showToast(msg) { const t = $('#toast'); $('#toastMsg').textContent = msg; t.classList.add('show'); clearTimeout(showToast._t); showToast._t = setTimeout(() => t.classList.remove('show'), 2200); }
+function copy(text) { if (navigator.clipboard) navigator.clipboard.writeText(text); else { const i = document.createElement('input'); i.value = text; document.body.appendChild(i); i.select(); document.execCommand('copy'); i.remove(); } }
+function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+/* ============ AUTH ============ */
+const STORAGE_KEY = 'hostlink_user';
+function getUser() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { return null; } }
+function setUser(u) { localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
+function logout() { localStorage.removeItem(STORAGE_KEY); track('Logout'); location.reload(); }
+
+function showLogin() { $('#loginScreen').classList.add('show'); $('#dashboard').classList.remove('show'); }
+function showDashboard(user) {
+  $('#loginScreen').classList.remove('show');
+  $('#dashboard').classList.add('show');
+  hydrate(user);
+}
+
+// Bootstrap
+const existing = getUser();
+if (existing) showDashboard(existing);
+else showLogin();
+
+// Login form
+$('#loginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const email = $('#li-email').value.trim();
+  const pw = $('#li-pw').value;
+  let ok = true;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $('#lf-email').classList.add('error'); ok = false; } else $('#lf-email').classList.remove('error');
+  if (!pw) { $('#lf-pw').classList.add('error'); ok = false; } else $('#lf-pw').classList.remove('error');
+  if (!ok) return;
+
+  // Mock auth: accept any valid input. In production this hits your real auth endpoint.
+  const u = {
+    name: email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+    email,
+    listing: null,
+    referralLink: `https://hostlink.com/r/${email.split('@')[0]}-${Math.random().toString(36).slice(2, 6)}`,
+    joinedAt: new Date().toISOString(),
+  };
+  setUser(u);
+  track('Login', { method: 'email' });
+  showDashboard(u);
+});
+
+$('#demoBtn').addEventListener('click', () => {
+  const u = {
+    name: 'Maria Santos',
+    email: 'maria@superhost.com',
+    listing: 'https://airbnb.com/rooms/12345',
+    referralLink: 'https://hostlink.com/r/maria-demo',
+    joinedAt: '2025-11-15T10:30:00.000Z',
+  };
+  setUser(u);
+  track('Login', { method: 'demo' });
+  showDashboard(u);
+});
+
+$('#logoutBtn').addEventListener('click', logout);
+
+/* ============ HYDRATE ============ */
+function hydrate(user) {
+  const first = (user.name || 'friend').split(' ')[0];
+  $('#firstName').textContent = first;
+  $('#userName').textContent = user.name || 'Host';
+  $('#userEmail').textContent = user.email;
+  $('#userAv').textContent = (user.name || 'H')[0].toUpperCase();
+  $('#linkInput').value = user.referralLink;
+  $('#setName').value = user.name || '';
+  $('#setEmail').value = user.email || '';
+  $('#setListing').value = user.listing || '';
+  // Pre-fill custom slug with current
+  const slug = user.referralLink.split('/').pop();
+  $('#customSlug').value = slug;
+  // Member since
+  if (user.joinedAt) {
+    const d = new Date(user.joinedAt);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    $('#memberSince').textContent = `Member since ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  buildChart();
+  renderActivity();
+  renderReferrals();
+  renderPayouts();
+  renderSources();
+}
+
+/* ============ TABS ============ */
+$$('.sidebar nav button').forEach(b => b.addEventListener('click', () => {
+  $$('.sidebar nav button').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  const tab = b.dataset.tab;
+  $$('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === tab));
+  track('Tab View', { tab });
+}));
+
+/* ============ CHART ============ */
+function buildChart(range = 30, seed = 7) {
+  const svg = $('#earningsChart');
+  const W = 700, H = 220, PAD = 8;
+  const points = range === 365 ? 52 : range;
+  let s = seed; const rand = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+  const data = []; let v = 60;
+  for (let i = 0; i < points; i++) { v += (rand() - 0.42) * 24; v = Math.max(18, Math.min(190, v)); data.push(v); }
+  const max = Math.max(...data), min = Math.min(...data);
+  const pts = data.map((d, i) => {
+    const x = PAD + (i / (points - 1)) * (W - PAD * 2);
+    const y = H - PAD - ((d - min) / (max - min || 1)) * (H - PAD * 2);
+    return [x, y];
+  });
+  const path = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const area = path + ` L${pts[pts.length-1][0]},${H} L${pts[0][0]},${H} Z`;
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#FF385C" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#FF385C" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${area}" fill="url(#cg)" />
+    <path d="${path}" fill="none" stroke="#FF385C" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+    ${pts.filter((_, i) => i % Math.max(1, Math.floor(points / 10)) === 0).map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#FF385C" stroke="white" stroke-width="2"/>`).join('')}
+  `;
+}
+$$('[data-range]').forEach(b => b.addEventListener('click', () => {
+  $$('[data-range]').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  buildChart(+b.dataset.range, Math.floor(Math.random() * 999));
+}));
+
+/* ============ MOCK DATA ============ */
+const firstNames = ['Sarah','James','Mei','Luca','Aisha','Olivier','Priya','Noah','Camila','Yusuf','Lena','Diego','Hannah','Kenji','Zara','Elena','Marco','Aya'];
+const lastNames = ['Chen','Garcia','Smith','Patel','Kim','Rossi','Tanaka','Khan','Müller','Silva','Dubois','Andersen'];
+const cities = ['Paris','Lisbon','Barcelona','Tokyo','Bali','Lima','Mexico City','Rome','Marrakech','Cape Town','Bangkok','Athens','Berlin','Reykjavik'];
+
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+function rndId() { return Math.random().toString(36).slice(2, 8).toUpperCase(); }
+
+function renderActivity() {
+  const items = [
+    { ic: 'green', emoji: '💰', lead: 'Sarah Chen booked a 4-night stay in Lisbon', when: '2 hours ago', earn: 142 },
+    { ic: 'purple', emoji: '👁', lead: '12 new clicks on your link from Instagram', when: '5 hours ago' },
+    { ic: 'green', emoji: '💰', lead: 'James Patel booked a 2-night stay in Tokyo', when: 'Yesterday', earn: 80 },
+    { ic: 'orange', emoji: '⭐', lead: 'Your link was shared by Maria Santos', when: '2 days ago' },
+    { ic: 'green', emoji: '💰', lead: 'Camila Silva booked a week in Bali', when: '3 days ago', earn: 287 },
+    { ic: 'purple', emoji: '📈', lead: 'You hit a new weekly record: $612 earned', when: '4 days ago' },
+  ];
+  $('#activityFeed').innerHTML = items.map(i => `
+    <div class="feed-row">
+      <div class="feed-ic ${i.ic}">${i.emoji}</div>
+      <div class="feed-content">
+        <div class="lead">${escapeHtml(i.lead)} ${i.earn ? `<span class="earn">+$${i.earn}</span>` : ''}</div>
+        <div class="when">${i.when}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderReferrals() {
+  const tb = $('#referralsTable tbody');
+  const rows = [];
+  for (let i = 0; i < 18; i++) {
+    const fn = pick(firstNames), ln = pick(lastNames), nm = fn + ' ' + ln;
+    const ct = pick(cities); const nights = 2 + Math.floor(Math.random() * 7);
+    const total = 80 + Math.floor(Math.random() * 900);
+    const earn = Math.round(total * 0.07);
+    const statuses = ['paid','paid','paid','pending','pending','confirmed'];
+    const st = pick(statuses);
+    const badge = { paid: 'b-green', pending: 'b-yellow', confirmed: 'b-blue' }[st];
+    const dt = new Date(Date.now() - i * 86400000 * (1 + Math.random())).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    rows.push(`
+      <tr>
+        <td><div class="name-cell"><div class="av-sm">${fn[0]}</div><div><div class="nm">${nm}</div><div class="em">${fn.toLowerCase()}@example.com</div></div></div></td>
+        <td>${nights} nights in ${ct}</td>
+        <td>${dt}</td>
+        <td>${fmtMoney(total)}</td>
+        <td class="earn">+${fmtMoney(earn)}</td>
+        <td><span class="badge ${badge}">${st}</span></td>
+      </tr>
+    `);
+  }
+  tb.innerHTML = rows.join('');
+}
+
+function renderPayouts() {
+  const tb = $('#payoutsTable tbody');
+  const months = ['Apr 1, 2026', 'Mar 1, 2026', 'Feb 1, 2026', 'Jan 1, 2026', 'Dec 1, 2025'];
+  const amounts = [612, 487, 351, 290, 260];
+  tb.innerHTML = months.map((m, i) => `
+    <tr>
+      <td>${m}</td>
+      <td>Stripe</td>
+      <td class="earn">${fmtMoney(amounts[i])}</td>
+      <td><span class="badge b-green">paid</span></td>
+      <td style="font-family:'Space Grotesk';color:var(--muted);">${rndId()}-${rndId()}</td>
+    </tr>
+  `).join('');
+}
+
+function renderSources() {
+  const sources = [
+    { name: 'WhatsApp', clicks: 412, pct: 33, color: '#25D366' },
+    { name: 'Instagram bio', clicks: 287, pct: 23, color: '#E1306C' },
+    { name: 'Direct (typed URL)', clicks: 198, pct: 16, color: '#64748B' },
+    { name: 'Email signature', clicks: 154, pct: 12, color: '#FFB800' },
+    { name: 'Welcome book QR code', clicks: 121, pct: 10, color: '#7C3AED' },
+    { name: 'X / Twitter', clicks: 75, pct: 6, color: '#000000' },
+  ];
+  $('#sourcesList').innerHTML = sources.map(s => `
+    <div style="margin-bottom: 14px;">
+      <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
+        <span style="font-weight: 600;">${s.name}</span>
+        <span style="color: var(--muted);">${s.clicks} clicks · ${s.pct}%</span>
+      </div>
+      <div style="height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden;">
+        <div style="height: 100%; width: ${s.pct * 3}%; background: ${s.color}; border-radius: 3px;"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ============ LINK ACTIONS ============ */
+$('#copyMainLink').addEventListener('click', () => {
+  copy($('#linkInput').value); showToast('Link copied!'); track('Link Copy', { source: 'dashboard' });
+});
+
+$('#overviewShare').addEventListener('click', () => {
+  $$('.sidebar nav button').forEach(x => x.classList.remove('active'));
+  $$('.sidebar nav button[data-tab="link"]')[0].classList.add('active');
+  $$('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === 'link'));
+});
+
+$$('.share-btn').forEach(b => b.addEventListener('click', () => {
+  const link = $('#linkInput').value;
+  const msg = encodeURIComponent(`Booking your next trip? Use my link — ${link}`);
+  const ch = b.dataset.share;
+  const map = {
+    whatsapp: `https://wa.me/?text=${msg}`,
+    email: `mailto:?subject=${encodeURIComponent('Found a great place to stay')}&body=${msg}`,
+    x: `https://twitter.com/intent/tweet?text=${msg}`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`,
+  };
+  if (ch === 'qr') {
+    showToast('QR code feature coming soon');
+  } else {
+    window.open(map[ch], '_blank');
+  }
+  track('Share Click', { channel: ch, source: 'dashboard' });
+}));
+
+$('#saveSlug').addEventListener('click', () => {
+  const newSlug = $('#customSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  if (newSlug.length < 3) { showToast('Slug must be 3+ characters'); return; }
+  const user = getUser();
+  user.referralLink = `https://hostlink.com/r/${newSlug}`;
+  setUser(user);
+  $('#linkInput').value = user.referralLink;
+  $('#customSlug').value = newSlug;
+  showToast('Link updated!');
+  track('Slug Change');
+});
+
+/* ============ SETTINGS ============ */
+$('#saveProfile').addEventListener('click', () => {
+  const user = getUser();
+  user.name = $('#setName').value.trim() || user.name;
+  user.email = $('#setEmail').value.trim() || user.email;
+  user.listing = $('#setListing').value.trim() || null;
+  setUser(user);
+  $('#userName').textContent = user.name;
+  $('#userEmail').textContent = user.email;
+  $('#firstName').textContent = user.name.split(' ')[0];
+  $('#userAv').textContent = user.name[0].toUpperCase();
+  showToast('Profile saved!');
+  track('Profile Update');
+});
+
+$('#deleteAcc').addEventListener('click', () => {
+  if (confirm('Delete your account? This cannot be undone.')) {
+    track('Account Delete');
+    logout();
+  }
+});
+
+/* ============ EXPORT ============ */
+$('#exportBtn').addEventListener('click', () => {
+  const rows = $$('#referralsTable tbody tr').map(tr => {
+    const tds = [...tr.querySelectorAll('td')].map(td => `"${td.innerText.replace(/\n/g, ' ').replace(/"/g, '""').trim()}"`);
+    return tds.join(',');
+  });
+  const header = 'Guest,Booking,Date,Total,Commission,Status';
+  const csv = header + '\n' + rows.join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `hostlink-referrals-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  track('CSV Export');
+  showToast('CSV exported!');
+});
+
+</script>
+</body>
+</html>

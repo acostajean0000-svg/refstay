@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hostlink — Turn Your Guests Into Recurring Income</title>
+<!--
+  ============================================================
+  HOSTLINK · referral landing page
+  ============================================================
+  To activate the signup form:
+    1. Go to https://formspree.io and create a new form
+    2. Copy your form ID (looks like 'xqkrdpwe')
+    3. Find FORMSPREE_FORM_ID in the <form> action below
+       and replace it with your real form ID
+  Until then, the form runs in demo mode (no submissions sent).
+  ============================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+<!--
+  ============================================================
+  PLAUSIBLE ANALYTICS · privacy-friendly, no cookie banner needed
+  ============================================================
+  1. Sign up at https://plausible.io and add your site
+  2. Copy your exact domain (e.g. hostlink.com — no protocol)
+  3. Replace YOUR_DOMAIN.com below with that domain
+  Custom events fire automatically: Signup, Link Copy, Share, Calculator Use.
+  ============================================================
+-->
+<script defer data-domain="YOUR_DOMAIN.com" src="https://plausible.io/js/script.tagged-events.js"></script>
+<script>
+  // Queue calls until script loads; works on first paint
+  window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments) };
+</script>
+
+<style>
+  :root {
+    --primary: #FF385C;
+    --primary-2: #7C3AED;
+    --accent: #00D97E;
+    --accent-2: #FFB800;
+    --ink: #0B1020;
+    --ink-2: #334155;
+    --muted: #64748B;
+    --bg: #FFFFFF;
+    --bg-soft: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --border: #E2E8F0;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06), 0 1px 3px rgba(15, 23, 42, .04);
+    --shadow-md: 0 8px 24px rgba(15, 23, 42, .08);
+    --shadow-lg: 0 24px 60px rgba(15, 23, 42, .12);
+    --grad-hero: linear-gradient(135deg, #FF385C 0%, #FF7A45 35%, #7C3AED 100%);
+    --grad-mesh: radial-gradient(at 20% 10%, #FFE2EC 0px, transparent 50%),
+                 radial-gradient(at 80% 20%, #E0E7FF 0px, transparent 50%),
+                 radial-gradient(at 60% 80%, #DCFCE7 0px, transparent 50%);
+    --radius-sm: 10px;
+    --radius: 16px;
+    --radius-lg: 24px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4 { font-family: 'Space Grotesk', 'Inter', sans-serif; letter-spacing: -0.02em; line-height: 1.1; margin: 0; }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ============ NAV ============ */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(14px);
+    background: rgba(255,255,255,0.75);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; font-family: 'Space Grotesk'; }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--grad-hero);
+    display: grid; place-items: center; color: white; font-weight: 900;
+    box-shadow: 0 8px 20px rgba(255, 56, 92, .35);
+  }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a { color: var(--ink-2); font-weight: 500; font-size: 15px; transition: color .2s; }
+  .nav-links a:hover { color: var(--primary); }
+  .nav-cta { display: flex; gap: 12px; align-items: center; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px; cursor: pointer;
+    border: none; transition: all .2s ease; white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--grad-hero); color: white;
+    box-shadow: 0 10px 30px rgba(255, 56, 92, .35);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(255, 56, 92, .45); }
+  .btn-ghost { background: transparent; color: var(--ink); }
+  .btn-ghost:hover { color: var(--primary); }
+  .btn-outline { background: white; color: var(--ink); border: 1px solid var(--border); }
+  .btn-outline:hover { border-color: var(--ink); }
+  .btn-lg { padding: 16px 30px; font-size: 16px; }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+  }
+
+  /* ============ HERO ============ */
+  .hero { position: relative; padding: 80px 0 120px; overflow: hidden; }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--grad-mesh);
+    pointer-events: none; z-index: -1;
+  }
+  .hero-inner { display: grid; grid-template-columns: 1.05fr 1fr; gap: 60px; align-items: center; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px; border-radius: 999px;
+    background: rgba(255, 56, 92, 0.1); color: var(--primary);
+    font-weight: 600; font-size: 13px; margin-bottom: 24px;
+  }
+  .hero-eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.6); opacity: 0.5; } }
+  .hero h1 { font-size: clamp(40px, 6vw, 68px); font-weight: 800; margin-bottom: 24px; }
+  .hero h1 .grad {
+    background: var(--grad-hero);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero-sub { font-size: 19px; color: var(--ink-2); margin-bottom: 36px; max-width: 540px; }
+  .hero-ctas { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+  .hero-trust { display: flex; gap: 32px; margin-top: 48px; flex-wrap: wrap; }
+  .trust-stat .num { font-size: 28px; font-weight: 800; font-family: 'Space Grotesk'; }
+  .trust-stat .lbl { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+  /* hero visual — mock dashboard card */
+  .hero-visual { position: relative; }
+  .hero-card {
+    background: white; border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg); padding: 24px;
+    transform: perspective(1200px) rotateY(-6deg) rotateX(4deg);
+    transition: transform .4s ease;
+  }
+  .hero-card:hover { transform: perspective(1200px) rotateY(-2deg) rotateX(1deg); }
+  .hc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .hc-title { font-weight: 700; font-size: 15px; }
+  .hc-badge { font-size: 11px; padding: 4px 10px; border-radius: 999px; background: #ECFDF5; color: #047857; font-weight: 600; }
+  .hc-earnings { font-size: 42px; font-weight: 800; font-family: 'Space Grotesk'; letter-spacing: -0.03em; }
+  .hc-delta { color: var(--accent); font-weight: 600; font-size: 14px; margin-bottom: 18px; }
+  .hc-bars { display: flex; gap: 6px; align-items: end; height: 80px; margin-bottom: 18px; }
+  .hc-bar { flex: 1; background: linear-gradient(180deg, var(--primary-2), var(--primary)); border-radius: 4px 4px 0 0; }
+  .hc-list { display: flex; flex-direction: column; gap: 10px; }
+  .hc-row { display: flex; align-items: center; gap: 12px; padding: 10px; background: var(--bg-soft); border-radius: 10px; font-size: 13px; }
+  .hc-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--grad-hero); }
+  .hc-row .name { flex: 1; font-weight: 600; }
+  .hc-row .amt { font-weight: 700; color: var(--accent); }
+
+  .floater { position: absolute; background: white; padding: 14px 18px; border-radius: 14px; box-shadow: var(--shadow-md); font-size: 13px; display: flex; align-items: center; gap: 10px; }
+  .floater-1 { top: -12px; left: -28px; animation: float 4s ease-in-out infinite; }
+  .floater-2 { bottom: 30px; right: -32px; animation: float 4s ease-in-out infinite 2s; }
+  .floater .ic { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-size: 16px; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+  @media (max-width: 900px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 60px; }
+    .hero { padding: 48px 0 80px; }
+    .hero-card { transform: none; }
+    .floater { display: none; }
+  }
+
+  /* ============ LOGOS / MARQUEE ============ */
+  .marquee { padding: 40px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: var(--bg-soft); }
+  .marquee-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+  .marquee .lbl { font-size: 13px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+  .marquee .brands { display: flex; gap: 36px; flex-wrap: wrap; align-items: center; opacity: 0.65; }
+  .brand-name { font-weight: 700; font-size: 18px; font-family: 'Space Grotesk'; color: var(--ink-2); }
+
+  /* ============ SECTIONS ============ */
+  .section { padding: 100px 0; }
+  .section-head { text-align: center; max-width: 720px; margin: 0 auto 60px; }
+  .section-eyebrow { display: inline-block; padding: 6px 14px; border-radius: 999px; background: rgba(124, 58, 237, 0.1); color: var(--primary-2); font-weight: 600; font-size: 13px; margin-bottom: 18px; }
+  .section h2 { font-size: clamp(32px, 4.5vw, 48px); font-weight: 800; margin-bottom: 18px; }
+  .section h2 .grad { background: var(--grad-hero); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .section-sub { font-size: 18px; color: var(--ink-2); }
+
+  /* ============ HOW IT WORKS ============ */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .step {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 32px; position: relative; overflow: hidden;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .step:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: transparent; }
+  .step-num {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: var(--grad-hero); color: white;
+    font-weight: 800; font-size: 20px; font-family: 'Space Grotesk';
+    display: grid; place-items: center; margin-bottom: 22px;
+    box-shadow: 0 10px 25px rgba(255, 56, 92, .3);
+  }
+  .step h3 { font-size: 22px; margin-bottom: 10px; }
+  .step p { color: var(--ink-2); font-size: 15px; }
+  .step-illu { position: absolute; bottom: -20px; right: -20px; font-size: 96px; opacity: 0.06; }
+  @media (max-width: 800px) { .steps { grid-template-columns: 1fr; } }
+
+  /* ============ CALCULATOR ============ */
+  .calc-section { background: linear-gradient(180deg, var(--bg-soft) 0%, white 100%); }
+  .calculator {
+    background: white; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 40px; box-shadow: var(--shadow-md);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+  }
+  .calc-controls .field { margin-bottom: 28px; }
+  .calc-controls .field-head { display: flex; justify-content: space-between; margin-bottom: 12px; }
+  .calc-controls label { font-weight: 600; font-size: 15px; }
+  .calc-controls .field-val { font-weight: 700; font-family: 'Space Grotesk'; color: var(--primary); font-size: 18px; }
+  .slider {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 8px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary) 50%, var(--border) 50%, var(--border) 100%);
+    border-radius: 8px; outline: none;
+  }
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: white; border: 4px solid var(--primary);
+    cursor: pointer; box-shadow: var(--shadow-sm);
+    transition: transform .15s ease;
+  }
+  .slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  .slider::-moz-range-thumb { width: 26px; height: 26px; border-radius: 50%; background: white; border: 4px solid var(--primary); cursor: pointer; }
+
+  .calc-result {
+    background: var(--grad-hero); color: white; border-radius: var(--radius);
+    padding: 36px; display: flex; flex-direction: column; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .calc-result::before {
+    content: ''; position: absolute; top: -60px; right: -60px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+  }
+  .calc-result .lbl { font-size: 14px; opacity: 0.9; font-weight: 500; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .calc-result .big { font-size: 60px; font-weight: 800; font-family: 'Space Grotesk'; letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px; }
+  .calc-result .per { opacity: 0.9; font-size: 14px; margin-bottom: 28px; }
+  .calc-result .row { display: flex; justify-content: space-between; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.2); font-size: 14px; }
+  .calc-result .row strong { font-weight: 700; }
+  @media (max-width: 800px) { .calculator { grid-template-columns: 1fr; padding: 28px; } .calc-result .big { font-size: 48px; } }
+
+  /* ============ PRICING ============ */
+  .pricing-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
+  .pricing-card {
+    background: var(--ink); color: white; border-radius: var(--radius-lg);
+    padding: 48px; position: relative; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(11, 16, 32, 0.25);
+  }
+  .pricing-card::before {
+    content: ''; position: absolute; inset: -50% -30% auto auto;
+    width: 360px; height: 360px; border-radius: 50%;
+    background: var(--grad-hero); opacity: 0.4; filter: blur(60px);
+    pointer-events: none;
+  }
+  .pricing-card > * { position: relative; }
+  .pricing-card .tier-label { display: inline-block; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 22px; }
+  .pricing-rate { display: flex; align-items: baseline; gap: 6px; margin-bottom: 8px; }
+  .pricing-rate .num { font-size: 110px; font-weight: 800; font-family: 'Space Grotesk'; line-height: 1; background: var(--grad-hero); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: -0.04em; }
+  .pricing-rate .unit { font-size: 32px; font-weight: 700; opacity: 0.8; }
+  .pricing-tag { font-size: 17px; opacity: 0.7; margin-bottom: 32px; }
+  .pricing-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 28px 0; }
+  .pricing-strike { font-size: 13px; opacity: 0.5; text-decoration: line-through; }
+
+  .pricing-features { display: flex; flex-direction: column; gap: 14px; }
+  .feat { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; }
+  .feat .ic { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--ink); display: grid; place-items: center; font-size: 12px; font-weight: 800; flex-shrink: 0; margin-top: 2px; }
+  .feat .x-ic { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
+  .feat strong { color: white; font-weight: 700; }
+  .feat span.muted { color: rgba(255,255,255,0.6); }
+
+  .pricing-side h3 { font-size: 32px; margin-bottom: 16px; font-weight: 800; }
+  .pricing-side h3 .grad { background: var(--grad-hero); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .pricing-side p { font-size: 16px; color: var(--ink-2); margin-bottom: 24px; }
+  .comparison { background: var(--bg-soft); border-radius: 14px; padding: 20px; margin-bottom: 24px; }
+  .compare-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+  .compare-row:last-child { border-bottom: none; font-weight: 700; }
+  .compare-row .winner { color: var(--accent); font-weight: 700; }
+  @media (max-width: 900px) {
+    .pricing-grid { grid-template-columns: 1fr; gap: 32px; }
+    .pricing-card { padding: 32px; }
+    .pricing-rate .num { font-size: 80px; }
+  }
+
+  /* ============ DASHBOARD ============ */
+  .dash-wrap {
+    background: var(--bg-soft); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 28px;
+    box-shadow: var(--shadow-md);
+  }
+  .dash-grid { display: grid; grid-template-columns: 260px 1fr; gap: 24px; min-height: 540px; }
+  .dash-side { background: var(--ink); border-radius: var(--radius); padding: 22px; color: white; display: flex; flex-direction: column; }
+  .dash-side .logo-mark { background: white; color: var(--primary); margin-bottom: 24px; }
+  .dash-side .user { display: flex; align-items: center; gap: 10px; padding: 10px; background: rgba(255,255,255,0.08); border-radius: 10px; margin-bottom: 22px; }
+  .dash-side .user .av { width: 36px; height: 36px; border-radius: 50%; background: var(--grad-hero); display: grid; place-items: center; font-weight: 700; }
+  .dash-side .user .nm { font-size: 14px; font-weight: 600; }
+  .dash-side .user .em { font-size: 12px; opacity: 0.6; }
+  .dash-side nav { display: flex; flex-direction: column; gap: 4px; }
+  .dash-side nav a { padding: 11px 14px; border-radius: 10px; font-size: 14px; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 10px; transition: all .2s; cursor: pointer; }
+  .dash-side nav a:hover { background: rgba(255,255,255,0.06); color: white; }
+  .dash-side nav a.active { background: var(--grad-hero); color: white; box-shadow: 0 8px 20px rgba(255, 56, 92, .35); }
+
+  .dash-main { background: white; border-radius: var(--radius); padding: 28px; overflow: hidden; }
+  .dash-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; }
+  .dash-head h3 { font-size: 22px; font-weight: 700; }
+  .link-pill { display: flex; align-items: center; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 999px; padding: 6px 6px 6px 16px; font-size: 13px; gap: 10px; max-width: 100%; }
+  .link-pill .url { color: var(--primary-2); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 260px; }
+  .link-pill button { background: var(--ink); color: white; border: none; padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .link-pill button:hover { background: var(--primary); }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+  .kpi { background: var(--bg-soft); border-radius: 14px; padding: 16px; }
+  .kpi .lbl { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .kpi .val { font-size: 26px; font-weight: 800; font-family: 'Space Grotesk'; }
+  .kpi .delta { font-size: 12px; font-weight: 600; margin-top: 4px; }
+  .kpi .delta.up { color: var(--accent); }
+
+  .chart-wrap { background: var(--bg-soft); border-radius: 14px; padding: 20px; margin-bottom: 22px; }
+  .chart-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .chart-head h4 { font-size: 15px; font-weight: 700; }
+  .chart-tabs { display: flex; gap: 4px; background: white; padding: 4px; border-radius: 999px; border: 1px solid var(--border); }
+  .chart-tabs button { background: transparent; border: none; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--muted); }
+  .chart-tabs button.on { background: var(--ink); color: white; }
+  .chart-svg { width: 100%; height: 160px; }
+
+  .booking-list { background: var(--bg-soft); border-radius: 14px; padding: 6px; }
+  .booking-row { display: grid; grid-template-columns: 36px 1fr auto auto auto; gap: 14px; align-items: center; padding: 12px; border-radius: 10px; transition: background .2s; }
+  .booking-row:hover { background: white; }
+  .booking-row .av { width: 36px; height: 36px; border-radius: 50%; background: var(--grad-hero); color: white; display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+  .booking-row .info .nm { font-weight: 600; font-size: 14px; }
+  .booking-row .info .dt { font-size: 12px; color: var(--muted); }
+  .booking-row .nights { font-size: 13px; color: var(--muted); }
+  .booking-row .total { font-weight: 700; font-size: 14px; }
+  .booking-row .earn { font-weight: 700; color: var(--accent); font-size: 14px; min-width: 60px; text-align: right; }
+
+  @media (max-width: 900px) {
+    .dash-grid { grid-template-columns: 1fr; }
+    .dash-side nav { flex-direction: row; overflow-x: auto; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .booking-row { grid-template-columns: 36px 1fr auto; }
+    .booking-row .nights, .booking-row .total { display: none; }
+  }
+
+  /* ============ SIGNUP ============ */
+  .signup-section { background: var(--ink); color: white; position: relative; overflow: hidden; }
+  .signup-section::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(at 80% 30%, rgba(255, 56, 92, 0.3) 0px, transparent 50%),
+                radial-gradient(at 20% 70%, rgba(124, 58, 237, 0.3) 0px, transparent 50%);
+    pointer-events: none;
+  }
+  .signup-section .section-head h2 { color: white; }
+  .signup-section .section-eyebrow { background: rgba(255, 56, 92, 0.2); color: #FFC6D2; }
+  .signup-section .section-sub { color: rgba(255,255,255,0.7); }
+  .signup-card {
+    position: relative; max-width: 640px; margin: 0 auto;
+    background: rgba(255,255,255,0.04); backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg);
+    padding: 40px;
+  }
+  .signup-form .field { margin-bottom: 18px; }
+  .signup-form label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.85); }
+  .signup-form input {
+    width: 100%; padding: 14px 18px; border-radius: 12px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15);
+    color: white; font-size: 15px; font-family: inherit; outline: none;
+    transition: border-color .2s, background .2s;
+  }
+  .signup-form input::placeholder { color: rgba(255,255,255,0.4); }
+  .signup-form input:focus { border-color: var(--primary); background: rgba(255,255,255,0.1); }
+  .field-error { color: #FFB4C0; font-size: 13px; margin-top: 6px; display: none; }
+  .field.error input { border-color: #FF6B81; }
+  .field.error .field-error { display: block; }
+  .signup-form .btn-primary { width: 100%; justify-content: center; padding: 16px; font-size: 16px; margin-top: 8px; }
+
+  .signup-success { display: none; text-align: center; }
+  .signup-success.show { display: block; animation: fadeIn .5s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .signup-success .check { width: 72px; height: 72px; margin: 0 auto 18px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; font-size: 36px; box-shadow: 0 0 0 8px rgba(0, 217, 126, 0.2); }
+  .signup-success h3 { font-size: 26px; margin-bottom: 10px; color: white; }
+  .signup-success p { color: rgba(255,255,255,0.7); margin-bottom: 24px; }
+  .ref-link-box {
+    background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 14px; display: flex; gap: 8px; align-items: center;
+    margin-bottom: 20px;
+  }
+  .ref-link-box input { flex: 1; background: transparent; border: none; color: var(--accent); font-weight: 600; font-size: 14px; outline: none; font-family: 'Space Grotesk'; }
+  .ref-link-box button { background: var(--grad-hero); color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .share-row { display: flex; gap: 10px; justify-content: center; }
+  .share-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: white; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .2s; }
+  .share-btn:hover { background: rgba(255,255,255,0.15); }
+
+  /* ============ FAQ ============ */
+  .faq-list { max-width: 760px; margin: 0 auto; }
+  .faq-item { border-bottom: 1px solid var(--border); padding: 22px 0; cursor: pointer; }
+  .faq-q { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 17px; }
+  .faq-q .ic { transition: transform .25s; }
+  .faq-item.open .faq-q .ic { transform: rotate(45deg); }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease; color: var(--ink-2); font-size: 15px; }
+  .faq-item.open .faq-a { max-height: 300px; padding-top: 14px; }
+
+  /* ============ FOOTER ============ */
+  .footer { background: var(--ink); color: rgba(255,255,255,0.7); padding: 60px 0 30px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+  .footer h5 { color: white; font-size: 14px; font-weight: 700; margin: 0 0 16px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .footer ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+  .footer ul a:hover { color: white; }
+  .footer-tag { font-size: 14px; max-width: 320px; margin-top: 14px; }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 24px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-size: 13px; }
+  @media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+
+  /* toast */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 200;
+    background: var(--ink); color: white;
+    padding: 14px 20px; border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    display: flex; align-items: center; gap: 10px;
+    transform: translateY(100px); opacity: 0;
+    transition: all .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast .ic { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="logo" href="#">
+      <span class="logo-mark">H</span>
+      <span>Hostlink</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#calculator">Earnings</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-ghost" href="dashboard.html">Log in</a>
+      <a class="btn btn-primary" href="#signup">Get my link →</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div>
+      <div class="hero-eyebrow"><span class="dot"></span> Earn 7% on every booking — paid monthly</div>
+      <h1>Turn every guest into <span class="grad">recurring income.</span></h1>
+      <p class="hero-sub">
+        Share your unique referral link with past guests, friends, and travel groups. Earn cash every time someone books through it — tracked automatically, paid out monthly.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary btn-lg" href="#signup">Create my referral link</a>
+        <a class="btn btn-outline btn-lg" href="#calculator">See how much you'd earn</a>
+      </div>
+      <div class="hero-trust">
+        <div class="trust-stat"><div class="num">12,400+</div><div class="lbl">Active hosts</div></div>
+        <div class="trust-stat"><div class="num">$3.2M</div><div class="lbl">Paid this year</div></div>
+        <div class="trust-stat"><div class="num">4.9★</div><div class="lbl">Host rating</div></div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="floater floater-1">
+        <div class="ic" style="background:#ECFDF5;color:#047857;">✓</div>
+        <div><strong>New booking!</strong><br><span style="color:var(--muted)">+$142 from Maria's link</span></div>
+      </div>
+      <div class="hero-card">
+        <div class="hc-top">
+          <div class="hc-title">This month's earnings</div>
+          <div class="hc-badge">● Live</div>
+        </div>
+        <div class="hc-earnings" id="heroEarnings">$2,847</div>
+        <div class="hc-delta">↑ 32% vs last month</div>
+        <div class="hc-bars">
+          <div class="hc-bar" style="height:30%"></div>
+          <div class="hc-bar" style="height:55%"></div>
+          <div class="hc-bar" style="height:42%"></div>
+          <div class="hc-bar" style="height:70%"></div>
+          <div class="hc-bar" style="height:60%"></div>
+          <div class="hc-bar" style="height:85%"></div>
+          <div class="hc-bar" style="height:95%"></div>
+        </div>
+        <div class="hc-list">
+          <div class="hc-row"><div class="hc-avatar"></div><div class="name">Sarah · 4 nights</div><div class="amt">+$142</div></div>
+          <div class="hc-row"><div class="hc-avatar" style="background:linear-gradient(135deg,#7C3AED,#00D97E)"></div><div class="name">James · 2 nights</div><div class="amt">+$80</div></div>
+        </div>
+      </div>
+      <div class="floater floater-2">
+        <div class="ic" style="background:#FFF7E0;color:#B45309;">★</div>
+        <div><strong>5 referrals</strong><br><span style="color:var(--muted)">in the last 7 days</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRUST MARQUEE ============ -->
+<section class="marquee">
+  <div class="container marquee-inner">
+    <div class="lbl">Trusted by Superhosts on</div>
+    <div class="brands">
+      <span class="brand-name">Airbnb</span>
+      <span class="brand-name">Vrbo</span>
+      <span class="brand-name">Booking</span>
+      <span class="brand-name">HomeAway</span>
+      <span class="brand-name">Hopper</span>
+      <span class="brand-name">Expedia</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="section" id="how">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">How it works</div>
+      <h2>Three steps. <span class="grad">Zero hassle.</span></h2>
+      <p class="section-sub">From signup to your first payout — it takes under 60 seconds to start earning.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Grab your link</h3>
+        <p>Sign up with your name, email, and listing URL. We instantly generate a personal referral link tied to your account.</p>
+        <div class="step-illu">🔗</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Share it everywhere</h3>
+        <p>Drop it in your guest welcome book, WhatsApp groups, Instagram bio, or thank-you emails. Every click is tracked.</p>
+        <div class="step-illu">📲</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Get paid</h3>
+        <p>Earn a commission on every booking made through your link. Real-time dashboard, monthly payouts via Stripe or PayPal.</p>
+        <div class="step-illu">💸</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CALCULATOR ============ -->
+<section class="section calc-section" id="calculator">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">Earnings calculator</div>
+      <h2>See exactly <span class="grad">how much you'll earn.</span></h2>
+      <p class="section-sub">Move the sliders. The math updates in real time — no signup needed.</p>
+    </div>
+
+    <div class="calculator">
+      <div class="calc-controls">
+        <div class="field">
+          <div class="field-head">
+            <label for="sl-clicks">People who click your link / month</label>
+            <span class="field-val" id="val-clicks">120</span>
+          </div>
+          <input class="slider" type="range" min="10" max="1000" value="120" id="sl-clicks" />
+        </div>
+        <div class="field">
+          <div class="field-head">
+            <label for="sl-conv">Booking conversion rate</label>
+            <span class="field-val"><span id="val-conv">8</span>%</span>
+          </div>
+          <input class="slider" type="range" min="1" max="25" value="8" id="sl-conv" />
+        </div>
+        <div class="field">
+          <div class="field-head">
+            <label for="sl-aov">Average booking value</label>
+            <span class="field-val">$<span id="val-aov">340</span></span>
+          </div>
+          <input class="slider" type="range" min="50" max="2000" step="10" value="340" id="sl-aov" />
+        </div>
+        <div class="field">
+          <div class="field-head">
+            <label for="sl-rate">Your commission <span style="opacity:.5;font-weight:500;font-size:13px">(flat 7% — locked)</span></label>
+            <span class="field-val"><span id="val-rate">7</span>%</span>
+          </div>
+          <input class="slider" type="range" min="7" max="7" value="7" id="sl-rate" disabled style="opacity:.6;cursor:not-allowed;" />
+        </div>
+      </div>
+
+      <div class="calc-result">
+        <div class="lbl">Estimated monthly earnings</div>
+        <div class="big" id="calc-month">$326</div>
+        <div class="per">based on your inputs above</div>
+        <div class="row"><span>Per booking avg</span><strong id="calc-perbooking">$34</strong></div>
+        <div class="row"><span>Bookings per month</span><strong id="calc-bookings">10</strong></div>
+        <div class="row"><span>Yearly projection</span><strong id="calc-year">$3,917</strong></div>
+        <div class="row"><span>Earnings in 3 years</span><strong id="calc-3y">$11,750</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">Pricing</div>
+      <h2>One rate. <span class="grad">No fine print.</span></h2>
+      <p class="section-sub">No tiers to unlock. No minimums. No surprise deductions. Every host earns the same flat rate from day one.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <span class="tier-label">⚡ All hosts · same rate</span>
+        <div class="pricing-rate">
+          <span class="num">7</span>
+          <span class="unit">%</span>
+        </div>
+        <div class="pricing-tag">on every booking made through your link</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-features">
+          <div class="feat"><div class="ic">✓</div><div><strong>Flat 7%</strong> — <span class="muted">no volume thresholds, no tier games</span></div></div>
+          <div class="feat"><div class="ic">✓</div><div><strong>30-day attribution</strong> — <span class="muted">commissions counted even if guests come back later</span></div></div>
+          <div class="feat"><div class="ic">✓</div><div><strong>Monthly payouts</strong> — <span class="muted">Stripe or PayPal, $25 minimum balance</span></div></div>
+          <div class="feat"><div class="ic">✓</div><div><strong>5% host-on-host bonus</strong> — <span class="muted">refer other hosts, earn from their referrals for 12 months</span></div></div>
+          <div class="feat"><div class="ic x-ic">✗</div><div><span class="muted">No subscription fees</span></div></div>
+          <div class="feat"><div class="ic x-ic">✗</div><div><span class="muted">No platform tax on payouts</span></div></div>
+        </div>
+      </div>
+
+      <div class="pricing-side">
+        <h3>Why <span class="grad">flat beats tiered.</span></h3>
+        <p>Most referral programs gate the good rates behind 50+ referrals and complex tier rules. We charge the same 7% to a host with 1 booking as we do to one with 1,000. Simple, fair, and predictable.</p>
+
+        <div class="comparison">
+          <div class="compare-row"><span>Industry avg (starter tier)</span><span>3–5%</span></div>
+          <div class="compare-row"><span>Industry avg (top tier)</span><span>8–12%</span></div>
+          <div class="compare-row"><span>Industry minimum to unlock top tier</span><span>~50 bookings</span></div>
+          <div class="compare-row"><span>Hostlink — every host, day one</span><span class="winner">7% flat</span></div>
+        </div>
+
+        <a class="btn btn-primary btn-lg" href="#signup">Claim your 7% link →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<section class="section" id="dashboard">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">Live dashboard preview</div>
+      <h2>One place to track <span class="grad">every click and dollar.</span></h2>
+      <p class="section-sub">This is what you'll see when you log in. Click around — it's interactive.</p>
+    </div>
+
+    <div class="dash-wrap">
+      <div class="dash-grid">
+        <aside class="dash-side">
+          <div class="logo-mark">S</div>
+          <div class="user">
+            <div class="av">Y</div>
+            <div>
+              <div class="nm">Your Account</div>
+              <div class="em">superhost@hostlink.com</div>
+            </div>
+          </div>
+          <nav>
+            <a class="active" data-tab="overview">📊  Overview</a>
+            <a data-tab="referrals">👥  Referrals</a>
+            <a data-tab="payouts">💰  Payouts</a>
+            <a data-tab="settings">⚙️   Settings</a>
+          </nav>
+        </aside>
+
+        <main class="dash-main">
+          <div class="dash-head">
+            <h3 id="dash-title">Overview</h3>
+            <div class="link-pill">
+              <span class="url" id="dash-url">hostlink.com/r/superhost-yoa</span>
+              <button id="dash-copy">Copy link</button>
+            </div>
+          </div>
+
+          <div class="kpi-row">
+            <div class="kpi"><div class="lbl">Link clicks</div><div class="val" id="k-clicks">1,247</div><div class="delta up">↑ 18% this month</div></div>
+            <div class="kpi"><div class="lbl">Bookings</div><div class="val" id="k-bookings">42</div><div class="delta up">↑ 24% this month</div></div>
+            <div class="kpi"><div class="lbl">Conversion</div><div class="val" id="k-conv">3.4%</div><div class="delta up">↑ 0.6 pts</div></div>
+            <div class="kpi"><div class="lbl">Total earned</div><div class="val" id="k-earned" style="color:var(--accent)">$2,847</div><div class="delta up">↑ $612 vs last month</div></div>
+          </div>
+
+          <div class="chart-wrap">
+            <div class="chart-head">
+              <h4>Earnings (last 30 days)</h4>
+              <div class="chart-tabs">
+                <button class="on" data-range="30">30D</button>
+                <button data-range="90">90D</button>
+                <button data-range="365">1Y</button>
+              </div>
+            </div>
+            <svg class="chart-svg" id="chart" viewBox="0 0 600 160" preserveAspectRatio="none"></svg>
+          </div>
+
+          <div class="booking-list" id="bookingList"></div>
+        </main>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SIGNUP ============ -->
+<section class="section signup-section" id="signup">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">Get your link</div>
+      <h2>Start earning in <span style="background: linear-gradient(135deg, #FFB800, #FF7A45); -webkit-background-clip: text; background-clip: text; color: transparent;">under 60 seconds</span></h2>
+      <p class="section-sub">No credit card. No fees. Cancel any time.</p>
+    </div>
+
+    <div class="signup-card">
+      <!-- ⚠️ Replace FORMSPREE_FORM_ID below with your real Formspree form ID -->
+      <form class="signup-form" id="signupForm" action="https://formspree.io/f/FORMSPREE_FORM_ID" method="POST" novalidate>
+        <div class="field" id="f-name">
+          <label for="in-name">Your name</label>
+          <input type="text" id="in-name" name="name" placeholder="Maria Santos" />
+          <div class="field-error">Please enter your name.</div>
+        </div>
+        <div class="field" id="f-email">
+          <label for="in-email">Email address</label>
+          <input type="email" id="in-email" name="email" placeholder="you@example.com" />
+          <div class="field-error">Please enter a valid email.</div>
+        </div>
+        <div class="field" id="f-listing">
+          <label for="in-listing">Your Airbnb listing URL <span style="opacity:.5;font-weight:500">(optional)</span></label>
+          <input type="url" id="in-listing" name="listing_url" placeholder="https://airbnb.com/rooms/..." />
+        </div>
+        <!-- honeypot anti-spam -->
+        <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
+        <input type="hidden" name="_subject" value="New Hostlink referral signup" />
+        <button class="btn btn-primary" type="submit" id="submitBtn">Generate my referral link →</button>
+        <p id="demoNotice" style="display:none;margin-top:14px;font-size:13px;color:#FFC6D2;text-align:center;">
+          ⚙️ Demo mode — submissions aren't being saved. Add your Formspree ID to start collecting signups.
+        </p>
+      </form>
+
+      <div class="signup-success" id="signupSuccess">
+        <div class="check">✓</div>
+        <h3>You're in, <span id="welcomeName">friend</span>!</h3>
+        <p>Your personal referral link is ready. Share it anywhere — every booking earns you cash.</p>
+        <div class="ref-link-box">
+          <input type="text" id="genLink" readonly />
+          <button id="copyLink">Copy</button>
+        </div>
+        <div class="share-row">
+          <button class="share-btn" data-share="whatsapp">📱 WhatsApp</button>
+          <button class="share-btn" data-share="email">✉️ Email</button>
+          <button class="share-btn" data-share="x">𝕏 Post on X</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">FAQ</div>
+      <h2>Questions, answered.</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q">How do I get paid?<span class="ic">+</span></div>
+        <div class="faq-a">Payouts happen on the 1st of every month via Stripe or PayPal, as long as your balance is above $25. You can track pending and paid balances in your dashboard.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Who counts as a referral?<span class="ic">+</span></div>
+        <div class="faq-a">Anyone who clicks your unique link and completes a booking within 30 days. Cookies, device fingerprinting, and email matching all count — even if they come back later through a different device.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is there a cost to join?<span class="ic">+</span></div>
+        <div class="faq-a">No. The platform is 100% free for hosts. You keep a flat 7% of every booking — no subscription, no platform tax, no fees deducted from your payout.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Why a flat 7%? Don't bigger hosts deserve more?<span class="ic">+</span></div>
+        <div class="faq-a">Tiered programs reward hosts who already have the biggest audience and punish everyone else. We think a host with one great listing deserves the same rate as a property manager with fifty. Plus, the math is easier — you always know what you're earning.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I refer other hosts, not just guests?<span class="ic">+</span></div>
+        <div class="faq-a">Yes. Hosts you refer get a $50 sign-up bonus, and you earn 5% of their referral commissions for 12 months. Stack the income.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What if a booking is canceled?<span class="ic">+</span></div>
+        <div class="faq-a">Commissions are confirmed once the guest checks in. Cancellations before check-in are removed from your pending balance — but anything paid out stays yours.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is my data safe?<span class="ic">+</span></div>
+        <div class="faq-a">We only collect what's needed to send payouts and track referrals. Your information is never sold or shared with third parties. We're SOC 2 compliant and GDPR-ready.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="logo" href="#" style="color:white;">
+          <span class="logo-mark">H</span>
+          <span>Hostlink</span>
+        </a>
+        <p class="footer-tag">The referral network built for Airbnb hosts. Turn your guests into a recurring income stream.</p>
+      </div>
+      <div>
+        <h5>Product</h5>
+        <ul>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#calculator">Calculator</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#dashboard">Dashboard</a></li>
+          <li><a href="#signup">Sign up</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Press</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Cookies</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Hostlink. Not affiliated with Airbnb, Inc.</span>
+      <span>Made with ♥ for hosts everywhere</span>
+    </div>
+  </div>
+</footer>
+
+<!-- toast -->
+<div class="toast" id="toast"><div class="ic">✓</div><span id="toastMsg">Copied!</span></div>
+
+<script>
+/* ============ HELPERS ============ */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const fmtMoney = n => '$' + Math.round(n).toLocaleString();
+const fmtNum = n => Math.round(n).toLocaleString();
+
+/* Analytics — Plausible (no-op safe) */
+function track(eventName, props) {
+  try { window.plausible && window.plausible(eventName, props ? { props } : undefined); }
+  catch (e) { /* ignore */ }
+}
+// Debounce for slider events
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+function showToast(msg='Copied!') {
+  const t = $('#toast'); $('#toastMsg').textContent = msg;
+  t.classList.add('show'); clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+function copy(text) {
+  if (navigator.clipboard) navigator.clipboard.writeText(text);
+  else { const i = document.createElement('input'); i.value = text; document.body.appendChild(i); i.select(); document.execCommand('copy'); i.remove(); }
+}
+
+/* ============ CALCULATOR ============ */
+const slClicks = $('#sl-clicks'), slConv = $('#sl-conv'), slAov = $('#sl-aov'), slRate = $('#sl-rate');
+function paintSlider(s) {
+  const pct = ((s.value - s.min) / (s.max - s.min)) * 100;
+  s.style.background = `linear-gradient(90deg, var(--primary) 0%, var(--primary) ${pct}%, var(--border) ${pct}%, var(--border) 100%)`;
+}
+function calcUpdate() {
+  const clicks = +slClicks.value, conv = +slConv.value, aov = +slAov.value, rate = +slRate.value;
+  $('#val-clicks').textContent = clicks;
+  $('#val-conv').textContent = conv;
+  $('#val-aov').textContent = aov;
+  $('#val-rate').textContent = rate;
+
+  const bookings = clicks * (conv / 100);
+  const perBooking = aov * (rate / 100);
+  const monthly = bookings * perBooking;
+
+  animateNumber('#calc-month', monthly, v => fmtMoney(v));
+  animateNumber('#calc-perbooking', perBooking, v => fmtMoney(v));
+  animateNumber('#calc-bookings', bookings, v => fmtNum(v));
+  animateNumber('#calc-year', monthly * 12, v => fmtMoney(v));
+  animateNumber('#calc-3y', monthly * 36, v => fmtMoney(v));
+
+  [slClicks, slConv, slAov, slRate].forEach(paintSlider);
+}
+const animState = new Map();
+function animateNumber(sel, target, fmt) {
+  const el = $(sel); if (!el) return;
+  const prev = animState.get(sel) ?? target;
+  const start = performance.now(), dur = 400;
+  function tick(t) {
+    const k = Math.min(1, (t - start) / dur);
+    const eased = 1 - Math.pow(1 - k, 3);
+    const cur = prev + (target - prev) * eased;
+    el.textContent = fmt(cur);
+    if (k < 1) requestAnimationFrame(tick);
+    else animState.set(sel, target);
+  }
+  requestAnimationFrame(tick);
+}
+[slClicks, slConv, slAov, slRate].forEach(s => s.addEventListener('input', calcUpdate));
+calcUpdate();
+
+// Track calculator usage (debounced — fires after they stop dragging)
+const trackCalc = debounce(() => {
+  track('Calculator Use', {
+    clicks: +slClicks.value,
+    conv: +slConv.value,
+    aov: +slAov.value,
+  });
+}, 1200);
+[slClicks, slConv, slAov].forEach(s => s.addEventListener('input', trackCalc));
+
+/* ============ DASHBOARD ============ */
+// random bookings
+const firstNames = ['Sarah','James','Mei','Luca','Aisha','Olivier','Priya','Noah','Camila','Yusuf','Lena','Diego','Hannah','Kenji','Zara'];
+const cities = ['Paris','Lisbon','Barcelona','Tokyo','Bali','Lima','Mexico City','Rome','Marrakech','Cape Town','Bangkok','Athens'];
+function genBookings(n=6) {
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const nm = firstNames[Math.floor(Math.random()*firstNames.length)];
+    const ct = cities[Math.floor(Math.random()*cities.length)];
+    const nights = 2 + Math.floor(Math.random() * 7);
+    const total = 80 + Math.floor(Math.random() * 800);
+    const earn = Math.round(total * (0.08 + Math.random() * 0.06));
+    out.push({ nm, ct, nights, total, earn, init: nm[0], days: i });
+  }
+  return out;
+}
+function renderBookings() {
+  const list = genBookings(6);
+  const html = list.map((b, i) => `
+    <div class="booking-row">
+      <div class="av">${b.init}</div>
+      <div class="info"><div class="nm">${b.nm}'s ${b.ct} stay</div><div class="dt">${b.days === 0 ? 'Today' : b.days + ' day' + (b.days>1?'s':'') + ' ago'}</div></div>
+      <div class="nights">${b.nights} nights</div>
+      <div class="total">${fmtMoney(b.total)}</div>
+      <div class="earn">+${fmtMoney(b.earn)}</div>
+    </div>
+  `).join('');
+  $('#bookingList').innerHTML = html;
+}
+renderBookings();
+
+// chart
+function buildChart(points = 30, seed = 1) {
+  const svg = $('#chart');
+  const W = 600, H = 160, PAD = 6;
+  let s = seed; const rand = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+  const data = []; let v = 60;
+  for (let i = 0; i < points; i++) { v += (rand() - 0.45) * 22; v = Math.max(20, Math.min(140, v)); data.push(v); }
+  const max = Math.max(...data), min = Math.min(...data);
+  const pts = data.map((d, i) => {
+    const x = PAD + (i / (points - 1)) * (W - PAD * 2);
+    const y = H - PAD - ((d - min) / (max - min || 1)) * (H - PAD * 2);
+    return [x, y];
+  });
+  const path = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const area = path + ` L${pts[pts.length-1][0]},${H} L${pts[0][0]},${H} Z`;
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#FF385C" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#FF385C" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${area}" fill="url(#g1)" />
+    <path d="${path}" fill="none" stroke="#FF385C" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+    ${pts.filter((_,i) => i % Math.max(1, Math.floor(points/8)) === 0 || i === pts.length - 1).map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#FF385C" stroke="white" stroke-width="2"/>`).join('')}
+  `;
+}
+buildChart(30, 7);
+$$('.chart-tabs button').forEach(b => b.addEventListener('click', () => {
+  $$('.chart-tabs button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  const r = +b.dataset.range;
+  buildChart(r === 365 ? 52 : r, r + 1);
+}));
+
+// dashboard side tabs
+$$('.dash-side nav a').forEach(a => a.addEventListener('click', e => {
+  e.preventDefault();
+  $$('.dash-side nav a').forEach(x => x.classList.remove('active'));
+  a.classList.add('active');
+  const map = { overview: 'Overview', referrals: 'Referrals', payouts: 'Payouts', settings: 'Settings' };
+  $('#dash-title').textContent = map[a.dataset.tab] || 'Overview';
+  // shuffle some numbers for realism
+  if (a.dataset.tab !== 'overview') {
+    renderBookings(); buildChart(30, Math.floor(Math.random() * 999));
+  }
+}));
+
+$('#dash-copy').addEventListener('click', () => {
+  copy($('#dash-url').textContent);
+  showToast('Link copied to clipboard!');
+  track('Link Copy', { source: 'dashboard_preview' });
+});
+
+/* ============ SIGNUP ============ */
+const form = $('#signupForm');
+const success = $('#signupSuccess');
+
+function slugify(s) {
+  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 20) || 'host';
+}
+function rand4() {
+  return Math.random().toString(36).slice(2, 6);
+}
+
+// Formspree integration — set FORMSPREE_FORM_ID in the form's action attribute above
+const FORMSPREE_DEMO = form.action.includes('FORMSPREE_FORM_ID');
+if (FORMSPREE_DEMO) {
+  $('#demoNotice').style.display = 'block';
+  console.warn('[Hostlink] Formspree is in demo mode. Replace FORMSPREE_FORM_ID in the form action with your real ID to start collecting signups.');
+}
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = $('#in-name').value.trim();
+  const email = $('#in-email').value.trim();
+  let ok = true;
+  if (!name) { $('#f-name').classList.add('error'); ok = false; } else $('#f-name').classList.remove('error');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $('#f-email').classList.add('error'); ok = false; } else $('#f-email').classList.remove('error');
+  if (!ok) return;
+
+  // Generate the referral link first — we'll send it to Formspree too
+  const link = `https://hostlink.com/r/${slugify(name)}-${rand4()}`;
+  $('#welcomeName').textContent = name.split(' ')[0];
+  $('#genLink').value = link;
+  $('#dash-url').textContent = link.replace('https://', '');
+
+  // Disable button during submit
+  const btn = $('#submitBtn');
+  const originalLabel = btn.textContent;
+  btn.disabled = true; btn.style.opacity = '0.7'; btn.textContent = 'Generating...';
+
+  // POST to Formspree (skipped in demo mode)
+  if (!FORMSPREE_DEMO) {
+    try {
+      const data = new FormData(form);
+      data.append('referral_link', link);
+      const res = await fetch(form.action, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: data,
+      });
+      if (!res.ok) throw new Error('Formspree returned ' + res.status);
+    } catch (err) {
+      console.error('[Hostlink] Submission failed:', err);
+      btn.disabled = false; btn.style.opacity = '1'; btn.textContent = originalLabel;
+      showToast('Submission failed — check your connection');
+      return;
+    }
+  }
+
+  // Persist to localStorage so dashboard.html can read it
+  try {
+    localStorage.setItem('hostlink_user', JSON.stringify({
+      name, email,
+      listing: $('#in-listing').value.trim() || null,
+      referralLink: link,
+      slug: link.split('/').pop(),
+      joinedAt: new Date().toISOString(),
+    }));
+  } catch (e) { /* localStorage disabled — non-fatal */ }
+
+  // Analytics
+  track('Signup', { source: 'landing', demo_mode: FORMSPREE_DEMO });
+
+  form.style.display = 'none';
+  success.classList.add('show');
+  setTimeout(() => {
+    showToast(FORMSPREE_DEMO ? 'Your referral link is live! (demo)' : 'Your referral link is live!');
+  }, 400);
+});
+
+// If user already signed up before, swap the success view in automatically
+(function hydrateReturningUser() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('hostlink_user') || 'null');
+    if (saved && saved.referralLink) {
+      $('#welcomeName').textContent = saved.name.split(' ')[0];
+      $('#genLink').value = saved.referralLink;
+      $('#dash-url').textContent = saved.referralLink.replace('https://', '');
+      // Show success state on load
+      form.style.display = 'none';
+      success.classList.add('show');
+      // Replace section heading subtle hint
+      const sub = $('#signup .section-sub');
+      if (sub) sub.textContent = 'Welcome back — your referral link is ready below.';
+    }
+  } catch (e) { /* ignore */ }
+})();
+
+$('#copyLink').addEventListener('click', () => {
+  copy($('#genLink').value);
+  showToast('Referral link copied!');
+  track('Link Copy', { source: 'signup_success' });
+});
+
+$$('.share-btn').forEach(b => b.addEventListener('click', () => {
+  const link = $('#genLink').value;
+  const msg = encodeURIComponent(`Booking your next trip? Use my link for a special host — ${link}`);
+  const map = {
+    whatsapp: `https://wa.me/?text=${msg}`,
+    email: `mailto:?subject=${encodeURIComponent('Found a great place to stay')}&body=${msg}`,
+    x: `https://twitter.com/intent/tweet?text=${msg}`,
+  };
+  window.open(map[b.dataset.share], '_blank');
+  track('Share Click', { channel: b.dataset.share });
+}));
+
+/* ============ FAQ ============ */
+$$('.faq-item').forEach(item => item.addEventListener('click', () => {
+  item.classList.toggle('open');
+}));
+
+/* ============ HERO COUNTER ANIMATION ============ */
+const heroEl = $('#heroEarnings');
+let n = 0, target = 2847;
+const heroTick = setInterval(() => {
+  n += Math.ceil((target - n) / 8);
+  if (n >= target) { n = target; clearInterval(heroTick); }
+  heroEl.textContent = '$' + n.toLocaleString();
+}, 30);
+
+/* smooth scroll for anchor links */
+$$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+  const id = a.getAttribute('href');
+  if (id.length > 1) {
+    const t = $(id);
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  }
+}));
+</script>
+</body>
+</html>
