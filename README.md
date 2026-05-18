@@ -1,4 +1,4 @@
-# Hostlink — referral landing page
+# Refstay — referral landing page
 
 A fully functional referral landing page for a platform that lets Airbnb hosts earn 7% on every booking made through their unique link.
 
@@ -11,7 +11,7 @@ deploy/
 ├── 404.html          # Branded not-found page
 ├── vercel.json       # Vercel config (clean URLs, redirects, security headers)
 ├── robots.txt        # Search-engine instructions
-├── sitemap.xml       # Sitemap (update YOUR_DOMAIN.com first)
+├── sitemap.xml       # Sitemap (update refstay.com first)
 └── README.md         # This file
 ```
 
@@ -24,10 +24,10 @@ These are the only three placeholders you must replace before going live. All th
 Open `index.html` and `dashboard.html`. Search for:
 
 ```
-data-domain="YOUR_DOMAIN.com"
+data-domain="refstay.com"
 ```
 
-Replace `YOUR_DOMAIN.com` with the exact domain you'll deploy to (no `https://`, no trailing slash). Example: `hostlink.com`.
+Replace `refstay.com` with the exact domain you'll deploy to (no `https://`, no trailing slash). Example: `refstay.com`.
 
 Sign up at [plausible.io](https://plausible.io) and add a site with that same domain. Custom events (`Signup`, `Link Copy`, `Share Click`, `Calculator Use`, `Login`, etc.) will start showing up in your dashboard automatically.
 
@@ -45,7 +45,7 @@ Until you do this, the form runs in demo mode — a small notice appears below t
 
 ### 3. Sitemap + robots URLs
 
-Open `sitemap.xml` and `robots.txt` and replace `YOUR_DOMAIN.com` with your real domain.
+Open `sitemap.xml` and `robots.txt` and replace `refstay.com` with your real domain.
 
 ## Deploy to Vercel — 3 options
 
@@ -107,7 +107,7 @@ Then visit `http://localhost:3000`.
 - Flat 7% pricing card with industry comparison
 - Mock dashboard preview (KPIs + SVG chart + recent bookings)
 - Signup form with validation + honeypot anti-spam + Formspree POST
-- Generated unique referral link (`hostlink.com/r/<name>-<random>`)
+- Generated unique referral link (`refstay.com/r/<name>-<random>`)
 - Share buttons (WhatsApp, Email, X) — each tracked
 - 7 FAQ entries
 - Smooth scroll, sticky nav, dark footer
@@ -115,7 +115,7 @@ Then visit `http://localhost:3000`.
 **Dashboard (`dashboard.html`)**
 
 - Login form with validation, plus "demo account" one-click bypass
-- Persists session in `localStorage` under `hostlink_user`
+- Persists session in `localStorage` under `refstay_user`
 - **Overview tab**: 4 KPIs, 30D/90D/1Y chart, activity feed
 - **Referrals tab**: 18-row table with paid/pending/confirmed status, CSV export
 - **Payouts tab**: 3-month payout history, payout method selector

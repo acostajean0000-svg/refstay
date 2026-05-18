@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Hostlink — Turn Your Guests Into Recurring Income</title>
+<title>Refstay — Turn Your Guests Into Recurring Income</title>
 <!--
   ============================================================
   HOSTLINK · referral landing page
@@ -25,12 +25,12 @@
   PLAUSIBLE ANALYTICS · privacy-friendly, no cookie banner needed
   ============================================================
   1. Sign up at https://plausible.io and add your site
-  2. Copy your exact domain (e.g. hostlink.com — no protocol)
-  3. Replace YOUR_DOMAIN.com below with that domain
+  2. Copy your exact domain (e.g. refstay.com — no protocol)
+  3. Replace refstay.com below with that domain
   Custom events fire automatically: Signup, Link Copy, Share, Calculator Use.
   ============================================================
 -->
-<script defer data-domain="YOUR_DOMAIN.com" src="https://plausible.io/js/script.tagged-events.js"></script>
+<script defer data-domain="refstay.com" src="https://plausible.io/js/script.tagged-events.js"></script>
 <script>
   // Queue calls until script loads; works on first paint
   window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments) };
@@ -447,8 +447,8 @@
 <header class="nav">
   <div class="container nav-inner">
     <a class="logo" href="#">
-      <span class="logo-mark">H</span>
-      <span>Hostlink</span>
+      <span class="logo-mark">R</span>
+      <span>Refstay</span>
     </a>
     <nav class="nav-links">
       <a href="#how">How it works</a>
@@ -655,7 +655,7 @@
           <div class="compare-row"><span>Industry avg (starter tier)</span><span>3–5%</span></div>
           <div class="compare-row"><span>Industry avg (top tier)</span><span>8–12%</span></div>
           <div class="compare-row"><span>Industry minimum to unlock top tier</span><span>~50 bookings</span></div>
-          <div class="compare-row"><span>Hostlink — every host, day one</span><span class="winner">7% flat</span></div>
+          <div class="compare-row"><span>Refstay — every host, day one</span><span class="winner">7% flat</span></div>
         </div>
 
         <a class="btn btn-primary btn-lg" href="#signup">Claim your 7% link →</a>
@@ -681,7 +681,7 @@
             <div class="av">Y</div>
             <div>
               <div class="nm">Your Account</div>
-              <div class="em">superhost@hostlink.com</div>
+              <div class="em">superhost@refstay.com</div>
             </div>
           </div>
           <nav>
@@ -696,7 +696,7 @@
           <div class="dash-head">
             <h3 id="dash-title">Overview</h3>
             <div class="link-pill">
-              <span class="url" id="dash-url">hostlink.com/r/superhost-yoa</span>
+              <span class="url" id="dash-url">refstay.com/r/superhost-yoa</span>
               <button id="dash-copy">Copy link</button>
             </div>
           </div>
@@ -755,7 +755,7 @@
         </div>
         <!-- honeypot anti-spam -->
         <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
-        <input type="hidden" name="_subject" value="New Hostlink referral signup" />
+        <input type="hidden" name="_subject" value="New Refstay referral signup" />
         <button class="btn btn-primary" type="submit" id="submitBtn">Generate my referral link →</button>
         <p id="demoNotice" style="display:none;margin-top:14px;font-size:13px;color:#FFC6D2;text-align:center;">
           ⚙️ Demo mode — submissions aren't being saved. Add your Formspree ID to start collecting signups.
@@ -826,8 +826,8 @@
     <div class="footer-grid">
       <div>
         <a class="logo" href="#" style="color:white;">
-          <span class="logo-mark">H</span>
-          <span>Hostlink</span>
+          <span class="logo-mark">R</span>
+          <span>Refstay</span>
         </a>
         <p class="footer-tag">The referral network built for Airbnb hosts. Turn your guests into a recurring income stream.</p>
       </div>
@@ -861,7 +861,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Hostlink. Not affiliated with Airbnb, Inc.</span>
+      <span>© 2026 Refstay. Not affiliated with Airbnb, Inc.</span>
       <span>Made with ♥ for hosts everywhere</span>
     </div>
   </div>
@@ -1048,7 +1048,7 @@ function rand4() {
 const FORMSPREE_DEMO = form.action.includes('FORMSPREE_FORM_ID');
 if (FORMSPREE_DEMO) {
   $('#demoNotice').style.display = 'block';
-  console.warn('[Hostlink] Formspree is in demo mode. Replace FORMSPREE_FORM_ID in the form action with your real ID to start collecting signups.');
+  console.warn('[Refstay] Formspree is in demo mode. Replace FORMSPREE_FORM_ID in the form action with your real ID to start collecting signups.');
 }
 
 form.addEventListener('submit', async e => {
@@ -1061,7 +1061,7 @@ form.addEventListener('submit', async e => {
   if (!ok) return;
 
   // Generate the referral link first — we'll send it to Formspree too
-  const link = `https://hostlink.com/r/${slugify(name)}-${rand4()}`;
+  const link = `https://refstay.com/r/${slugify(name)}-${rand4()}`;
   $('#welcomeName').textContent = name.split(' ')[0];
   $('#genLink').value = link;
   $('#dash-url').textContent = link.replace('https://', '');
@@ -1083,7 +1083,7 @@ form.addEventListener('submit', async e => {
       });
       if (!res.ok) throw new Error('Formspree returned ' + res.status);
     } catch (err) {
-      console.error('[Hostlink] Submission failed:', err);
+      console.error('[Refstay] Submission failed:', err);
       btn.disabled = false; btn.style.opacity = '1'; btn.textContent = originalLabel;
       showToast('Submission failed — check your connection');
       return;
@@ -1092,7 +1092,7 @@ form.addEventListener('submit', async e => {
 
   // Persist to localStorage so dashboard.html can read it
   try {
-    localStorage.setItem('hostlink_user', JSON.stringify({
+    localStorage.setItem('refstay_user', JSON.stringify({
       name, email,
       listing: $('#in-listing').value.trim() || null,
       referralLink: link,
@@ -1114,7 +1114,7 @@ form.addEventListener('submit', async e => {
 // If user already signed up before, swap the success view in automatically
 (function hydrateReturningUser() {
   try {
-    const saved = JSON.parse(localStorage.getItem('hostlink_user') || 'null');
+    const saved = JSON.parse(localStorage.getItem('refstay_user') || 'null');
     if (saved && saved.referralLink) {
       $('#welcomeName').textContent = saved.name.split(' ')[0];
       $('#genLink').value = saved.referralLink;

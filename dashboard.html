@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Dashboard — Hostlink</title>
+<title>Dashboard — Refstay</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 
-<!-- Plausible Analytics — replace YOUR_DOMAIN.com with your real domain -->
-<script defer data-domain="YOUR_DOMAIN.com" src="https://plausible.io/js/script.tagged-events.js"></script>
+<!-- Plausible Analytics — replace refstay.com with your real domain -->
+<script defer data-domain="refstay.com" src="https://plausible.io/js/script.tagged-events.js"></script>
 <script>window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments) };</script>
 
 <style>
@@ -215,8 +215,8 @@
 <div class="login-wrap" id="loginScreen">
   <div class="login-card">
     <a class="logo" href="index.html">
-      <span class="logo-mark">H</span>
-      <span>Hostlink</span>
+      <span class="logo-mark">R</span>
+      <span>Refstay</span>
     </a>
     <h1>Welcome back</h1>
     <p class="sub">Log in to track your referrals and earnings.</p>
@@ -246,8 +246,8 @@
 <div class="dash" id="dashboard">
   <aside class="sidebar">
     <a class="logo" href="index.html">
-      <span class="logo-mark">H</span>
-      <span>Hostlink</span>
+      <span class="logo-mark">R</span>
+      <span>Refstay</span>
     </a>
     <div class="me">
       <div class="av" id="userAv">H</div>
@@ -396,7 +396,7 @@
           <div style="flex: 1; margin: 0;">
             <label>Custom slug</label>
             <div style="display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 12px; padding: 12px; background: var(--bg);">
-              <span style="color: var(--muted); font-family: 'Space Grotesk';">hostlink.com/r/</span>
+              <span style="color: var(--muted); font-family: 'Space Grotesk';">refstay.com/r/</span>
               <input id="customSlug" type="text" style="border: none; background: transparent; outline: none; flex: 1; font-family: 'Space Grotesk'; font-weight: 600; color: var(--ink); font-size: 15px;" placeholder="your-name" />
             </div>
           </div>
@@ -468,7 +468,7 @@ function copy(text) { if (navigator.clipboard) navigator.clipboard.writeText(tex
 function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
 /* ============ AUTH ============ */
-const STORAGE_KEY = 'hostlink_user';
+const STORAGE_KEY = 'refstay_user';
 function getUser() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { return null; } }
 function setUser(u) { localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
 function logout() { localStorage.removeItem(STORAGE_KEY); track('Logout'); location.reload(); }
@@ -500,7 +500,7 @@ $('#loginForm').addEventListener('submit', e => {
     name: email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
     email,
     listing: null,
-    referralLink: `https://hostlink.com/r/${email.split('@')[0]}-${Math.random().toString(36).slice(2, 6)}`,
+    referralLink: `https://refstay.com/r/${email.split('@')[0]}-${Math.random().toString(36).slice(2, 6)}`,
     joinedAt: new Date().toISOString(),
   };
   setUser(u);
@@ -513,7 +513,7 @@ $('#demoBtn').addEventListener('click', () => {
     name: 'Maria Santos',
     email: 'maria@superhost.com',
     listing: 'https://airbnb.com/rooms/12345',
-    referralLink: 'https://hostlink.com/r/maria-demo',
+    referralLink: 'https://refstay.com/r/maria-demo',
     joinedAt: '2025-11-15T10:30:00.000Z',
   };
   setUser(u);
@@ -718,7 +718,7 @@ $('#saveSlug').addEventListener('click', () => {
   const newSlug = $('#customSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
   if (newSlug.length < 3) { showToast('Slug must be 3+ characters'); return; }
   const user = getUser();
-  user.referralLink = `https://hostlink.com/r/${newSlug}`;
+  user.referralLink = `https://refstay.com/r/${newSlug}`;
   setUser(user);
   $('#linkInput').value = user.referralLink;
   $('#customSlug').value = newSlug;

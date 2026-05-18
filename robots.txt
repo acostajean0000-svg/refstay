@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /dashboard
 
-Sitemap: https://YOUR_DOMAIN.com/sitemap.xml
+Sitemap: https://refstay.com/sitemap.xml
