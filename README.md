@@ -36,10 +36,10 @@ Sign up at [plausible.io](https://plausible.io) and add a site with that same do
 Open `index.html` and search for:
 
 ```
-formspree.io/f/FORMSPREE_FORM_ID
+formspree.io/f/xojbqgqa
 ```
 
-Sign up at [formspree.io](https://formspree.io), create a new form, copy its ID (looks like `xqkrdpwe`), and paste it in place of `FORMSPREE_FORM_ID`. Submissions will arrive in your email and the Formspree dashboard.
+Sign up at [formspree.io](https://formspree.io), create a new form, copy its ID (looks like `xqkrdpwe`), and paste it in place of `xojbqgqa`. Submissions will arrive in your email and the Formspree dashboard.
 
 Until you do this, the form runs in demo mode — a small notice appears below the submit button and submissions are not sent anywhere.
 

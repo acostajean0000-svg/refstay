@@ -6,14 +6,11 @@
 <title>Refstay — Turn Your Guests Into Recurring Income</title>
 <!--
   ============================================================
-  HOSTLINK · referral landing page
+  REFSTAY · referral landing page
   ============================================================
-  To activate the signup form:
-    1. Go to https://formspree.io and create a new form
-    2. Copy your form ID (looks like 'xqkrdpwe')
-    3. Find FORMSPREE_FORM_ID in the <form> action below
-       and replace it with your real form ID
-  Until then, the form runs in demo mode (no submissions sent).
+  Form is wired to Formspree (form ID: xojbqgqa).
+  Submissions go to the email on your Formspree account.
+  Manage at: https://formspree.io/forms/xojbqgqa
   ============================================================
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -737,8 +734,8 @@
     </div>
 
     <div class="signup-card">
-      <!-- ⚠️ Replace FORMSPREE_FORM_ID below with your real Formspree form ID -->
-      <form class="signup-form" id="signupForm" action="https://formspree.io/f/FORMSPREE_FORM_ID" method="POST" novalidate>
+      <!-- Wired to Formspree (form ID: xojbqgqa). Submissions go to your Formspree inbox. -->
+      <form class="signup-form" id="signupForm" action="https://formspree.io/f/xojbqgqa" method="POST" novalidate>
         <div class="field" id="f-name">
           <label for="in-name">Your name</label>
           <input type="text" id="in-name" name="name" placeholder="Maria Santos" />
@@ -1044,11 +1041,12 @@ function rand4() {
   return Math.random().toString(36).slice(2, 6);
 }
 
-// Formspree integration — set FORMSPREE_FORM_ID in the form's action attribute above
-const FORMSPREE_DEMO = form.action.includes('FORMSPREE_FORM_ID');
+// Formspree integration — form ID is set in the form's action attribute above.
+// Set FORMSPREE_DEMO = true to bypass real submissions during local testing.
+const FORMSPREE_DEMO = false;
 if (FORMSPREE_DEMO) {
   $('#demoNotice').style.display = 'block';
-  console.warn('[Refstay] Formspree is in demo mode. Replace FORMSPREE_FORM_ID in the form action with your real ID to start collecting signups.');
+  console.warn('[Refstay] Formspree is in demo mode. Set FORMSPREE_DEMO = false to collect real submissions.');
 }
 
 form.addEventListener('submit', async e => {
