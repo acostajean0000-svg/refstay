@@ -331,7 +331,7 @@
         <div class="table-wrap">
           <table id="referralsTable">
             <thead>
-              <tr><th>Guest</th><th>Booking</th><th>Date</th><th>Total</th><th>Your 5%</th><th>Status</th></tr>
+              <tr><th>Guest</th><th>Activity</th><th>Date</th><th>Total</th><th>Your 5%</th><th>Status</th></tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -600,19 +600,32 @@ $$('[data-range]').forEach(b => b.addEventListener('click', () => {
 /* ============ MOCK DATA ============ */
 const firstNames = ['Sarah','James','Mei','Luca','Aisha','Olivier','Priya','Noah','Camila','Yusuf','Lena','Diego','Hannah','Kenji','Zara','Elena','Marco','Aya'];
 const lastNames = ['Chen','Garcia','Smith','Patel','Kim','Rossi','Tanaka','Khan','Müller','Silva','Dubois','Andersen'];
-const cities = ['Paris','Lisbon','Barcelona','Tokyo','Bali','Lima','Mexico City','Rome','Marrakech','Cape Town','Bangkok','Athens','Berlin','Reykjavik'];
+const activities = [
+  { type: 'Jet ski rental',       location: 'Miami Beach',     min: 89,  max: 250 },
+  { type: 'Yacht charter',        location: 'Biscayne Bay',    min: 500, max: 2000 },
+  { type: 'Boat tour',            location: 'South Beach',     min: 140, max: 480 },
+  { type: 'Parasailing',          location: 'Key Biscayne',    min: 80,  max: 160 },
+  { type: 'Fishing charter',      location: 'Haulover Marina', min: 450, max: 950 },
+  { type: 'Sunset sail',          location: 'Coconut Grove',   min: 90,  max: 220 },
+  { type: 'Slingshot rental',     location: 'Wynwood',         min: 150, max: 320 },
+  { type: 'Snorkel tour',         location: 'Key Largo',       min: 70,  max: 180 },
+  { type: 'Helicopter tour',      location: 'Downtown Miami',  min: 250, max: 700 },
+  { type: 'Jet car rental',       location: 'Miami Beach',     min: 199, max: 350 },
+  { type: 'Pontoon boat',         location: 'Hollywood Beach', min: 350, max: 850 },
+  { type: 'Airboat Everglades',   location: 'Everglades City', min: 80,  max: 220 },
+];
 
 function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
 function rndId() { return Math.random().toString(36).slice(2, 8).toUpperCase(); }
 
 function renderActivity() {
   const items = [
-    { ic: 'green', emoji: '💰', lead: 'Sarah Chen booked a 4-night stay in Lisbon', when: '2 hours ago', earn: 142 },
+    { ic: 'green', emoji: '🌊', lead: 'Sarah Chen booked a jet ski rental in Miami Beach', when: '2 hours ago', earn: 12 },
     { ic: 'purple', emoji: '👁', lead: '12 new clicks on your link from Instagram', when: '5 hours ago' },
-    { ic: 'green', emoji: '💰', lead: 'James Patel booked a 2-night stay in Tokyo', when: 'Yesterday', earn: 80 },
-    { ic: 'orange', emoji: '⭐', lead: 'Your link was shared by Maria Santos', when: '2 days ago' },
-    { ic: 'green', emoji: '💰', lead: 'Camila Silva booked a week in Bali', when: '3 days ago', earn: 287 },
-    { ic: 'purple', emoji: '📈', lead: 'You hit a new weekly record: $612 earned', when: '4 days ago' },
+    { ic: 'green', emoji: '⛵', lead: 'James Patel booked a sunset boat tour', when: 'Yesterday', earn: 18 },
+    { ic: 'orange', emoji: '⭐', lead: 'New referral signed up using your link', when: '2 days ago' },
+    { ic: 'green', emoji: '🛥️', lead: 'Camila Silva booked a yacht charter — Biscayne Bay', when: '3 days ago', earn: 64 },
+    { ic: 'purple', emoji: '📈', lead: 'You hit a new weekly record: $124 earned', when: '4 days ago' },
   ];
   $('#activityFeed').innerHTML = items.map(i => `
     <div class="feed-row">
@@ -630,8 +643,8 @@ function renderReferrals() {
   const rows = [];
   for (let i = 0; i < 18; i++) {
     const fn = pick(firstNames), ln = pick(lastNames), nm = fn + ' ' + ln;
-    const ct = pick(cities); const nights = 2 + Math.floor(Math.random() * 7);
-    const total = 80 + Math.floor(Math.random() * 900);
+    const act = pick(activities);
+    const total = act.min + Math.floor(Math.random() * (act.max - act.min));
     const earn = Math.round(total * 0.05);
     const statuses = ['paid','paid','paid','pending','pending','confirmed'];
     const st = pick(statuses);
@@ -640,7 +653,7 @@ function renderReferrals() {
     rows.push(`
       <tr>
         <td><div class="name-cell"><div class="av-sm">${fn[0]}</div><div><div class="nm">${nm}</div><div class="em">${fn.toLowerCase()}@example.com</div></div></div></td>
-        <td>${nights} nights in ${ct}</td>
+        <td>${act.type} · ${act.location}</td>
         <td>${dt}</td>
         <td>${fmtMoney(total)}</td>
         <td class="earn">+${fmtMoney(earn)}</td>

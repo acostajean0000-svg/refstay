@@ -6,6 +6,9 @@
     { "source": "/login", "destination": "/dashboard", "permanent": false },
     { "source": "/app", "destination": "/dashboard", "permanent": false }
   ],
+  "rewrites": [
+    { "source": "/r/:slug", "destination": "/r.html?slug=:slug" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
