@@ -282,9 +282,7 @@
       </div>
     </div>
     <nav>
-      <button class="active" data-tab="overview"><span class="ic">📊</span> Overview</button>
-      <button data-tab="referrals"><span class="ic">👥</span> Referrals</button>
-      <button data-tab="payouts"><span class="ic">💰</span> Payouts</button>
+      <button class="active" data-tab="overview"><span class="ic">🏠</span> Overview</button>
       <button data-tab="link"><span class="ic">🔗</span> Your link</button>
       <button data-tab="activities"><span class="ic">🎟️</span> Direct links</button>
       <button data-tab="settings"><span class="ic">⚙️</span> Settings</button>
@@ -299,98 +297,109 @@
     <div class="tab-pane active" data-pane="overview">
       <div class="topbar">
         <div>
-          <h1>Welcome back, <span id="firstName">friend</span> 👋</h1>
+          <h1>Welcome, <span id="firstName">friend</span> 👋</h1>
           <div class="sub" id="memberSince">Member since today</div>
         </div>
         <div class="topbar-right">
-          <div class="balance-pill">Pending balance · <span class="amt" id="pendingBalance">$847.50</span></div>
+          <div class="balance-pill" style="background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;">🚀 Pilot mode</div>
           <button class="btn btn-primary" id="overviewShare">Share my link →</button>
         </div>
       </div>
 
-      <div class="kpi-grid">
-        <div class="kpi"><div class="kpi-head"><div class="lbl">Total earned</div><div class="ic-bg d">💰</div></div><div class="val" id="kpi-earned">$2,847</div><div class="delta">↑ $612 vs last month</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="lbl">Bookings</div><div class="ic-bg a">📅</div></div><div class="val" id="kpi-bookings">42</div><div class="delta">↑ 24% MoM</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="lbl">Link clicks</div><div class="ic-bg b">👆</div></div><div class="val" id="kpi-clicks">1,247</div><div class="delta">↑ 18% MoM</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="lbl">Conversion</div><div class="ic-bg c">🎯</div></div><div class="val">3.4%</div><div class="delta">↑ 0.6 pts</div></div>
+      <!-- Hero: their actual link, prominent -->
+      <div class="link-card" style="margin-bottom: 20px;">
+        <div class="lbl">Your referral link</div>
+        <h3>Share this anywhere — guests book Miami activities, you earn 5%.</h3>
+        <div class="link-box">
+          <input type="text" id="linkInputOverview" readonly />
+          <button id="copyOverviewLink">Copy</button>
+        </div>
+        <div class="share-row">
+          <button class="share-btn" data-share-overview="whatsapp">📱 WhatsApp</button>
+          <button class="share-btn" data-share-overview="qr">📷 QR code</button>
+        </div>
       </div>
 
+      <!-- How it works -->
       <div class="card">
         <div class="card-head">
-          <div>
-            <h3>Earnings over time</h3>
-            <div class="sub">Confirmed payouts (excludes pending)</div>
+          <div><h3>How it works</h3><div class="sub">Three steps from share to payout.</div></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+          <div style="padding: 16px; background: var(--bg); border-radius: 12px;">
+            <div style="font-size: 22px; margin-bottom: 8px;">1️⃣</div>
+            <div style="font-weight: 700; margin-bottom: 4px;">You share your link</div>
+            <div class="sub" style="font-size: 13px;">Welcome book, WhatsApp on check-in, a QR sticker by the door — your call.</div>
           </div>
-          <div class="tabs">
-            <button class="on" data-range="30">30D</button>
-            <button data-range="90">90D</button>
-            <button data-range="365">1Y</button>
+          <div style="padding: 16px; background: var(--bg); border-radius: 12px;">
+            <div style="font-size: 22px; margin-bottom: 8px;">2️⃣</div>
+            <div style="font-weight: 700; margin-bottom: 4px;">Guests browse & book</div>
+            <div class="sub" style="font-size: 13px;">They land on miamijetskiboatrentals.com with your slug tracked. Booking happens via FareHarbor.</div>
+          </div>
+          <div style="padding: 16px; background: var(--bg); border-radius: 12px;">
+            <div style="font-size: 22px; margin-bottom: 8px;">3️⃣</div>
+            <div style="font-weight: 700; margin-bottom: 4px;">We pay you monthly</div>
+            <div class="sub" style="font-size: 13px;">By the 5th of every month, you get a report by email with your bookings + payment via PayPal/Zelle.</div>
           </div>
         </div>
-        <svg class="chart" id="earningsChart" viewBox="0 0 700 220" preserveAspectRatio="none"></svg>
       </div>
 
+      <!-- Reporting schedule -->
+      <div class="card" style="background: linear-gradient(135deg, #F0FDF4 0%, #ECFEFF 100%); border: 1px solid #BBF7D0;">
+        <div style="display: flex; align-items: start; gap: 14px;">
+          <div style="font-size: 26px;">📬</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; font-size: 16px; margin-bottom: 6px;">Your next report arrives by the 5th</div>
+            <div class="sub" style="line-height: 1.5;">
+              Refstay is currently in pilot mode — we hand-reconcile bookings monthly from the FareHarbor system. Once a month, you receive an email with:
+              <ul style="margin: 10px 0 0; padding-left: 20px; color: var(--ink);">
+                <li>Every guest who booked through your link (slug: <code style="background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px;" id="overviewSlug">your-slug</code>)</li>
+                <li>Each booking's amount and your 5% commission</li>
+                <li>Total payout for the month, sent the same day via PayPal or Zelle</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
       <div class="card">
         <div class="card-head">
-          <div><h3>Recent activity</h3><div class="sub">Bookings, clicks, and payouts</div></div>
+          <div><h3>Set yourself up for success</h3><div class="sub">Two quick wins to do today.</div></div>
         </div>
-        <div class="feed" id="activityFeed"></div>
-      </div>
-    </div>
-
-    <!-- ============ REFERRALS ============ -->
-    <div class="tab-pane" data-pane="referrals">
-      <div class="topbar">
-        <div>
-          <h1>Your referrals</h1>
-          <div class="sub">Every guest who booked through your link.</div>
-        </div>
-        <div class="topbar-right">
-          <button class="btn btn-outline" id="exportBtn">⬇ Export CSV</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <button class="btn btn-outline quick-action" data-goto="link" style="text-align: left; padding: 18px; height: auto;">
+            <div style="font-size: 20px; margin-bottom: 6px;">🔗</div>
+            <div style="font-weight: 700; margin-bottom: 4px;">Customize your link slug</div>
+            <div class="sub" style="font-size: 12px;">Replace the random suffix with your name — easier to remember and share.</div>
+          </button>
+          <button class="btn btn-outline quick-action" data-goto="activities" style="text-align: left; padding: 18px; height: auto;">
+            <div style="font-size: 20px; margin-bottom: 6px;">🎟️</div>
+            <div style="font-weight: 700; margin-bottom: 4px;">Browse direct activity links</div>
+            <div class="sub" style="font-size: 12px;">Pick a specific activity (jet ski, yacht, sunset) and get a copy-paste link for a single guest.</div>
+          </button>
         </div>
       </div>
 
-      <div class="card" style="padding: 0">
-        <div class="table-wrap">
-          <table id="referralsTable">
-            <thead>
-              <tr><th>Guest</th><th>Activity</th><th>Date</th><th>Total</th><th>Your 5%</th><th>Status</th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============ PAYOUTS ============ -->
-    <div class="tab-pane" data-pane="payouts">
-      <div class="topbar">
-        <div><h1>Payouts</h1><div class="sub">Paid out on the 1st of every month.</div></div>
-      </div>
-
-      <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr);">
-        <div class="kpi"><div class="kpi-head"><div class="lbl">Pending balance</div><div class="ic-bg c">⏳</div></div><div class="val">$847.50</div><div class="delta">Releases Jun 1</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="lbl">Paid this year</div><div class="ic-bg d">✅</div></div><div class="val">$2,000.00</div><div class="delta">5 payouts</div></div>
-        <div class="kpi"><div class="kpi-head"><div class="lbl">Lifetime</div><div class="ic-bg b">📈</div></div><div class="val">$2,847.00</div><div class="delta">Since joining</div></div>
-      </div>
-
-      <div class="card" style="padding: 0">
-        <div class="table-wrap">
-          <table id="payoutsTable">
-            <thead><tr><th>Date</th><th>Method</th><th>Amount</th><th>Status</th><th>Reference</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
+      <!-- FAQ -->
       <div class="card">
-        <div class="card-head"><div><h3>Payout method</h3><div class="sub">Choose how you want to be paid.</div></div></div>
-        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-          <button class="btn btn-outline" style="border: 2px solid var(--primary); color: var(--primary);">✓ Stripe</button>
-          <button class="btn btn-outline">PayPal</button>
-          <button class="btn btn-outline">Wise</button>
-          <button class="btn btn-outline">+ Bank transfer</button>
-        </div>
+        <div class="card-head"><div><h3>Common questions</h3></div></div>
+        <details style="border-bottom: 1px solid var(--border); padding: 14px 0;">
+          <summary style="font-weight: 600; cursor: pointer;">When will I see real numbers in my dashboard?</summary>
+          <p style="color: var(--muted); margin-top: 10px; line-height: 1.6;">During pilot mode, real booking numbers come by email on the 5th of each month, not in the dashboard. We'll wire live metrics here once we cross 25+ active hosts — keeps the platform focused on what actually drives revenue (you sharing the link).</p>
+        </details>
+        <details style="border-bottom: 1px solid var(--border); padding: 14px 0;">
+          <summary style="font-weight: 600; cursor: pointer;">How do I know my link is working?</summary>
+          <p style="color: var(--muted); margin-top: 10px; line-height: 1.6;">Open your link in a private/incognito browser tab. You should land on miamijetskiboatrentals.com normally. To verify the slug is captured, open DevTools console and type <code>window.__refstay.getRef()</code> — it should return your slug.</p>
+        </details>
+        <details style="border-bottom: 1px solid var(--border); padding: 14px 0;">
+          <summary style="font-weight: 600; cursor: pointer;">What if a guest books on a partner site instead of miamijetskiboatrentals.com?</summary>
+          <p style="color: var(--muted); margin-top: 10px; line-height: 1.6;">Use a Direct link (see the "Direct links" tab). Those have your slug baked into the URL itself, so they work on any partner site, Instagram bio, WhatsApp message, anywhere a URL goes.</p>
+        </details>
+        <details style="padding: 14px 0;">
+          <summary style="font-weight: 600; cursor: pointer;">How do I get paid?</summary>
+          <p style="color: var(--muted); margin-top: 10px; line-height: 1.6;">PayPal or Zelle, whichever you prefer. Update your payout method in Settings. Payments go out by the 5th of every month for the prior month's bookings.</p>
+        </details>
       </div>
     </div>
 
@@ -430,9 +439,14 @@
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-head"><div><h3>Top sources</h3><div class="sub">Where your clicks are coming from.</div></div></div>
-        <div id="sourcesList"></div>
+      <div class="card" style="background: #F8FAFC;">
+        <div style="display: flex; align-items: start; gap: 12px;">
+          <div style="font-size: 22px;">📊</div>
+          <div>
+            <div style="font-weight: 700; margin-bottom: 4px;">Where your clicks come from</div>
+            <div class="sub" style="line-height: 1.5;">Click sources arrive in your monthly email report alongside booking data. During pilot mode we keep the dashboard focused on action over analytics.</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -587,12 +601,14 @@ function hydrate(user) {
   $('#userEmail').textContent = user.email;
   $('#userAv').textContent = (user.name || 'H')[0].toUpperCase();
   $('#linkInput').value = user.referralLink;
+  $('#linkInputOverview').value = user.referralLink;
   $('#setName').value = user.name || '';
   $('#setEmail').value = user.email || '';
   $('#setListing').value = user.listing || '';
   // Pre-fill custom slug with current
   const slug = user.referralLink.split('/').pop();
   $('#customSlug').value = slug;
+  $('#overviewSlug').textContent = slug;
   // Member since
   if (user.joinedAt) {
     const d = new Date(user.joinedAt);
@@ -600,11 +616,6 @@ function hydrate(user) {
     $('#memberSince').textContent = `Member since ${months[d.getMonth()]} ${d.getFullYear()}`;
   }
 
-  buildChart();
-  renderActivity();
-  renderReferrals();
-  renderPayouts();
-  renderSources();
   renderActivitiesPicker();
 }
 
@@ -617,143 +628,35 @@ $$('.sidebar nav button').forEach(b => b.addEventListener('click', () => {
   track('Tab View', { tab });
 }));
 
-/* ============ CHART ============ */
-function buildChart(range = 30, seed = 7) {
-  const svg = $('#earningsChart');
-  const W = 700, H = 220, PAD = 8;
-  const points = range === 365 ? 52 : range;
-  let s = seed; const rand = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
-  const data = []; let v = 60;
-  for (let i = 0; i < points; i++) { v += (rand() - 0.42) * 24; v = Math.max(18, Math.min(190, v)); data.push(v); }
-  const max = Math.max(...data), min = Math.min(...data);
-  const pts = data.map((d, i) => {
-    const x = PAD + (i / (points - 1)) * (W - PAD * 2);
-    const y = H - PAD - ((d - min) / (max - min || 1)) * (H - PAD * 2);
-    return [x, y];
-  });
-  const path = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
-  const area = path + ` L${pts[pts.length-1][0]},${H} L${pts[0][0]},${H} Z`;
-  svg.innerHTML = `
-    <defs>
-      <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#FF385C" stop-opacity="0.35"/>
-        <stop offset="100%" stop-color="#FF385C" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-    <path d="${area}" fill="url(#cg)" />
-    <path d="${path}" fill="none" stroke="#FF385C" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
-    ${pts.filter((_, i) => i % Math.max(1, Math.floor(points / 10)) === 0).map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#FF385C" stroke="white" stroke-width="2"/>`).join('')}
-  `;
-}
-$$('[data-range]').forEach(b => b.addEventListener('click', () => {
-  $$('[data-range]').forEach(x => x.classList.remove('on'));
-  b.classList.add('on');
-  buildChart(+b.dataset.range, Math.floor(Math.random() * 999));
+/* ============ OVERVIEW ACTIONS ============ */
+// Copy button on the overview link card
+$('#copyOverviewLink')?.addEventListener('click', () => {
+  copy($('#linkInputOverview').value);
+  showToast('Link copied!');
+  track('Link Copy', { source: 'overview' });
+});
+
+// Share buttons on the overview card (whatsapp, qr)
+$$('[data-share-overview]').forEach(b => b.addEventListener('click', () => {
+  const link = $('#linkInputOverview').value;
+  const ch = b.dataset.shareOverview;
+  if (ch === 'whatsapp') {
+    const msg = encodeURIComponent(`Hey! If you're booking jet skis, boats or tours in Miami, use this link — ${link}`);
+    window.open(`https://wa.me/?text=${msg}`, '_blank');
+  } else if (ch === 'qr') {
+    showToast('QR code feature coming soon');
+  }
+  track('Share Click', { channel: ch, source: 'overview' });
 }));
 
-/* ============ MOCK DATA ============ */
-const firstNames = ['Sarah','James','Mei','Luca','Aisha','Olivier','Priya','Noah','Camila','Yusuf','Lena','Diego','Hannah','Kenji','Zara','Elena','Marco','Aya'];
-const lastNames = ['Chen','Garcia','Smith','Patel','Kim','Rossi','Tanaka','Khan','Müller','Silva','Dubois','Andersen'];
-const activities = [
-  { type: 'Jet ski rental',       location: 'Miami Beach',     min: 89,  max: 250 },
-  { type: 'Yacht charter',        location: 'Biscayne Bay',    min: 500, max: 2000 },
-  { type: 'Boat tour',            location: 'South Beach',     min: 140, max: 480 },
-  { type: 'Parasailing',          location: 'Key Biscayne',    min: 80,  max: 160 },
-  { type: 'Fishing charter',      location: 'Haulover Marina', min: 450, max: 950 },
-  { type: 'Sunset sail',          location: 'Coconut Grove',   min: 90,  max: 220 },
-  { type: 'Slingshot rental',     location: 'Wynwood',         min: 150, max: 320 },
-  { type: 'Snorkel tour',         location: 'Key Largo',       min: 70,  max: 180 },
-  { type: 'Helicopter tour',      location: 'Downtown Miami',  min: 250, max: 700 },
-  { type: 'Jet car rental',       location: 'Miami Beach',     min: 199, max: 350 },
-  { type: 'Pontoon boat',         location: 'Hollywood Beach', min: 350, max: 850 },
-  { type: 'Airboat Everglades',   location: 'Everglades City', min: 80,  max: 220 },
-];
-
-function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
-function rndId() { return Math.random().toString(36).slice(2, 8).toUpperCase(); }
-
-function renderActivity() {
-  const items = [
-    { ic: 'green', emoji: '🌊', lead: 'Sarah Chen booked a jet ski rental in Miami Beach', when: '2 hours ago', earn: 12 },
-    { ic: 'purple', emoji: '👁', lead: '12 new clicks on your link from Instagram', when: '5 hours ago' },
-    { ic: 'green', emoji: '⛵', lead: 'James Patel booked a sunset boat tour', when: 'Yesterday', earn: 18 },
-    { ic: 'orange', emoji: '⭐', lead: 'New referral signed up using your link', when: '2 days ago' },
-    { ic: 'green', emoji: '🛥️', lead: 'Camila Silva booked a yacht charter — Biscayne Bay', when: '3 days ago', earn: 64 },
-    { ic: 'purple', emoji: '📈', lead: 'You hit a new weekly record: $124 earned', when: '4 days ago' },
-  ];
-  $('#activityFeed').innerHTML = items.map(i => `
-    <div class="feed-row">
-      <div class="feed-ic ${i.ic}">${i.emoji}</div>
-      <div class="feed-content">
-        <div class="lead">${escapeHtml(i.lead)} ${i.earn ? `<span class="earn">+$${i.earn}</span>` : ''}</div>
-        <div class="when">${i.when}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderReferrals() {
-  const tb = $('#referralsTable tbody');
-  const rows = [];
-  for (let i = 0; i < 18; i++) {
-    const fn = pick(firstNames), ln = pick(lastNames), nm = fn + ' ' + ln;
-    const act = pick(activities);
-    const total = act.min + Math.floor(Math.random() * (act.max - act.min));
-    const earn = Math.round(total * 0.05);
-    const statuses = ['paid','paid','paid','pending','pending','confirmed'];
-    const st = pick(statuses);
-    const badge = { paid: 'b-green', pending: 'b-yellow', confirmed: 'b-blue' }[st];
-    const dt = new Date(Date.now() - i * 86400000 * (1 + Math.random())).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    rows.push(`
-      <tr>
-        <td><div class="name-cell"><div class="av-sm">${fn[0]}</div><div><div class="nm">${nm}</div><div class="em">${fn.toLowerCase()}@example.com</div></div></div></td>
-        <td>${act.type} · ${act.location}</td>
-        <td>${dt}</td>
-        <td>${fmtMoney(total)}</td>
-        <td class="earn">+${fmtMoney(earn)}</td>
-        <td><span class="badge ${badge}">${st}</span></td>
-      </tr>
-    `);
-  }
-  tb.innerHTML = rows.join('');
-}
-
-function renderPayouts() {
-  const tb = $('#payoutsTable tbody');
-  const months = ['Apr 1, 2026', 'Mar 1, 2026', 'Feb 1, 2026', 'Jan 1, 2026', 'Dec 1, 2025'];
-  const amounts = [612, 487, 351, 290, 260];
-  tb.innerHTML = months.map((m, i) => `
-    <tr>
-      <td>${m}</td>
-      <td>Stripe</td>
-      <td class="earn">${fmtMoney(amounts[i])}</td>
-      <td><span class="badge b-green">paid</span></td>
-      <td style="font-family:'Space Grotesk';color:var(--muted);">${rndId()}-${rndId()}</td>
-    </tr>
-  `).join('');
-}
-
-function renderSources() {
-  const sources = [
-    { name: 'WhatsApp', clicks: 412, pct: 33, color: '#25D366' },
-    { name: 'Instagram bio', clicks: 287, pct: 23, color: '#E1306C' },
-    { name: 'Direct (typed URL)', clicks: 198, pct: 16, color: '#64748B' },
-    { name: 'Email signature', clicks: 154, pct: 12, color: '#FFB800' },
-    { name: 'Welcome book QR code', clicks: 121, pct: 10, color: '#7C3AED' },
-    { name: 'X / Twitter', clicks: 75, pct: 6, color: '#000000' },
-  ];
-  $('#sourcesList').innerHTML = sources.map(s => `
-    <div style="margin-bottom: 14px;">
-      <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px;">
-        <span style="font-weight: 600;">${s.name}</span>
-        <span style="color: var(--muted);">${s.clicks} clicks · ${s.pct}%</span>
-      </div>
-      <div style="height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden;">
-        <div style="height: 100%; width: ${s.pct * 3}%; background: ${s.color}; border-radius: 3px;"></div>
-      </div>
-    </div>
-  `).join('');
-}
+// Quick action cards on overview ("Customize your link slug", "Browse direct activity links")
+$$('.quick-action').forEach(b => b.addEventListener('click', () => {
+  const target = b.dataset.goto;
+  $$('.sidebar nav button').forEach(x => x.classList.remove('active'));
+  $$(`.sidebar nav button[data-tab="${target}"]`)[0]?.classList.add('active');
+  $$('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === target));
+  track('Quick Action', { target });
+}));
 
 /* ============ DIRECT ACTIVITY LINKS ============ */
 // Curated set of Miami activities. Each links to a specific FareHarbor item.
@@ -922,23 +825,8 @@ $('#deleteAcc').addEventListener('click', () => {
   }
 });
 
-/* ============ EXPORT ============ */
-$('#exportBtn').addEventListener('click', () => {
-  const rows = $$('#referralsTable tbody tr').map(tr => {
-    const tds = [...tr.querySelectorAll('td')].map(td => `"${td.innerText.replace(/\n/g, ' ').replace(/"/g, '""').trim()}"`);
-    return tds.join(',');
-  });
-  const header = 'Guest,Booking,Date,Total,Commission,Status';
-  const csv = header + '\n' + rows.join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `hostlink-referrals-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-  track('CSV Export');
-  showToast('CSV exported!');
-});
+/* CSV export removed — Referrals tab no longer exists in pilot mode.
+   Hosts receive their referral list via monthly email report instead. */
 
 </script>
 </body>
