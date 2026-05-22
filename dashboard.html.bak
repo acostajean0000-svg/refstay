@@ -469,14 +469,6 @@
         </div>
       </div>
 
-      <div style="display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;">
-        <div style="position: relative; flex: 1; min-width: 240px;">
-          <input id="activitySearch" type="search" placeholder="Search 'jet ski', 'yacht', 'wynwood'…" style="width: 100%; padding: 12px 16px 12px 42px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-family: inherit; background: white; outline: none; transition: border-color .15s;" />
-          <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px;">🔍</span>
-        </div>
-        <div id="activityCount" style="display: flex; align-items: center; padding: 0 14px; font-size: 13px; color: var(--muted); font-weight: 600;">Loading…</div>
-      </div>
-
       <div class="activities-filter" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
         <button class="cat-pill on" data-cat="all">All</button>
         <button class="cat-pill" data-cat="water">Water</button>
@@ -486,10 +478,6 @@
       </div>
 
       <div id="activitiesGrid" class="activities-grid"></div>
-
-      <div style="display: flex; justify-content: center; margin-top: 24px;">
-        <button id="loadMoreBtn" type="button" style="display: none; background: white; border: 1px solid var(--border); padding: 12px 28px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; color: var(--ink); font-family: inherit;">Load more activities</button>
-      </div>
     </div>
 
     <!-- ============ SETTINGS ============ -->
@@ -671,19 +659,31 @@ $$('.quick-action').forEach(b => b.addEventListener('click', () => {
 }));
 
 /* ============ DIRECT ACTIVITY LINKS ============ */
-// Full catalog of Miami activities is loaded async from /activities.json (~133 KB).
-// Each entry is shape: { c: category, g: group, t: title, p: price, i: image, o: operator, id: itemId, s: pageSlug }
-// To refresh — re-run the extractor in tools/ and replace activities.json.
-let ACTIVITIES = [];
-let activitiesLoaded = false;
-let activityFilter = 'all';
-let activitySearchQuery = '';
-let activityPage = 1;
-const ACTIVITY_PAGE_SIZE = 20;
+// Curated set of Miami activities. Each links to a specific FareHarbor item.
+// Update this list to add/remove activities. Re-run the extractor in the
+// repo's tools to refresh image URLs and item IDs if FareHarbor pages move.
+const ACTIVITIES = [
+  { category: 'Jet Ski',          group: 'water', title: '1 Hour Jet Ski Tour',                              price: 100, image: 'https://cdn.filestackcontent.com/vHGlErbRSieyKeVHaAG5/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'miamiatvrentals',         itemId: '498696', pageSlug: '1-hour-jet-ski-tour-miami' },
+  { category: 'Yacht',            group: 'boat',  title: "166' VIP Mega Yacht",                              price: 100, image: 'https://cdn.filestackcontent.com/2VVwKcGQ5KeI8eMlSDpg/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'vip-inmiami',            itemId: '688500', pageSlug: '166-vip-mega-yacht-miami' },
+  { category: 'Boat',             group: 'boat',  title: '42 Sea Ray',                                       price: 50,  image: 'https://cdn.filestackcontent.com/qzh3IajKTrCeYng6CNAD/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'odyseaboatrentals',      itemId: '604825', pageSlug: '42-sea-ray-miami' },
+  { category: 'Sunset Cruise',    group: 'boat',  title: '2-Hour Sightseeing Serenity',                     price: 100, image: 'https://cdn.filestackcontent.com/V5MiP3fhRCpxBjvOwCrA/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'yajuboattours',          itemId: '575404', pageSlug: '2-hour-sightseeing-serenity-miami' },
+  { category: 'Airboat',          group: 'tour',  title: '2 Hour Gladesmens Airboat Journey',               price: 50,  image: 'https://cdn.filestackcontent.com/BJpjxXiZTtK9D70twCp5/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'gladesmenairboattours',  itemId: '673834', pageSlug: '2-hour-gladesmens-airboat-journey-miami' },
+  { category: 'Parasailing',      group: 'water', title: 'Parasailing',                                      price: 75,  image: 'https://cdn.filestackcontent.com/MahZBKNtTUejouOSIvuR/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'toplinewatersports',     itemId: '724515', pageSlug: 'parasailing-miami' },
+  { category: 'Scuba',            group: 'water', title: 'Miami: 2 Tank Dive Trip',                         price: 75,  image: 'https://cdn.filestackcontent.com/MVgHTVwiT5mEG59t9dKv/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'northmiamidivers',       itemId: '368129', pageSlug: 'miami-2-tank-dive-trip-miami' },
+  { category: 'Fishing',          group: 'boat',  title: 'Offshore Fishing',                                 price: 150, image: 'https://cdn.filestackcontent.com/408vkxQGq7CSlROdyjKw/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'farsideoutfitters',      itemId: '657511', pageSlug: 'offshore-fishing-miami' },
+  { category: 'Paddleboard',      group: 'water', title: 'Miami Pelican Island Paddle',                     price: 50,  image: 'https://cdn.filestackcontent.com/U4sHj4fHRRa6NCjosmmJ/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'padl-pelicanharbor',     itemId: '718953', pageSlug: 'miami-pelican-island-paddle-miami' },
+  { category: 'ATV',              group: 'land',  title: '1 Hour ATV Tour',                                  price: 65,  image: 'https://cdn.filestackcontent.com/Npdjw8xSh6ApwdCG7RmO/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'miamiatvrentals',        itemId: '498688', pageSlug: '1-hour-atv-tour-miami' },
+  { category: 'Horseback',        group: 'land',  title: '1 Hour Horseback Riding + Meet & Greet',          price: 50,  image: 'https://cdn.filestackcontent.com/U4sHj4fHRRa6NCjosmmJ/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'miamiatvrentals',        itemId: '498699', pageSlug: '1-hour-horseback-riding-tour-meet-and-greet-miami' },
+  { category: 'Bike Tour',        group: 'land',  title: 'Best of Miami Electric Bike Tour',                price: 45,  image: 'https://cdn.filestackcontent.com/mdcBKF4lTbahj8bdgPPX/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'unlimitedbiking',        itemId: '394561', pageSlug: 'best-of-miami-electric-bike-tour-miami' },
+  { category: 'Watersport Combo', group: 'water', title: '3 Hour Watersport Excursion',                     price: 50,  image: 'https://cdn.filestackcontent.com/dXez58wwSeaeYHIjtdSQ/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'toplinewatersports',     itemId: '651398', pageSlug: '3-hour-watersport-excursion-miami-to1354' },
+  { category: 'Wynwood Art',      group: 'tour',  title: 'Best of Wynwood: Street Art Walking Tour',        price: 50,  image: 'https://cdn.filestackcontent.com/A2bdMKFkT9qkwiRm1opz/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'wynwoodartwalk',         itemId: '41828',  pageSlug: 'best-of-wynwood-street-art-walking-tour-miami' },
+  { category: 'Banana Boat',      group: 'water', title: 'Banana Boat (Miami Watersports)',                 price: 50,  image: 'https://cdn.filestackcontent.com/vEgRyDKRSH2AOtLMaNXQ/convert?cache=true&compress=true&quality=90&format=webp&rotate=exif&w=1000&fit=max', operator: 'sfjetskirentals',        itemId: '534394', pageSlug: 'banana-boat-miami-watersports-miami' },
+];
 
 // Build a per-host FareHarbor URL with `ref=miamistylerentals-<slug>` baked in.
 // This is the same format the FareHarbor specialist confirmed:
 //   ref = <distribution_partner>-<host_slug>
+// We keep `miamistylerentals` as prefix so the overall account tracking stays.
 function buildActivityUrl(activity, hostSlug) {
   const baseRef = 'miamistylerentals';
   const ref = hostSlug ? `${baseRef}-${hostSlug}` : baseRef;
@@ -696,88 +696,41 @@ function buildActivityUrl(activity, hostSlug) {
     'marketplace': 'yes',
     'flow': 'no'
   });
-  return `https://fareharbor.com/embeds/book/${activity.o}/items/${activity.id}/?${params.toString()}`;
+  return `https://fareharbor.com/embeds/book/${activity.operator}/items/${activity.itemId}/?${params.toString()}`;
 }
 
-async function loadActivitiesCatalog() {
-  if (activitiesLoaded) return;
-  try {
-    const res = await fetch('/activities.json', { cache: 'force-cache' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    ACTIVITIES = await res.json();
-    activitiesLoaded = true;
-  } catch (err) {
-    console.error('Failed to load activities catalog:', err);
-    ACTIVITIES = [];
-    const grid = $('#activitiesGrid');
-    if (grid) grid.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);grid-column:1/-1;">Couldn\'t load the activity catalog. Refresh the page.</div>';
-  }
-}
-
-function getFilteredActivities() {
-  const q = activitySearchQuery.trim().toLowerCase();
-  return ACTIVITIES.filter(a => {
-    if (activityFilter !== 'all' && a.g !== activityFilter) return false;
-    if (q) {
-      const hay = (a.t + ' ' + a.c + ' ' + a.s).toLowerCase();
-      if (!hay.includes(q)) return false;
-    }
-    return true;
-  });
-}
+let activityFilter = 'all';
 
 function renderActivitiesPicker() {
   const user = getUser();
   if (!user) return;
   const slug = (user.referralLink || '').split('/').pop();
   const grid = $('#activitiesGrid');
-  const loadMore = $('#loadMoreBtn');
-  const countEl = $('#activityCount');
   if (!grid) return;
 
-  if (!activitiesLoaded) {
-    grid.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);grid-column:1/-1;">Loading activities…</div>';
-    if (loadMore) loadMore.style.display = 'none';
-    if (countEl) countEl.textContent = 'Loading…';
-    return;
-  }
+  const filtered = activityFilter === 'all'
+    ? ACTIVITIES
+    : ACTIVITIES.filter(a => a.group === activityFilter);
 
-  const filtered = getFilteredActivities();
-  const total = filtered.length;
-  const visibleCount = Math.min(activityPage * ACTIVITY_PAGE_SIZE, total);
-  const visible = filtered.slice(0, visibleCount);
-
-  if (countEl) {
-    countEl.textContent = total === 0
-      ? 'No activities match'
-      : (visibleCount < total ? `${visibleCount} of ${total}` : `${total} ${total === 1 ? 'activity' : 'activities'}`);
-  }
-
-  if (total === 0) {
-    grid.innerHTML = '<div style="padding:48px 24px;text-align:center;color:var(--muted);grid-column:1/-1;"><div style="font-size:28px;margin-bottom:8px;">🔎</div><div style="font-weight:700;color:var(--ink);margin-bottom:4px;">No matches</div><div style="font-size:13px;">Try a different search term or category.</div></div>';
-    if (loadMore) loadMore.style.display = 'none';
-    return;
-  }
-
-  grid.innerHTML = visible.map((a, i) => {
+  grid.innerHTML = filtered.map((a, i) => {
     const url = buildActivityUrl(a, slug);
-    const previewUrl = `https://miamijetskiboatrentals.com/${a.s}`;
-    const estEarn = Math.round((a.p || 0) * 0.05);
+    const previewUrl = `https://miamijetskiboatrentals.com/${a.pageSlug}`;
+    const estEarn = Math.round(a.price * 0.05);
     return `
       <div class="activity-card" data-idx="${i}">
-        <div class="img" style="background-image: url('${escapeHtml(a.i)}');">
-          <span class="cat-badge">${escapeHtml(a.c)}</span>
+        <div class="img" style="background-image: url('${escapeHtml(a.image)}');">
+          <span class="cat-badge">${escapeHtml(a.category)}</span>
         </div>
         <div class="body">
-          <div class="title">${escapeHtml(a.t)}</div>
+          <div class="title">${escapeHtml(a.title)}</div>
           <div class="meta">
             <div>
-              <div class="price">${a.p ? '$' + a.p : 'See site'}${a.p ? '<small> from</small>' : ''}</div>
-              ${a.p ? `<div class="earn">You earn ~$${estEarn}/booking</div>` : ''}
+              <div class="price">$${a.price}<small> from</small></div>
+              <div class="earn">You earn ~$${estEarn}/booking</div>
             </div>
           </div>
           <div class="row">
-            <button class="copy-btn" data-url="${escapeHtml(url)}" data-cat="${escapeHtml(a.c)}">Copy booking link</button>
+            <button class="copy-btn" data-url="${escapeHtml(url)}" data-cat="${escapeHtml(a.category)}">Copy booking link</button>
             <a class="preview-btn" href="${escapeHtml(previewUrl)}" target="_blank" rel="noopener" title="Preview activity page">↗</a>
           </div>
         </div>
@@ -799,51 +752,15 @@ function renderActivitiesPicker() {
       track('Activity Link Copy', { category: cat, slug });
     });
   });
-
-  if (loadMore) loadMore.style.display = visibleCount < total ? '' : 'none';
 }
 
-// Async bootstrap: load catalog, then render
-async function initActivitiesCatalog() {
-  await loadActivitiesCatalog();
-  renderActivitiesPicker();
-}
-initActivitiesCatalog();
-
-// Wire category filter pills (reset to page 1 on change)
+// Wire category filter pills
 $$('.cat-pill').forEach(pill => pill.addEventListener('click', () => {
   $$('.cat-pill').forEach(p => p.classList.remove('on'));
   pill.classList.add('on');
   activityFilter = pill.dataset.cat;
-  activityPage = 1;
   renderActivitiesPicker();
-  track('Activity Filter', { group: activityFilter });
 }));
-
-// Wire search box (debounced)
-let _searchTimer = null;
-const searchInput = $('#activitySearch');
-if (searchInput) {
-  searchInput.addEventListener('input', (e) => {
-    clearTimeout(_searchTimer);
-    _searchTimer = setTimeout(() => {
-      activitySearchQuery = e.target.value || '';
-      activityPage = 1;
-      renderActivitiesPicker();
-      if (activitySearchQuery) track('Activity Search', { query: activitySearchQuery });
-    }, 200);
-  });
-}
-
-// Wire "Load more" button
-const loadMoreBtn = $('#loadMoreBtn');
-if (loadMoreBtn) {
-  loadMoreBtn.addEventListener('click', () => {
-    activityPage += 1;
-    renderActivitiesPicker();
-    track('Activity Load More', { page: activityPage });
-  });
-}
 
 /* ============ LINK ACTIONS ============ */
 $('#copyMainLink').addEventListener('click', () => {
