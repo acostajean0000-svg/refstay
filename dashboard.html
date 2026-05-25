@@ -188,6 +188,11 @@
   .sub-pill:hover { background: white; border-color: var(--primary); color: var(--primary); }
   .sub-pill.on { background: var(--primary); color: white; border-color: var(--primary); }
   .sub-pill .count { opacity: 0.7; margin-left: 4px; font-weight: 500; }
+
+  /* Zone pills — visually distinct, slightly bigger than sub-pills */
+  .zone-pill { background: white; border: 1px solid var(--border); padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--ink); transition: all .15s; font-family: inherit; }
+  .zone-pill:hover { border-color: var(--accent); }
+  .zone-pill.on { background: var(--accent); color: white; border-color: var(--accent); }
   .activities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
   .activity-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: transform .15s, box-shadow .15s; }
   .activity-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
@@ -538,6 +543,14 @@
         </div>
       </div>
 
+      <!-- Zone selector -->
+      <div style="display: flex; gap: 6px; margin-bottom: 14px; align-items: center; flex-wrap: wrap;">
+        <span style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-right: 4px;">Zone:</span>
+        <button class="zone-pill on" data-zone="miami">🌴 Miami</button>
+        <button class="zone-pill" data-zone="punta-cana">🇩🇴 Punta Cana</button>
+        <button class="zone-pill" data-zone="all">All zones</button>
+      </div>
+
       <div style="display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;">
         <div style="position: relative; flex: 1; min-width: 240px;">
           <input id="activitySearch" type="search" placeholder="Search 'jet ski', 'yacht', 'wynwood'…" style="width: 100%; padding: 12px 16px 12px 42px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-family: inherit; background: white; outline: none; transition: border-color .15s;" />
@@ -806,6 +819,7 @@ const DEMO_USER = {
   name: 'Sample Host',
   email: 'demo@refstay.com',
   listing: null,
+  zone: 'miami',
   referralLink: 'https://refstay.com/r/demo',
   joinedAt: '2026-01-01T00:00:00.000Z',
   stats: { clicksMonth: 84, bookingsMonth: 5, earningsTotal: 127.50, earningsPaid: 102.50, earningsPending: 25.00 },
@@ -829,7 +843,7 @@ async function fetchUserDataFromSupabase(authUserId) {
   // 1. Get host profile
   const { data: host, error: hostErr } = await sb
     .from('hosts')
-    .select('slug, name, email, listing, joined, payout_method, last_payout, next_payout')
+    .select('slug, name, email, listing, joined, payout_method, last_payout, next_payout, zone')
     .eq('id', authUserId)
     .single();
 
@@ -866,6 +880,7 @@ async function fetchUserDataFromSupabase(authUserId) {
     name: host.name,
     email: host.email,
     listing: host.listing,
+    zone: host.zone || 'miami',
     referralLink: `https://refstay.com/r/${host.slug}`,
     joinedAt: host.joined,
     stats: { clicksMonth: 0, bookingsMonth, earningsTotal, earningsPaid, earningsPending },
@@ -1070,6 +1085,19 @@ function hydrate(user) {
     recentBody.innerHTML = '';
   }
 
+  // Default zone filter = host's primary zone (so PC host sees PC activities by default)
+  if (user.zone && user.zone !== activityZoneFilter) {
+    activityZoneFilter = user.zone;
+    // Update visual active state on zone pills
+    $$('.zone-pill').forEach(p => p.classList.toggle('on', p.dataset.zone === activityZoneFilter));
+    // Reset sub-filters when zone changes
+    activityFilter = 'all';
+    activityCategoryFilter = 'all';
+    activityPage = 1;
+    $$('.cat-pill').forEach(p => p.classList.toggle('on', p.dataset.cat === 'all'));
+    renderSubFilter();
+  }
+
   renderActivitiesPicker();
   wirePrintAssets(user);
 }
@@ -1119,6 +1147,7 @@ $$('.quick-action').forEach(b => b.addEventListener('click', () => {
 // To refresh — re-run the extractor in tools/ and replace activities.json.
 let ACTIVITIES = [];
 let activitiesLoaded = false;
+let activityZoneFilter = 'miami';   // zone: miami / punta-cana / all — defaults to host's zone on hydrate
 let activityFilter = 'all';         // primary group filter (water/boat/land/tour/all)
 let activityCategoryFilter = 'all'; // secondary category filter (Jet Ski/Yacht/Airboat/all)
 let activitySearchQuery = '';
@@ -1163,6 +1192,11 @@ async function loadActivitiesCatalog() {
 function getFilteredActivities() {
   const q = activitySearchQuery.trim().toLowerCase();
   return ACTIVITIES.filter(a => {
+    // Zone filter (a.z is set; fallback to 'miami' for legacy data without zone)
+    if (activityZoneFilter !== 'all') {
+      const aZone = a.z || 'miami';
+      if (aZone !== activityZoneFilter) return false;
+    }
     if (activityFilter !== 'all' && a.g !== activityFilter) return false;
     if (activityCategoryFilter !== 'all' && a.c !== activityCategoryFilter) return false;
     if (q) {
@@ -1180,9 +1214,10 @@ function renderSubFilter() {
   const container = $('#subFilter');
   if (!container || !activitiesLoaded) return;
 
-  // Count categories — scoped to selected group if not 'all'
+  // Count categories — scoped to selected zone + group
   const counts = new Map();
   ACTIVITIES.forEach(a => {
+    if (activityZoneFilter !== 'all' && (a.z || 'miami') !== activityZoneFilter) return;
     if (activityFilter !== 'all' && a.g !== activityFilter) return;
     const c = a.c || 'Other';
     counts.set(c, (counts.get(c) || 0) + 1);
@@ -1323,6 +1358,22 @@ async function initActivitiesCatalog() {
   renderActivitiesPicker();
 }
 initActivitiesCatalog();
+
+// Wire ZONE pills — switches between Miami / Punta Cana / All
+$$('.zone-pill').forEach(pill => pill.addEventListener('click', () => {
+  $$('.zone-pill').forEach(p => p.classList.remove('on'));
+  pill.classList.add('on');
+  activityZoneFilter = pill.dataset.zone;
+  // Reset sub-filters when zone changes
+  activityFilter = 'all';
+  activityCategoryFilter = 'all';
+  subFilterExpanded = false;
+  activityPage = 1;
+  $$('.cat-pill').forEach(p => p.classList.toggle('on', p.dataset.cat === 'all'));
+  renderSubFilter();
+  renderActivitiesPicker();
+  track('Activity Zone', { zone: activityZoneFilter });
+}));
 
 // Wire PRIMARY group filter pills — reset category sub-filter when group changes
 $$('.cat-pill').forEach(pill => pill.addEventListener('click', () => {
