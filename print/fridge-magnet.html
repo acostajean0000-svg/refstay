@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fridge Magnet — Refstay</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --coral: #FF6B5C;
+    --turquoise: #00C8B8;
+    --gold: #F4B942;
+    --ocean: #006A8E;
+    --ink: #1E3A47;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #ECEEF3; font-family: 'Inter', -apple-system, sans-serif; }
+
+  .screen-only {
+    padding: 32px 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .toolbar {
+    background: white;
+    padding: 14px 22px;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(15,23,42,.1);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 14px;
+    color: #475569;
+  }
+  .toolbar strong { color: #0F172A; }
+  .btn {
+    background: linear-gradient(135deg, #FF385C 0%, #7C3AED 100%);
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(255,56,92,.3);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: #64748B;
+    padding: 10px 16px;
+    border: none;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .note {
+    background: #FEF3C7;
+    border: 1px solid #FCD34D;
+    color: #92400E;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    max-width: 360px;
+    text-align: center;
+  }
+
+  /* The magnet sheet — 8.5x11" with 4 magnets per page (each 3x3") */
+  .sheet {
+    width: 8.5in;
+    background: white;
+    padding: 0.5in 0.75in;
+    box-shadow: 0 30px 80px rgba(15,23,42,.2);
+    border-radius: 4px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 3in 3in;
+    grid-template-rows: 3in 3in;
+    gap: 0.5in;
+    justify-content: center;
+  }
+  .magnet {
+    width: 3in;
+    height: 3in;
+    border: 2px dashed #94A3B8;
+    background:
+      radial-gradient(at 0% 0%, rgba(255,107,92,.3) 0px, transparent 60%),
+      radial-gradient(at 100% 100%, rgba(0,200,184,.3) 0px, transparent 60%),
+      linear-gradient(180deg, #FFFCFA 0%, #F0FAFC 100%);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: var(--ink);
+    overflow: hidden;
+    position: relative;
+  }
+  .magnet .top-strip {
+    background: linear-gradient(135deg, var(--coral) 0%, var(--gold) 100%);
+    color: white;
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+  }
+  .magnet h2 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    line-height: 1.15;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+  .magnet h2 .grad {
+    background: linear-gradient(135deg, var(--coral) 0%, var(--ocean) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .magnet .qr {
+    width: 1.4in;
+    height: 1.4in;
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 4px;
+    margin: 0 auto 6px;
+  }
+  .magnet .qr img { width: 100%; height: 100%; display: block; }
+  .magnet .scan {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--ocean);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .magnet .footer {
+    font-size: 8px;
+    color: #64748B;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .loading { padding: 80px; text-align: center; color: var(--ocean); }
+
+  @media print {
+    @page { size: letter; margin: 0; }
+    html, body { background: white; }
+    .screen-only { padding: 0; min-height: 0; }
+    .toolbar, .note { display: none; }
+    .sheet { box-shadow: none; border-radius: 0; padding: 0.5in 0.75in; }
+    .magnet { border-color: #CBD5E1; }
+  }
+</style>
+</head>
+<body>
+<div class="screen-only">
+  <div class="toolbar">
+    <span>Fridge magnets for <strong id="hostName">…</strong> — 4 per sheet</span>
+    <button class="btn" onclick="window.print()">🖨️ Print sheet</button>
+    <button class="btn-ghost" onclick="window.close()">Close</button>
+  </div>
+
+  <div class="note">
+    💡 Print on magnetic sheet (Amazon: "printable magnetic paper") or regular paper + cut and laminate. Each magnet is 3"×3".
+  </div>
+
+  <div class="sheet">
+    <div class="grid" id="grid">
+      <!-- 4 magnets injected here -->
+    </div>
+  </div>
+</div>
+
+<script>
+(async function() {
+  'use strict';
+
+  const params = new URLSearchParams(location.search);
+  const slug = (params.get('host') || 'demo').toLowerCase().replace(/[^a-z0-9-]/g, '');
+
+  let host = null;
+  try {
+    const res = await fetch('/hosts.json', { cache: 'no-cache' });
+    if (res.ok) {
+      const data = await res.json();
+      host = (data.hosts || []).find(h => h.slug === slug);
+    }
+  } catch (e) { console.error('hosts.json fetch failed:', e); }
+
+  if (!host) host = { slug, name: 'your host' };
+
+  const referralUrl = `https://refstay.com/r/${host.slug}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=4&data=${encodeURIComponent(referralUrl)}`;
+
+  // Render 4 magnets (2x2 grid per sheet)
+  const grid = document.getElementById('grid');
+  const magnetHtml = `
+    <div class="magnet">
+      <div class="top-strip">Miami Activities</div>
+      <h2>Scan to <span class="grad">save</span><br>on local fun</h2>
+      <div class="qr"><img src="${qrUrl}" alt="QR code" /></div>
+      <div class="scan">📱 Scan with camera</div>
+      <div class="footer">refstay.com/r/${host.slug}</div>
+    </div>
+  `;
+  grid.innerHTML = magnetHtml.repeat(4);
+
+  document.getElementById('hostName').textContent = host.name || host.slug;
+  document.title = `Fridge magnets — ${host.name || host.slug}`;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Welcome Card — Refstay</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --coral: #FF6B5C;
+    --turquoise: #00C8B8;
+    --gold: #F4B942;
+    --sand: #FFF4E6;
+    --ocean: #006A8E;
+    --shell: #FFFAF0;
+    --ink: #1E3A47;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #ECEEF3; font-family: 'Inter', -apple-system, sans-serif; }
+
+  /* Screen — center the card, add print button bar */
+  .screen-only {
+    padding: 32px 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .toolbar {
+    background: white;
+    padding: 14px 22px;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(15,23,42,.1);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 14px;
+    color: #475569;
+  }
+  .toolbar strong { color: #0F172A; }
+  .btn {
+    background: linear-gradient(135deg, #FF385C 0%, #7C3AED 100%);
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(255,56,92,.3);
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent;
+    color: #64748B;
+    padding: 10px 16px;
+    border: none;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .btn-ghost:hover { color: #0F172A; }
+
+  /* The actual card — 5x7" postcard */
+  .card-wrap {
+    background: white;
+    padding: 0;
+    box-shadow: 0 30px 80px rgba(15,23,42,.2), 0 8px 24px rgba(15,23,42,.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .card {
+    width: 5in;
+    height: 7in;
+    position: relative;
+    background:
+      radial-gradient(at 0% 0%, rgba(255,107,92,.35) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(0,200,184,.35) 0px, transparent 50%),
+      radial-gradient(at 80% 20%, rgba(244,185,66,.25) 0px, transparent 50%),
+      linear-gradient(180deg, #FFF9F0 0%, #FFFCFA 50%, #F0FAFC 100%);
+    color: var(--ink);
+    padding: 0.45in 0.4in;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Decorative wave at top */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(135deg, var(--coral) 0%, var(--gold) 100%);
+    border-radius: 0 0 100% 100% / 0 0 100px 100px;
+    opacity: 0.9;
+  }
+  /* Decorative wave at bottom */
+  .card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 50px;
+    background: linear-gradient(135deg, var(--turquoise) 0%, var(--ocean) 100%);
+    border-radius: 100% 100% 0 0 / 80px 80px 0 0;
+    opacity: 0.85;
+  }
+
+  .brand {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .brand .bullet { opacity: 0.7; margin: 0 6px; }
+
+  .hero {
+    text-align: center;
+    margin-top: 4px;
+  }
+  .emoji {
+    font-size: 28px;
+    margin-bottom: 4px;
+  }
+  .hello {
+    font-family: 'Caveat', cursive;
+    font-size: 36px;
+    color: var(--coral);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  h1 .grad {
+    background: linear-gradient(135deg, var(--coral) 0%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .sub {
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.45;
+    margin-bottom: 14px;
+    max-width: 3.6in;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .qr-block {
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 6px 16px rgba(15,23,42,.08);
+    margin: 12px auto 14px;
+    width: 2in;
+    height: 2in;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qr-block img { width: 100%; height: 100%; display: block; }
+
+  .scan-cta {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .scan-cta .label {
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--ocean);
+    margin-bottom: 4px;
+  }
+  .scan-cta .url {
+    font-family: 'Inter', monospace;
+    font-size: 12px;
+    color: #475569;
+    font-weight: 600;
+    word-break: break-all;
+    padding: 0 8px;
+  }
+
+  .activities {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    padding: 0 4px;
+  }
+  .activity-tag {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(0,106,142,0.2);
+    color: var(--ocean);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .signature {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    margin-top: auto;
+    padding-bottom: 6px;
+    color: white;
+  }
+  .signature .from {
+    font-size: 10px;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 2px;
+  }
+  .signature .name {
+    font-family: 'Caveat', cursive;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  /* Loading state */
+  .loading { text-align: center; padding: 40px; color: var(--ocean); }
+
+  /* PRINT styles */
+  @media print {
+    @page { size: 5in 7in; margin: 0; }
+    html, body { background: white; }
+    .screen-only { padding: 0; min-height: 0; }
+    .toolbar { display: none; }
+    .card-wrap { box-shadow: none; border-radius: 0; }
+    .card { width: 5in; height: 7in; }
+  }
+</style>
+</head>
+<body>
+<div class="screen-only">
+  <div class="toolbar">
+    <span>Welcome card for <strong id="hostName">…</strong></span>
+    <button class="btn" onclick="window.print()">🖨️ Print card</button>
+    <button class="btn-ghost" onclick="window.close()">Close</button>
+  </div>
+
+  <div class="card-wrap">
+    <div class="card" id="card">
+      <div class="brand">
+        <span>Refstay</span><span class="bullet">•</span><span>Miami</span>
+      </div>
+
+      <div class="hero">
+        <div class="emoji">🌴</div>
+        <div class="hello">Hey there,</div>
+        <h1>Make Miami <span class="grad">unforgettable</span></h1>
+        <div class="sub">We've pre-vetted the best jet ski, boat, and tour operators in Miami. Scan below for guest-only access.</div>
+      </div>
+
+      <div class="qr-block">
+        <img id="qrImg" alt="QR code to book Miami activities" />
+      </div>
+
+      <div class="scan-cta">
+        <div class="label">📱 Scan with your camera</div>
+        <div class="url" id="urlText">refstay.com/r/…</div>
+      </div>
+
+      <div class="activities">
+        <span class="activity-tag">🏄 Jet Ski</span>
+        <span class="activity-tag">🛥️ Yacht</span>
+        <span class="activity-tag">🌅 Sunset</span>
+        <span class="activity-tag">🐊 Airboat</span>
+      </div>
+
+      <div class="signature">
+        <div class="from">Have a great stay! From</div>
+        <div class="name" id="hostSig">your host</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function() {
+  'use strict';
+
+  const params = new URLSearchParams(location.search);
+  const slug = (params.get('host') || 'demo').toLowerCase().replace(/[^a-z0-9-]/g, '');
+
+  // Fetch host data from /hosts.json (one level up)
+  let host = null;
+  try {
+    const res = await fetch('/hosts.json', { cache: 'no-cache' });
+    if (res.ok) {
+      const data = await res.json();
+      host = (data.hosts || []).find(h => h.slug === slug);
+    }
+  } catch (e) { console.error('hosts.json fetch failed:', e); }
+
+  // Fallback if host not found
+  if (!host) {
+    host = { slug, name: 'your host' };
+  }
+
+  const referralUrl = `https://refstay.com/r/${host.slug}`;
+  const firstName = (host.name || 'your host').split(' ')[0];
+
+  // QR via free qrserver.com API — no JS lib needed, works in print
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=4&data=${encodeURIComponent(referralUrl)}`;
+  document.getElementById('qrImg').src = qrUrl;
+
+  document.getElementById('urlText').textContent = `refstay.com/r/${host.slug}`;
+  document.getElementById('hostSig').textContent = firstName;
+  document.getElementById('hostName').textContent = host.name || host.slug;
+  document.title = `Welcome card — ${host.name || host.slug}`;
+})();
+</script>
+</body>
+</html>

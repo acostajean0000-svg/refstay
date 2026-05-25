@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wall Poster — Refstay</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --coral: #FF6B5C;
+    --turquoise: #00C8B8;
+    --gold: #F4B942;
+    --ocean: #006A8E;
+    --ink: #1E3A47;
+    --sand: #FFF4E6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #ECEEF3; font-family: 'Inter', -apple-system, sans-serif; }
+
+  .screen-only {
+    padding: 32px 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .toolbar {
+    background: white;
+    padding: 14px 22px;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(15,23,42,.1);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 14px;
+    color: #475569;
+  }
+  .toolbar strong { color: #0F172A; }
+  .btn {
+    background: linear-gradient(135deg, #FF385C 0%, #7C3AED 100%);
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(255,56,92,.3);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: #64748B;
+    padding: 10px 16px;
+    border: none;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  /* The poster — 8.5x11" letter */
+  .poster {
+    width: 8.5in;
+    height: 11in;
+    background:
+      radial-gradient(at 0% 0%, rgba(255,107,92,.25) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(0,200,184,.3) 0px, transparent 50%),
+      radial-gradient(at 80% 30%, rgba(244,185,66,.2) 0px, transparent 40%),
+      linear-gradient(180deg, #FFF9F0 0%, #FFFCFA 50%, #F0FAFC 100%);
+    color: var(--ink);
+    padding: 0.7in 0.6in;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(15,23,42,.2);
+    border-radius: 4px;
+  }
+
+  /* Decorative top wave */
+  .poster::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 90px;
+    background: linear-gradient(135deg, var(--coral) 0%, var(--gold) 100%);
+    border-radius: 0 0 100% 100% / 0 0 140px 140px;
+    opacity: 0.9;
+  }
+  .poster::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(135deg, var(--turquoise) 0%, var(--ocean) 100%);
+    border-radius: 100% 100% 0 0 / 120px 120px 0 0;
+    opacity: 0.9;
+  }
+
+  .header {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+  }
+  .header .brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  .header .brand .bullet { opacity: 0.7; margin: 0 8px; }
+
+  .hero {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 32px;
+  }
+  .hello {
+    font-family: 'Caveat', cursive;
+    font-size: 42px;
+    color: var(--coral);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 900;
+    line-height: 1.05;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  h1 .grad {
+    background: linear-gradient(135deg, var(--coral) 0%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .lead {
+    font-size: 16px;
+    color: #475569;
+    max-width: 5.5in;
+    margin: 0 auto;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  .activities-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .act {
+    background: white;
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(15,23,42,.06);
+    border: 1px solid rgba(0,106,142,0.1);
+  }
+  .act .emoji { font-size: 28px; margin-bottom: 6px; }
+  .act .label {
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--ink);
+  }
+  .act .from {
+    font-size: 10px;
+    color: var(--ocean);
+    margin-top: 3px;
+    font-weight: 600;
+  }
+
+  .cta-block {
+    background: white;
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 8px 20px rgba(15,23,42,.08);
+  }
+  .cta-block .qr {
+    flex-shrink: 0;
+    width: 2.2in;
+    height: 2.2in;
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    padding: 8px;
+  }
+  .cta-block .qr img { width: 100%; height: 100%; display: block; }
+  .cta-block .info { flex: 1; }
+  .cta-block .scan-label {
+    color: var(--coral);
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .cta-block h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .cta-block .desc {
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .cta-block .url {
+    font-family: 'Inter', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ocean);
+    padding: 8px 12px;
+    background: var(--sand);
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  .footer {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    margin-top: auto;
+    padding-bottom: 6px;
+  }
+  .footer .from-label {
+    font-size: 11px;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .footer .name {
+    font-family: 'Caveat', cursive;
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+  @media print {
+    @page { size: letter; margin: 0; }
+    html, body { background: white; }
+    .screen-only { padding: 0; min-height: 0; }
+    .toolbar { display: none; }
+    .poster { box-shadow: none; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="screen-only">
+  <div class="toolbar">
+    <span>Wall poster for <strong id="hostName">…</strong> — letter size (8.5×11")</span>
+    <button class="btn" onclick="window.print()">🖨️ Print poster</button>
+    <button class="btn-ghost" onclick="window.close()">Close</button>
+  </div>
+
+  <div class="poster">
+    <div class="header">
+      <div class="brand">
+        <span>Refstay</span><span class="bullet">•</span><span>Miami</span><span class="bullet">•</span><span>Florida</span>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="hello">Hey there,</div>
+      <h1>Make Miami <span class="grad">unforgettable</span></h1>
+      <div class="lead">Your host pre-vetted the best activity operators in Miami — jet skis, boats, sunset cruises, and more. Save by booking through this link.</div>
+    </div>
+
+    <div class="activities-grid">
+      <div class="act"><div class="emoji">🏄</div><div class="label">Jet Ski</div><div class="from">From $79</div></div>
+      <div class="act"><div class="emoji">🛥️</div><div class="label">Yacht</div><div class="from">From $399</div></div>
+      <div class="act"><div class="emoji">🌅</div><div class="label">Sunset Cruise</div><div class="from">From $45</div></div>
+      <div class="act"><div class="emoji">🐊</div><div class="label">Airboat Tour</div><div class="from">From $39</div></div>
+    </div>
+
+    <div class="cta-block">
+      <div class="qr">
+        <img id="qrImg" alt="Scan to book Miami activities" />
+      </div>
+      <div class="info">
+        <div class="scan-label">📱 Scan with your phone</div>
+        <h2>Book your<br>Miami adventure</h2>
+        <div class="desc">Open your camera app, point at the QR code, then tap the notification to see all activities.</div>
+        <div class="url" id="urlText">refstay.com/r/…</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="from-label">Welcome — From</div>
+      <div class="name" id="hostSig">your host</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function() {
+  'use strict';
+
+  const params = new URLSearchParams(location.search);
+  const slug = (params.get('host') || 'demo').toLowerCase().replace(/[^a-z0-9-]/g, '');
+
+  let host = null;
+  try {
+    const res = await fetch('/hosts.json', { cache: 'no-cache' });
+    if (res.ok) {
+      const data = await res.json();
+      host = (data.hosts || []).find(h => h.slug === slug);
+    }
+  } catch (e) { console.error('hosts.json fetch failed:', e); }
+
+  if (!host) host = { slug, name: 'your host' };
+
+  const referralUrl = `https://refstay.com/r/${host.slug}`;
+  const firstName = (host.name || 'your host').split(' ')[0];
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=700x700&margin=4&data=${encodeURIComponent(referralUrl)}`;
+
+  document.getElementById('qrImg').src = qrUrl;
+  document.getElementById('urlText').textContent = `refstay.com/r/${host.slug}`;
+  document.getElementById('hostSig').textContent = firstName;
+  document.getElementById('hostName').textContent = host.name || host.slug;
+  document.title = `Wall poster — ${host.name || host.slug}`;
+})();
+</script>
+</body>
+</html>

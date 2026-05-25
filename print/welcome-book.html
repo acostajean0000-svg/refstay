@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Welcome Book Insert — Refstay</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --coral: #FF6B5C;
+    --turquoise: #00C8B8;
+    --gold: #F4B942;
+    --ocean: #006A8E;
+    --ink: #1E3A47;
+    --sand: #FFF4E6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #ECEEF3; font-family: 'Inter', -apple-system, sans-serif; }
+
+  .screen-only {
+    padding: 32px 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .toolbar {
+    background: white;
+    padding: 14px 22px;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(15,23,42,.1);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 14px;
+    color: #475569;
+  }
+  .toolbar strong { color: #0F172A; }
+  .btn {
+    background: linear-gradient(135deg, #FF385C 0%, #7C3AED 100%);
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(255,56,92,.3);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: #64748B;
+    padding: 10px 16px;
+    border: none;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .page {
+    width: 8.5in;
+    height: 11in;
+    background: white;
+    padding: 0.75in 0.85in;
+    color: var(--ink);
+    box-shadow: 0 30px 80px rgba(15,23,42,.2);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Coral accent stripe at the top */
+  .page::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 8px;
+    background: linear-gradient(90deg, var(--coral) 0%, var(--gold) 50%, var(--turquoise) 100%);
+  }
+
+  .header {
+    border-bottom: 1px solid #E2E8F0;
+    padding-bottom: 18px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 1px;
+    color: var(--ink);
+  }
+  .header .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--ocean);
+    font-weight: 700;
+  }
+
+  .eyebrow {
+    color: var(--coral);
+    font-weight: 800;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+  h1 .grad {
+    background: linear-gradient(135deg, var(--coral) 0%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .intro {
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.6;
+    margin-bottom: 22px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 28px;
+    margin-bottom: 24px;
+    flex: 1;
+  }
+
+  .why-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--ocean);
+  }
+  .why-list {
+    list-style: none;
+    padding: 0;
+  }
+  .why-list li {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #334155;
+  }
+  .why-list li .check {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--turquoise) 0%, var(--ocean) 100%);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: 12px;
+  }
+  .why-list li strong { color: var(--ink); }
+
+  .qr-box {
+    background: linear-gradient(180deg, #FFF9F0 0%, #F0FAFC 100%);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+  }
+  .qr-box .label {
+    color: var(--coral);
+    font-weight: 800;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .qr-box .qr {
+    width: 2in;
+    height: 2in;
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 6px;
+    margin: 0 auto 10px;
+  }
+  .qr-box .qr img { width: 100%; height: 100%; display: block; }
+  .qr-box .url {
+    font-family: 'Inter', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ocean);
+    word-break: break-all;
+  }
+  .qr-box .helper {
+    font-size: 10px;
+    color: #64748B;
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  .activity-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    background: var(--sand);
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 22px;
+  }
+  .act-tag {
+    text-align: center;
+  }
+  .act-tag .emoji { font-size: 22px; margin-bottom: 3px; }
+  .act-tag .name {
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--ink);
+  }
+  .act-tag .price {
+    font-size: 10px;
+    color: var(--ocean);
+    margin-top: 2px;
+  }
+
+  .footer-note {
+    border-top: 1px solid #E2E8F0;
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .footer-note .signature .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #64748B;
+    margin-bottom: 4px;
+  }
+  .footer-note .signature .name {
+    font-family: 'Caveat', cursive;
+    font-size: 26px;
+    color: var(--coral);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .footer-note .powered {
+    font-size: 10px;
+    color: #94A3B8;
+    text-align: right;
+  }
+  .footer-note .powered strong { color: var(--ink); }
+
+  @media print {
+    @page { size: letter; margin: 0; }
+    html, body { background: white; }
+    .screen-only { padding: 0; min-height: 0; }
+    .toolbar { display: none; }
+    .page { box-shadow: none; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="screen-only">
+  <div class="toolbar">
+    <span>Welcome book insert for <strong id="hostName">…</strong> — letter size (8.5×11")</span>
+    <button class="btn" onclick="window.print()">🖨️ Print page</button>
+    <button class="btn-ghost" onclick="window.close()">Close</button>
+  </div>
+
+  <div class="page">
+    <div class="header">
+      <div class="brand-name">Refstay × Miami</div>
+      <div class="section-label">Activities & Adventures</div>
+    </div>
+
+    <div class="eyebrow">Local recommendations</div>
+    <h1>Save on Miami's best <span class="grad">water activities</span></h1>
+    <p class="intro">
+      To help you make the most of your stay, we've partnered with <strong>Refstay</strong> — a curated marketplace of Miami's top water-sport operators. All bookings on the link below are <strong>FareHarbor-verified</strong>, instantly confirmed, and discounted vs. booking direct.
+    </p>
+
+    <div class="two-col">
+      <div class="why-section">
+        <h2>Why book through this link?</h2>
+        <ul class="why-list">
+          <li>
+            <span class="check">✓</span>
+            <span><strong>Vetted operators only.</strong> No tourist traps — we only list operators with 4.5+ stars and FareHarbor verification.</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span><strong>Same prices, with savings.</strong> Same official prices you'd see anywhere, but our guests get the best rate when available.</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span><strong>One link, every activity.</strong> Jet skis, yacht charters, sunset cruises, airboat tours, watersports — all bookable from one place.</span>
+          </li>
+          <li>
+            <span class="check">✓</span>
+            <span><strong>Instant confirmation.</strong> Booking confirmation hits your email in seconds. Cancellation policies on the booking page.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="qr-box">
+        <div class="label">📱 Scan to browse</div>
+        <div class="qr">
+          <img id="qrImg" alt="QR code to browse Miami activities" />
+        </div>
+        <div class="url" id="urlText">refstay.com/r/…</div>
+        <div class="helper">Open your camera, point at the QR code, tap the notification.</div>
+      </div>
+    </div>
+
+    <div class="activity-row">
+      <div class="act-tag"><div class="emoji">🏄</div><div class="name">Jet Ski</div><div class="price">From $79/hr</div></div>
+      <div class="act-tag"><div class="emoji">🛥️</div><div class="name">Yacht</div><div class="price">From $399/hr</div></div>
+      <div class="act-tag"><div class="emoji">🌅</div><div class="name">Sunset</div><div class="price">From $45</div></div>
+      <div class="act-tag"><div class="emoji">🐊</div><div class="name">Airboat</div><div class="price">From $39</div></div>
+    </div>
+
+    <div class="footer-note">
+      <div class="signature">
+        <div class="label">Have a great stay — From</div>
+        <div class="name" id="hostSig">your host</div>
+      </div>
+      <div class="powered">
+        Powered by <strong>Refstay</strong><br>
+        refstay.com
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function() {
+  'use strict';
+
+  const params = new URLSearchParams(location.search);
+  const slug = (params.get('host') || 'demo').toLowerCase().replace(/[^a-z0-9-]/g, '');
+
+  let host = null;
+  try {
+    const res = await fetch('/hosts.json', { cache: 'no-cache' });
+    if (res.ok) {
+      const data = await res.json();
+      host = (data.hosts || []).find(h => h.slug === slug);
+    }
+  } catch (e) { console.error('hosts.json fetch failed:', e); }
+
+  if (!host) host = { slug, name: 'your host' };
+
+  const referralUrl = `https://refstay.com/r/${host.slug}`;
+  const firstName = (host.name || 'your host').split(' ')[0];
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=4&data=${encodeURIComponent(referralUrl)}`;
+
+  document.getElementById('qrImg').src = qrUrl;
+  document.getElementById('urlText').textContent = `refstay.com/r/${host.slug}`;
+  document.getElementById('hostSig').textContent = firstName;
+  document.getElementById('hostName').textContent = host.name || host.slug;
+  document.title = `Welcome book — ${host.name || host.slug}`;
+})();
+</script>
+</body>
+</html>

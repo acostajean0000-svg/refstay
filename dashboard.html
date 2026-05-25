@@ -280,6 +280,7 @@
       <button class="active" data-tab="overview"><span class="ic">🏠</span> Overview</button>
       <button data-tab="link"><span class="ic">🔗</span> Your link</button>
       <button data-tab="activities"><span class="ic">🎟️</span> Direct links</button>
+      <button data-tab="print"><span class="ic">🖨️</span> Print assets</button>
       <button data-tab="settings"><span class="ic">⚙️</span> Settings</button>
     </nav>
     <div class="bottom">
@@ -540,6 +541,149 @@
 
       <div style="display: flex; justify-content: center; margin-top: 24px;">
         <button id="loadMoreBtn" type="button" style="display: none; background: white; border: 1px solid var(--border); padding: 12px 28px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; color: var(--ink); font-family: inherit;">Load more activities</button>
+      </div>
+    </div>
+
+    <!-- ============ PRINT ASSETS ============ -->
+    <div class="tab-pane" data-pane="print">
+      <div class="topbar">
+        <div>
+          <h1>Print assets for your Airbnb</h1>
+          <div class="sub">Welcome cards, fridge magnets, posters & welcome-book inserts — each pre-personalized with your QR code. Print from your browser, leave them in your unit, guests scan and book.</div>
+        </div>
+      </div>
+
+      <!-- Pro tip -->
+      <div class="card" style="background: linear-gradient(135deg, #FEF3C7 0%, #FED7AA 100%); border: 1px solid #FCD34D; margin-bottom: 22px;">
+        <div style="display: flex; gap: 14px; align-items: start;">
+          <div style="font-size: 26px;">💡</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; font-size: 16px; margin-bottom: 6px; color: #92400E;">Where to put each asset (proven by top hosts)</div>
+            <div class="sub" style="line-height: 1.55; color: #78350F;">
+              <strong>Welcome card</strong> on the kitchen counter or nightstand (guests see it within 5 min of check-in).
+              <strong>Wall poster</strong> taped to the inside of the front door or above the bed.
+              <strong>Fridge magnets</strong> for the fridge handle — guests reach for it daily.
+              <strong>Welcome book insert</strong> slips into your existing binder/folder.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Asset grid -->
+      <div class="settings-grid" id="printGrid">
+
+        <div class="card asset-card">
+          <div class="card-head">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span style="font-size: 22px;">💌</span>
+                <h3 style="margin: 0;">Welcome card</h3>
+              </div>
+              <div class="sub">5×7" postcard. Tropical design, big QR, host signature. Leave on counter or nightstand.</div>
+            </div>
+          </div>
+          <div style="background: linear-gradient(135deg, #FFF9F0 0%, #F0FAFC 100%); border-radius: 12px; padding: 18px; text-align: center; margin: 10px 0 14px; border: 1px dashed #E2E8F0;">
+            <div style="font-size: 36px; margin-bottom: 4px;">🌴</div>
+            <div style="font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 800; color: #1E3A47;">Make Miami unforgettable</div>
+            <div style="font-size: 11px; color: #64748B; margin-top: 4px;">+ QR + your signature</div>
+          </div>
+          <a class="btn btn-primary print-asset" data-asset="welcome-card" target="_blank" rel="noopener" style="width: 100%; justify-content: center;">
+            Open print preview →
+          </a>
+        </div>
+
+        <div class="card asset-card">
+          <div class="card-head">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span style="font-size: 22px;">🧲</span>
+                <h3 style="margin: 0;">Fridge magnets</h3>
+              </div>
+              <div class="sub">4 magnets per sheet (3×3" each). Print on magnetic paper or laminate. Fridge handle = daily eye traffic.</div>
+            </div>
+          </div>
+          <div style="background: linear-gradient(135deg, #FFFCFA 0%, #F0FAFC 100%); border-radius: 12px; padding: 18px; text-align: center; margin: 10px 0 14px; border: 1px dashed #E2E8F0;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 140px; margin: 0 auto;">
+              <div style="aspect-ratio: 1; background: white; border: 1px solid #CBD5E1; border-radius: 6px; display: grid; place-items: center; font-size: 18px;">📱</div>
+              <div style="aspect-ratio: 1; background: white; border: 1px solid #CBD5E1; border-radius: 6px; display: grid; place-items: center; font-size: 18px;">📱</div>
+              <div style="aspect-ratio: 1; background: white; border: 1px solid #CBD5E1; border-radius: 6px; display: grid; place-items: center; font-size: 18px;">📱</div>
+              <div style="aspect-ratio: 1; background: white; border: 1px solid #CBD5E1; border-radius: 6px; display: grid; place-items: center; font-size: 18px;">📱</div>
+            </div>
+            <div style="font-size: 11px; color: #64748B; margin-top: 8px;">4 magnets per letter page</div>
+          </div>
+          <a class="btn btn-primary print-asset" data-asset="fridge-magnet" target="_blank" rel="noopener" style="width: 100%; justify-content: center;">
+            Open print preview →
+          </a>
+        </div>
+
+        <div class="card asset-card">
+          <div class="card-head">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span style="font-size: 22px;">📄</span>
+                <h3 style="margin: 0;">Wall poster</h3>
+              </div>
+              <div class="sub">Letter size (8.5×11"). Bold tropical design with activity grid. Tape to back of door or above the bed.</div>
+            </div>
+          </div>
+          <div style="background: linear-gradient(180deg, #FFF9F0 0%, #F0FAFC 100%); border-radius: 12px; padding: 14px; text-align: center; margin: 10px 0 14px; border: 1px dashed #E2E8F0;">
+            <div style="font-family: 'Playfair Display', serif; font-weight: 800; font-size: 13px; color: #1E3A47; margin-bottom: 4px;">Make Miami unforgettable</div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; max-width: 200px; margin: 6px auto;">
+              <span style="font-size: 16px;">🏄</span>
+              <span style="font-size: 16px;">🛥️</span>
+              <span style="font-size: 16px;">🌅</span>
+              <span style="font-size: 16px;">🐊</span>
+            </div>
+            <div style="font-size: 11px; color: #64748B; margin-top: 4px;">+ big QR + 4 activities</div>
+          </div>
+          <a class="btn btn-primary print-asset" data-asset="wall-poster" target="_blank" rel="noopener" style="width: 100%; justify-content: center;">
+            Open print preview →
+          </a>
+        </div>
+
+        <div class="card asset-card">
+          <div class="card-head">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                <span style="font-size: 22px;">📕</span>
+                <h3 style="margin: 0;">Welcome book insert</h3>
+              </div>
+              <div class="sub">Letter page for your existing welcome binder. Professional tone, explains the value, includes QR.</div>
+            </div>
+          </div>
+          <div style="background: white; border-radius: 12px; padding: 14px; text-align: left; margin: 10px 0 14px; border: 1px dashed #E2E8F0; min-height: 96px;">
+            <div style="font-family: 'Playfair Display', serif; font-weight: 800; font-size: 13px; color: #1E3A47; margin-bottom: 6px;">Save on Miami's best water activities</div>
+            <div style="font-size: 10px; color: #64748B; line-height: 1.5;">To help you make the most of your stay, we've partnered with Refstay — a curated marketplace…</div>
+          </div>
+          <a class="btn btn-primary print-asset" data-asset="welcome-book" target="_blank" rel="noopener" style="width: 100%; justify-content: center;">
+            Open print preview →
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Print tips -->
+      <div class="card" style="margin-top: 8px;">
+        <div class="card-head"><div><h3>Printing tips</h3></div></div>
+        <details style="border-bottom: 1px solid var(--border); padding: 12px 0;">
+          <summary style="font-weight: 600; cursor: pointer;">Paper recommendations</summary>
+          <p style="color: var(--muted); margin-top: 10px; line-height: 1.6;">
+            <strong>Welcome card / Wall poster / Welcome book:</strong> Print on glossy or matte photo paper for premium feel ($15 for 50 sheets on Amazon).<br>
+            <strong>Fridge magnets:</strong> Buy "printable magnetic paper" on Amazon ($12 for 5 sheets) OR print on regular paper, laminate, and use double-sided tape with a small magnet on the back.
+          </p>
+        </details>
+        <details style="border-bottom: 1px solid var(--border); padding: 12px 0;">
+          <summary style="font-weight: 600; cursor: pointer;">Print settings</summary>
+          <p style="color: var(--muted); margin-top: 10px; line-height: 1.6;">
+            In the print dialog: set "Background graphics" to ON (so the colors print), choose "Letter" or "5×7 photo" depending on the asset, and set margins to "None" or "Minimum". The CSS handles the rest.
+          </p>
+        </details>
+        <details style="padding: 12px 0;">
+          <summary style="font-weight: 600; cursor: pointer;">Verify your QR works before printing</summary>
+          <p style="color: var(--muted); margin-top: 10px; line-height: 1.6;">
+            Click "Open print preview" → scan the QR with your phone's camera before hitting print. It should open <code style="background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px;" id="qrCheckUrl">refstay.com/r/your-slug</code>. If it doesn't, refresh the preview.
+          </p>
+        </details>
       </div>
     </div>
 
@@ -829,6 +973,7 @@ function hydrate(user) {
   }
 
   renderActivitiesPicker();
+  wirePrintAssets(user);
 }
 
 /* ============ TABS ============ */
@@ -1079,6 +1224,21 @@ $$('.share-btn').forEach(b => b.addEventListener('click', () => {
 
 $('#requestSlugBtn')?.addEventListener('click', () => track('Slug Change Request'));
 $('#requestUpdate')?.addEventListener('click', () => track('Profile Update Request'));
+
+/* ============ PRINT ASSETS ============ */
+// Each "Open print preview" button opens the matching print page in a new tab,
+// pre-filled with the host's slug so the QR code and signature are personalized.
+function wirePrintAssets(user) {
+  const slug = (user && user.slug) || (user && user.referralLink ? user.referralLink.split('/').pop() : '');
+  $$('.print-asset').forEach(btn => {
+    const asset = btn.dataset.asset;
+    btn.href = `/print/${asset}.html?host=${encodeURIComponent(slug)}`;
+    btn.addEventListener('click', () => track('Print Asset Open', { asset, slug }));
+  });
+  // Show the host's actual slug in the QR check helper text
+  const qrCheck = $('#qrCheckUrl');
+  if (qrCheck && slug) qrCheck.textContent = `refstay.com/r/${slug}`;
+}
 
 $('#deleteAcc').addEventListener('click', () => {
   if (confirm('Send a delete request to support? Your data is removed within 24 hours.')) {
