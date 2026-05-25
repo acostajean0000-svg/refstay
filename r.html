@@ -132,10 +132,14 @@
   // Light sanitize — only alphanumerics and hyphens, max 64 chars
   slug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 64);
 
-  // 2. Build destination URL with ref attached
+  // 2. Build destination URL with ref attached via BOTH query AND fragment.
+  // Fragment (#ref=) survives URL cleaners, CDN normalizers, history.replaceState,
+  // and any analytics that strips query params — it never goes to the server.
+  // The referral.js on miami-site reads from either source.
   let dest = MIAMI_SITE;
   if (slug) {
-    dest = MIAMI_SITE + '/?ref=' + encodeURIComponent(slug);
+    const enc = encodeURIComponent(slug);
+    dest = MIAMI_SITE + '/?ref=' + enc + '#ref=' + enc;
     document.getElementById('byline').innerHTML = 'Referred by <strong>' + slug + '</strong>';
   }
   document.getElementById('manualLink').href = dest;
