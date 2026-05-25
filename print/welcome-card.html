@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800;900&display=swap" rel="stylesheet">
+<!-- Supabase client for fetching host name by slug -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
   :root {
@@ -309,15 +311,19 @@
   const params = new URLSearchParams(location.search);
   const slug = (params.get('host') || 'demo').toLowerCase().replace(/[^a-z0-9-]/g, '');
 
-  // Fetch host data from /hosts.json (one level up)
+  // Fetch host data from Supabase via the get_host_display RPC
+  // (exposes only slug + name to anon — emails and other fields stay private)
   let host = null;
   try {
-    const res = await fetch('/hosts.json', { cache: 'no-cache' });
-    if (res.ok) {
-      const data = await res.json();
-      host = (data.hosts || []).find(h => h.slug === slug);
+    const sb = window.supabase.createClient(
+      'https://nexsrqqoqerajjquoiqk.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5leHNycXFvcWVyYWpqcXVvaXFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjU0NTYsImV4cCI6MjA5NTMwMTQ1Nn0.xBTu_YuVlLmdgb74yfOeBvwbsLFX4uNVjbmpILgEiTo'
+    );
+    const { data, error } = await sb.rpc('get_host_display', { host_slug: slug });
+    if (!error && data && data.length > 0) {
+      host = data[0];
     }
-  } catch (e) { console.error('hosts.json fetch failed:', e); }
+  } catch (e) { console.error('Supabase fetch failed:', e); }
 
   // Fallback if host not found
   if (!host) {

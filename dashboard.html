@@ -767,8 +767,15 @@ try {
   if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } catch (e) { console.error('Supabase init failed:', e); }
 
+// Module-level current user — set by showDashboard, read by renderActivitiesPicker,
+// wirePrintAssets, and other callers that need the active session's host info.
+let _currentUser = null;
+function getUser() { return _currentUser; }
+function setUser(u) { _currentUser = u; }
+
 function showLogin() { $('#loginScreen').classList.add('show'); $('#dashboard').classList.remove('show'); }
 function showDashboard(user) {
+  setUser(user); // store globally so getUser() callers (activities picker, print assets) can access it
   $('#loginScreen').classList.remove('show');
   $('#dashboard').classList.add('show');
   hydrate(user);
