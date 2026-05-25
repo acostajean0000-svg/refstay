@@ -15,6 +15,9 @@
   plausible.init()
 </script>
 
+<!-- Supabase JS client (auth + DB) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
   :root {
     --primary: #FF385C;
@@ -244,7 +247,7 @@
       <span>Refstay</span>
     </a>
     <h1>Welcome back</h1>
-    <p class="sub">Enter the email you signed up with. We'll pull up your referrals and earnings.</p>
+    <p class="sub">Log in with the email and password you signed up with.</p>
 
     <form id="loginForm" novalidate>
       <div class="field" id="lf-email">
@@ -252,7 +255,15 @@
         <input type="email" id="li-email" placeholder="you@example.com" autocomplete="email" />
         <div class="field-error" id="lf-email-msg">Please enter a valid email.</div>
       </div>
-      <button class="btn btn-primary" type="submit" id="loginSubmit">Open my dashboard →</button>
+      <div class="field" id="lf-password">
+        <label for="li-password">Password</label>
+        <input type="password" id="li-password" placeholder="••••••••" autocomplete="current-password" />
+        <div class="field-error" id="lf-password-msg">Password is required.</div>
+      </div>
+      <div style="text-align: right; margin-top: -10px; margin-bottom: 14px;">
+        <a href="#" id="forgotPwBtn" style="font-size: 13px; color: var(--primary); font-weight: 600;">Forgot password?</a>
+      </div>
+      <button class="btn btn-primary" type="submit" id="loginSubmit">Log in →</button>
     </form>
 
     <div class="sep">or</div>
@@ -316,7 +327,7 @@
         </div>
       </div>
 
-      <!-- KPIs: real numbers from hosts.json (updated monthly) -->
+      <!-- KPIs: real numbers from Supabase bookings table (refreshed each load) -->
       <div class="kpi-grid" id="kpiGrid">
         <div class="kpi">
           <div class="kpi-head"><div class="lbl">Clicks this month</div><div class="ic-bg b">👀</div></div>
@@ -747,17 +758,14 @@ function showToast(msg) { const t = $('#toast'); $('#toastMsg').textContent = ms
 function copy(text) { if (navigator.clipboard) navigator.clipboard.writeText(text); else { const i = document.createElement('input'); i.value = text; document.body.appendChild(i); i.select(); document.execCommand('copy'); i.remove(); } }
 function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
-/* ============ AUTH (hosts.json-backed) ============ */
-const STORAGE_KEY = 'refstay_user';
-function getUser() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { return null; } }
-function setUser(u) { localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
-function logout() {
-  localStorage.removeItem(STORAGE_KEY);
-  track('Logout');
-  // Strip any ?host= param on logout so we don't auto-re-login
-  if (location.search) location.href = location.pathname;
-  else location.reload();
-}
+/* ============ AUTH (Supabase) ============ */
+const SUPABASE_URL = 'https://nexsrqqoqerajjquoiqk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5leHNycXFvcWVyYWpqcXVvaXFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjU0NTYsImV4cCI6MjA5NTMwMTQ1Nn0.xBTu_YuVlLmdgb74yfOeBvwbsLFX4uNVjbmpILgEiTo';
+
+let sb = null;
+try {
+  if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (e) { console.error('Supabase init failed:', e); }
 
 function showLogin() { $('#loginScreen').classList.add('show'); $('#dashboard').classList.remove('show'); }
 function showDashboard(user) {
@@ -766,135 +774,206 @@ function showDashboard(user) {
   hydrate(user);
 }
 
-// ---- hosts.json loader (cached for the session) ----
-let HOSTS = null;
-async function loadHosts() {
-  if (HOSTS) return HOSTS;
-  try {
-    const res = await fetch('/hosts.json', { cache: 'no-cache' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    HOSTS = Array.isArray(data.hosts) ? data.hosts : [];
-  } catch (err) {
-    console.error('Failed to load hosts.json:', err);
-    HOSTS = [];
+async function logout() {
+  try { if (sb) await sb.auth.signOut(); } catch (e) {}
+  track('Logout');
+  if (location.search) location.href = location.pathname;
+  else location.reload();
+}
+
+// Hardcoded demo data — shown when ?host=demo or "View Demo" clicked. No Supabase needed.
+const DEMO_USER = {
+  slug: 'demo',
+  name: 'Sample Host',
+  email: 'demo@refstay.com',
+  listing: null,
+  referralLink: 'https://refstay.com/r/demo',
+  joinedAt: '2026-01-01T00:00:00.000Z',
+  stats: { clicksMonth: 84, bookingsMonth: 5, earningsTotal: 127.50, earningsPaid: 102.50, earningsPending: 25.00 },
+  recent: [
+    { date: '2026-05-20', activity: 'Jet Ski 1hr Rental', amount: 10.00 },
+    { date: '2026-05-15', activity: 'Sunset Cruise', amount: 15.00 },
+    { date: '2026-04-28', activity: 'Yacht Half Day', amount: 50.00 },
+    { date: '2026-04-22', activity: 'Airboat Everglades Tour', amount: 12.50 },
+    { date: '2026-04-10', activity: 'Parasail Adventure', amount: 15.00 },
+  ],
+  nextPayout: '2026-06-05',
+  lastPayout: '2026-05-05',
+  payoutMethod: 'PayPal',
+  isDemo: true,
+};
+
+// Fetch the authenticated user's host profile + bookings from Supabase
+async function fetchUserDataFromSupabase(authUserId) {
+  if (!sb) return null;
+
+  // 1. Get host profile
+  const { data: host, error: hostErr } = await sb
+    .from('hosts')
+    .select('slug, name, email, listing, joined, payout_method, last_payout, next_payout')
+    .eq('id', authUserId)
+    .single();
+
+  if (hostErr) {
+    console.error('Host fetch failed:', hostErr);
+    return null;
   }
-  return HOSTS;
-}
 
-function findHostByEmail(hosts, email) {
-  if (!email) return null;
-  const e = email.trim().toLowerCase();
-  return hosts.find(h => (h.email || '').toLowerCase() === e) || null;
-}
-function findHostBySlug(hosts, slug) {
-  if (!slug) return null;
-  const s = slug.trim().toLowerCase();
-  return hosts.find(h => (h.slug || '').toLowerCase() === s) || null;
-}
+  // 2. Get recent bookings (last 5)
+  const { data: bookings, error: bkErr } = await sb
+    .from('bookings')
+    .select('date, activity, amount, status')
+    .eq('host_id', authUserId)
+    .order('date', { ascending: false })
+    .limit(5);
 
-// Convert a hosts.json entry into the legacy user object the rest of the app expects.
-function hostToUser(h) {
+  // 3. Aggregate stats — get ALL bookings for this host, compute totals
+  const { data: allBookings } = await sb
+    .from('bookings')
+    .select('amount, status, date')
+    .eq('host_id', authUserId);
+
+  let earningsTotal = 0, earningsPaid = 0, earningsPending = 0, bookingsMonth = 0;
+  const thisMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+  (allBookings || []).forEach(b => {
+    earningsTotal += Number(b.amount) || 0;
+    if (b.status === 'paid') earningsPaid += Number(b.amount) || 0;
+    else if (b.status === 'pending') earningsPending += Number(b.amount) || 0;
+    if (b.date && b.date.startsWith(thisMonth)) bookingsMonth++;
+  });
+
   return {
-    slug: h.slug,
-    name: h.name,
-    email: h.email,
-    listing: h.listing || null,
-    referralLink: `https://refstay.com/r/${h.slug}`,
-    joinedAt: h.joined ? h.joined + 'T00:00:00.000Z' : new Date().toISOString(),
-    stats: h.stats || { clicksMonth: 0, bookingsMonth: 0, earningsTotal: 0, earningsPaid: 0, earningsPending: 0 },
-    recent: h.recent || [],
-    nextPayout: h.nextPayout || null,
-    lastPayout: h.lastPayout || null,
-    payoutMethod: h.payoutMethod || 'PayPal',
+    slug: host.slug,
+    name: host.name,
+    email: host.email,
+    listing: host.listing,
+    referralLink: `https://refstay.com/r/${host.slug}`,
+    joinedAt: host.joined,
+    stats: { clicksMonth: 0, bookingsMonth, earningsTotal, earningsPaid, earningsPending },
+    recent: (bookings || []).map(b => ({ date: b.date, activity: b.activity, amount: Number(b.amount) })),
+    nextPayout: host.next_payout,
+    lastPayout: host.last_payout,
+    payoutMethod: host.payout_method,
   };
 }
 
-// ---- Bootstrap ----
+// Bootstrap — runs once on page load
 (async function bootstrap() {
-  const hosts = await loadHosts();
   const params = new URLSearchParams(location.search);
   const slugParam = params.get('host');
-  const emailParam = params.get('email');
 
-  // 1. URL shortcut — direct link to a host's dashboard
-  let host = null;
-  if (slugParam) host = findHostBySlug(hosts, slugParam);
-  if (!host && emailParam) host = findHostByEmail(hosts, emailParam);
-
-  if (host) {
-    const u = hostToUser(host);
-    setUser(u);
-    track('Login', { method: 'url' });
-    showDashboard(u);
+  // 1. ?host=demo → show hardcoded demo (no auth needed)
+  if (slugParam === 'demo') {
+    showDashboard(DEMO_USER);
     return;
   }
 
-  // 2. Cached user — refresh from hosts.json if still listed
-  const cached = getUser();
-  if (cached && cached.email) {
-    const fresh = findHostByEmail(hosts, cached.email);
-    if (fresh) {
-      const u = hostToUser(fresh);
-      setUser(u);
-      showDashboard(u);
-      return;
-    }
-    // Cached email no longer in hosts.json — fall through to login
-    localStorage.removeItem(STORAGE_KEY);
+  // 2. Check Supabase session — if logged in, fetch their data
+  if (sb) {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session && session.user) {
+        const user = await fetchUserDataFromSupabase(session.user.id);
+        if (user) {
+          showDashboard(user);
+          return;
+        }
+        // Session valid but no host row — sign them out and show login with message
+        await sb.auth.signOut();
+      }
+    } catch (e) { console.error('Session check failed:', e); }
   }
 
   // 3. Show login screen
   showLogin();
 })();
 
-// Login form
+// Login form — email + password via Supabase Auth
 $('#loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const email = $('#li-email').value.trim();
-  const msgEl = $('#lf-email-msg');
-  const fieldEl = $('#lf-email');
+  const password = $('#li-password').value;
 
+  let ok = true;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    msgEl.textContent = 'Please enter a valid email.';
-    fieldEl.classList.add('error');
+    $('#lf-email-msg').textContent = 'Please enter a valid email.';
+    $('#lf-email').classList.add('error');
+    ok = false;
+  } else { $('#lf-email').classList.remove('error'); }
+  if (!password) {
+    $('#lf-password-msg').textContent = 'Password is required.';
+    $('#lf-password').classList.add('error');
+    ok = false;
+  } else { $('#lf-password').classList.remove('error'); }
+  if (!ok) return;
+
+  if (!sb) {
+    $('#lf-email-msg').textContent = 'Login system not loaded. Refresh the page.';
+    $('#lf-email').classList.add('error');
     return;
   }
 
   const submitBtn = $('#loginSubmit');
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Looking up…';
+  submitBtn.textContent = 'Logging in…';
 
-  const hosts = await loadHosts();
-  const host = findHostByEmail(hosts, email);
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
 
-  if (!host) {
-    msgEl.innerHTML = 'We can\'t find that email. <a href="index.html#signup" style="color: var(--primary); font-weight: 600;">Sign up first</a> — it takes 30 seconds.';
-    fieldEl.classList.add('error');
+  if (error) {
+    let msg = 'Login failed. Try again.';
+    if (/invalid.*credentials/i.test(error.message)) msg = 'Wrong email or password.';
+    else if (/email.*not.*confirmed/i.test(error.message)) {
+      msg = 'Email not verified yet. Check your inbox for the confirmation link.';
+    }
+    $('#lf-password-msg').textContent = msg;
+    $('#lf-password').classList.add('error');
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Open my dashboard →';
-    track('Login Failed', { reason: 'not-found' });
+    submitBtn.textContent = 'Log in →';
+    track('Login Failed', { reason: error.message });
     return;
   }
 
-  fieldEl.classList.remove('error');
-  const u = hostToUser(host);
-  setUser(u);
-  track('Login', { method: 'email' });
-  showDashboard(u);
+  // Got session — fetch host data
+  const user = await fetchUserDataFromSupabase(data.user.id);
+  if (!user) {
+    $('#lf-email-msg').innerHTML = 'Account found but profile is missing. <a href="mailto:support@refstay.com" style="color: var(--primary); font-weight: 600;">Contact support</a>.';
+    $('#lf-email').classList.add('error');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Log in →';
+    return;
+  }
+
+  track('Login', { method: 'password' });
+  showDashboard(user);
 });
 
-$('#demoBtn').addEventListener('click', async () => {
-  const hosts = await loadHosts();
-  const demo = findHostBySlug(hosts, 'demo') || findHostBySlug(hosts, 'maria-demo');
-  if (!demo) {
-    showToast('Demo unavailable — try again in a moment');
+// Demo button — load hardcoded demo
+$('#demoBtn').addEventListener('click', () => {
+  track('Login', { method: 'demo' });
+  showDashboard(DEMO_USER);
+});
+
+// Forgot password flow — sends reset email via Supabase
+$('#forgotPwBtn').addEventListener('click', async (e) => {
+  e.preventDefault();
+  const email = $('#li-email').value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    $('#lf-email-msg').textContent = 'Enter your email above first, then click Forgot password.';
+    $('#lf-email').classList.add('error');
     return;
   }
-  const u = hostToUser(demo);
-  setUser(u);
-  track('Login', { method: 'demo' });
-  showDashboard(u);
+  if (!sb) return;
+  try {
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: `${location.origin}/reset-password.html`,
+    });
+    if (error) throw error;
+    showToast(`Password reset email sent to ${email}`);
+    track('Password Reset Requested');
+  } catch (err) {
+    showToast('Could not send reset email. Try again.');
+    console.error(err);
+  }
 });
 
 $('#logoutBtn').addEventListener('click', logout);
@@ -930,7 +1009,7 @@ function hydrate(user) {
     $('#memberSince').textContent = `Member since ${months[d.getMonth()]} ${d.getFullYear()}`;
   }
 
-  // ---- KPIs from hosts.json ----
+  // ---- KPIs from Supabase ----
   const s = user.stats || {};
   const clicks = s.clicksMonth || 0;
   const bookings = s.bookingsMonth || 0;
