@@ -182,6 +182,12 @@
   .cat-pill { background: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--ink); transition: all .15s; }
   .cat-pill:hover { border-color: var(--primary); color: var(--primary); }
   .cat-pill.on { background: var(--ink); color: white; border-color: var(--ink); }
+
+  /* Secondary filter pills — smaller, lighter weight to feel like sub-filter */
+  .sub-pill { background: var(--bg); border: 1px solid var(--border); padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--ink-2); transition: all .12s; font-family: inherit; }
+  .sub-pill:hover { background: white; border-color: var(--primary); color: var(--primary); }
+  .sub-pill.on { background: var(--primary); color: white; border-color: var(--primary); }
+  .sub-pill .count { opacity: 0.7; margin-left: 4px; font-weight: 500; }
   .activities-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
   .activity-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: transform .15s, box-shadow .15s; }
   .activity-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
@@ -540,12 +546,18 @@
         <div id="activityCount" style="display: flex; align-items: center; padding: 0 14px; font-size: 13px; color: var(--muted); font-weight: 600;">Loading…</div>
       </div>
 
-      <div class="activities-filter" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+      <!-- PRIMARY filter: top-level groups -->
+      <div class="activities-filter" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
         <button class="cat-pill on" data-cat="all">All</button>
         <button class="cat-pill" data-cat="water">Water</button>
         <button class="cat-pill" data-cat="boat">Boats & yachts</button>
         <button class="cat-pill" data-cat="land">Land</button>
         <button class="cat-pill" data-cat="tour">Tours</button>
+      </div>
+
+      <!-- SECONDARY filter: specific categories (rendered dynamically from activities data) -->
+      <div id="subFilter" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; align-items: center;">
+        <span style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-right: 4px;">Filter by type:</span>
       </div>
 
       <div id="activitiesGrid" class="activities-grid"></div>
@@ -1107,10 +1119,12 @@ $$('.quick-action').forEach(b => b.addEventListener('click', () => {
 // To refresh — re-run the extractor in tools/ and replace activities.json.
 let ACTIVITIES = [];
 let activitiesLoaded = false;
-let activityFilter = 'all';
+let activityFilter = 'all';         // primary group filter (water/boat/land/tour/all)
+let activityCategoryFilter = 'all'; // secondary category filter (Jet Ski/Yacht/Airboat/all)
 let activitySearchQuery = '';
 let activityPage = 1;
 const ACTIVITY_PAGE_SIZE = 20;
+const SUB_FILTER_MAX_CHIPS = 12;     // show top N categories as chips by default
 
 // Build a per-host FareHarbor URL with `ref=miamistylerentals-<slug>` baked in.
 // This is the same format the FareHarbor specialist confirmed:
@@ -1149,12 +1163,54 @@ function getFilteredActivities() {
   const q = activitySearchQuery.trim().toLowerCase();
   return ACTIVITIES.filter(a => {
     if (activityFilter !== 'all' && a.g !== activityFilter) return false;
+    if (activityCategoryFilter !== 'all' && a.c !== activityCategoryFilter) return false;
     if (q) {
       const hay = (a.t + ' ' + a.c + ' ' + a.s).toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
   });
+}
+
+// Render the sub-filter chips based on the currently selected group.
+// "All" group → show top N most-popular categories across all activities.
+// Specific group → show ONLY categories that exist in that group, sorted by count.
+function renderSubFilter() {
+  const container = $('#subFilter');
+  if (!container || !activitiesLoaded) return;
+
+  // Count categories — scoped to selected group if not 'all'
+  const counts = new Map();
+  ACTIVITIES.forEach(a => {
+    if (activityFilter !== 'all' && a.g !== activityFilter) return;
+    const c = a.c || 'Other';
+    counts.set(c, (counts.get(c) || 0) + 1);
+  });
+
+  // Sort by count desc, take top N
+  const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  const top = sorted.slice(0, SUB_FILTER_MAX_CHIPS);
+  const totalForGroup = sorted.reduce((s, [, n]) => s + n, 0);
+
+  // Build chips: "All <group> (N)" + top N categories
+  const groupLabel = activityFilter === 'all' ? 'All' : ({ water: 'All water', boat: 'All boats', land: 'All land', tour: 'All tours' }[activityFilter] || 'All');
+
+  let html = `<span style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-right: 4px;">Filter by type:</span>`;
+  html += `<button class="sub-pill ${activityCategoryFilter === 'all' ? 'on' : ''}" data-subcat="all">${groupLabel}<span class="count">(${totalForGroup})</span></button>`;
+  top.forEach(([cat, n]) => {
+    const isOn = activityCategoryFilter === cat ? 'on' : '';
+    html += `<button class="sub-pill ${isOn}" data-subcat="${escapeHtml(cat)}">${escapeHtml(cat)}<span class="count">(${n})</span></button>`;
+  });
+  container.innerHTML = html;
+
+  // Wire click handlers
+  $$('#subFilter .sub-pill').forEach(btn => btn.addEventListener('click', () => {
+    activityCategoryFilter = btn.dataset.subcat;
+    activityPage = 1;
+    renderSubFilter();           // re-render to update active state
+    renderActivitiesPicker();    // re-render the grid
+    track('Activity Subfilter', { category: activityCategoryFilter, group: activityFilter });
+  }));
 }
 
 function renderActivitiesPicker() {
@@ -1237,16 +1293,19 @@ function renderActivitiesPicker() {
 // Async bootstrap: load catalog, then render
 async function initActivitiesCatalog() {
   await loadActivitiesCatalog();
+  renderSubFilter();
   renderActivitiesPicker();
 }
 initActivitiesCatalog();
 
-// Wire category filter pills (reset to page 1 on change)
+// Wire PRIMARY group filter pills — reset category sub-filter when group changes
 $$('.cat-pill').forEach(pill => pill.addEventListener('click', () => {
   $$('.cat-pill').forEach(p => p.classList.remove('on'));
   pill.classList.add('on');
   activityFilter = pill.dataset.cat;
+  activityCategoryFilter = 'all';  // reset sub-filter on group change
   activityPage = 1;
+  renderSubFilter();
   renderActivitiesPicker();
   track('Activity Filter', { group: activityFilter });
 }));
