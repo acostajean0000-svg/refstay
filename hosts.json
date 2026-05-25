@@ -4,6 +4,24 @@
   "note": "Source of truth for per-host data. Update monthly after FareHarbor reconciliation. slug = unique URL segment (refstay.com/r/<slug>). email = login key. Add a new entry when a host signs up via Formspree.",
   "hosts": [
     {
+      "slug": "jean-acosta",
+      "name": "Jean Acosta",
+      "email": "acostajean0000@gmail.com",
+      "listing": null,
+      "joined": "2026-05-25",
+      "stats": {
+        "clicksMonth": 0,
+        "bookingsMonth": 0,
+        "earningsTotal": 0,
+        "earningsPaid": 0,
+        "earningsPending": 0
+      },
+      "recent": [],
+      "nextPayout": "2026-06-05",
+      "lastPayout": null,
+      "payoutMethod": "PayPal"
+    },
+    {
       "slug": "demo",
       "name": "Demo Host",
       "email": "demo@refstay.com",
