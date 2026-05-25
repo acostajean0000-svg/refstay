@@ -10,13 +10,15 @@
       "listing": null,
       "joined": "2026-05-25",
       "stats": {
-        "clicksMonth": 0,
-        "bookingsMonth": 0,
-        "earningsTotal": 0,
+        "clicksMonth": 1,
+        "bookingsMonth": 1,
+        "earningsTotal": 1.28,
         "earningsPaid": 0,
-        "earningsPending": 0
+        "earningsPending": 1.28
       },
-      "recent": [],
+      "recent": [
+        { "date": "2026-05-25", "activity": "Polaris Slingshot Rental Miami (test booking)", "amount": 1.28 }
+      ],
       "nextPayout": "2026-06-05",
       "lastPayout": null,
       "payoutMethod": "PayPal"
