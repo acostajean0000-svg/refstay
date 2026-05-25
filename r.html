@@ -126,9 +126,17 @@
   // Helpers
   function safe(fn) { try { return fn(); } catch (e) { return null; } }
 
-  // 1. Read the slug from URL (?slug=maria-x4k2)
+  // 1. Read the slug from URL. Vercel rewrites /r/<slug> to /r.html?slug=<slug>
+  // INTERNALLY — but window.location keeps the original URL (/r/<slug>), so the
+  // ?slug= query is invisible to JS. We try BOTH sources:
+  //   (a) ?slug=<slug>  — if user visited /r.html?slug=... directly
+  //   (b) /r/<slug>     — pathname extraction (the normal case)
   const url = new URL(window.location.href);
   let slug = url.searchParams.get('slug') || '';
+  if (!slug) {
+    const m = url.pathname.match(/^\/r\/([^\/]+)\/?$/);
+    if (m) slug = m[1];
+  }
   // Light sanitize — only alphanumerics and hyphens, max 64 chars
   slug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 64);
 
