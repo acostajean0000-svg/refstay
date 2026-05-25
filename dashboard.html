@@ -1124,7 +1124,8 @@ let activityCategoryFilter = 'all'; // secondary category filter (Jet Ski/Yacht/
 let activitySearchQuery = '';
 let activityPage = 1;
 const ACTIVITY_PAGE_SIZE = 20;
-const SUB_FILTER_MAX_CHIPS = 12;     // show top N categories as chips by default
+const SUB_FILTER_MAX_CHIPS = 14;     // show top N categories as chips by default; rest behind "+ more"
+let subFilterExpanded = false;       // user clicked "+ more"? show all categories
 
 // Build a per-host FareHarbor URL with `ref=miamistylerentals-<slug>` baked in.
 // This is the same format the FareHarbor specialist confirmed:
@@ -1187,30 +1188,55 @@ function renderSubFilter() {
     counts.set(c, (counts.get(c) || 0) + 1);
   });
 
-  // Sort by count desc, take top N
+  // Sort by count desc
   const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
-  const top = sorted.slice(0, SUB_FILTER_MAX_CHIPS);
   const totalForGroup = sorted.reduce((s, [, n]) => s + n, 0);
 
-  // Build chips: "All <group> (N)" + top N categories
+  // Show all or limited list based on expanded state
+  // If the active category is in the "hidden" tier, force expanded so user sees it as selected
+  const activeIdx = sorted.findIndex(([cat]) => cat === activityCategoryFilter);
+  const forceExpanded = subFilterExpanded || (activeIdx >= SUB_FILTER_MAX_CHIPS);
+  const visible = forceExpanded ? sorted : sorted.slice(0, SUB_FILTER_MAX_CHIPS);
+  const hiddenCount = sorted.length - visible.length;
+
+  // Build chips
   const groupLabel = activityFilter === 'all' ? 'All' : ({ water: 'All water', boat: 'All boats', land: 'All land', tour: 'All tours' }[activityFilter] || 'All');
 
   let html = `<span style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-right: 4px;">Filter by type:</span>`;
   html += `<button class="sub-pill ${activityCategoryFilter === 'all' ? 'on' : ''}" data-subcat="all">${groupLabel}<span class="count">(${totalForGroup})</span></button>`;
-  top.forEach(([cat, n]) => {
+  visible.forEach(([cat, n]) => {
     const isOn = activityCategoryFilter === cat ? 'on' : '';
     html += `<button class="sub-pill ${isOn}" data-subcat="${escapeHtml(cat)}">${escapeHtml(cat)}<span class="count">(${n})</span></button>`;
   });
+  // "+ more" expander OR "show less" collapser
+  if (hiddenCount > 0 && !forceExpanded) {
+    html += `<button class="sub-pill" id="subMoreBtn" style="border-style: dashed; color: var(--primary); border-color: var(--primary);">+ ${hiddenCount} more</button>`;
+  } else if (subFilterExpanded && sorted.length > SUB_FILTER_MAX_CHIPS) {
+    html += `<button class="sub-pill" id="subLessBtn" style="border-style: dashed; color: var(--muted); border-color: var(--border);">Show less</button>`;
+  }
   container.innerHTML = html;
 
-  // Wire click handlers
-  $$('#subFilter .sub-pill').forEach(btn => btn.addEventListener('click', () => {
+  // Wire category click handlers
+  $$('#subFilter .sub-pill[data-subcat]').forEach(btn => btn.addEventListener('click', () => {
     activityCategoryFilter = btn.dataset.subcat;
     activityPage = 1;
-    renderSubFilter();           // re-render to update active state
-    renderActivitiesPicker();    // re-render the grid
+    renderSubFilter();
+    renderActivitiesPicker();
     track('Activity Subfilter', { category: activityCategoryFilter, group: activityFilter });
   }));
+
+  // Wire expander
+  const moreBtn = $('#subMoreBtn');
+  if (moreBtn) moreBtn.addEventListener('click', () => {
+    subFilterExpanded = true;
+    renderSubFilter();
+    track('Activity Subfilter Expanded');
+  });
+  const lessBtn = $('#subLessBtn');
+  if (lessBtn) lessBtn.addEventListener('click', () => {
+    subFilterExpanded = false;
+    renderSubFilter();
+  });
 }
 
 function renderActivitiesPicker() {
@@ -1303,7 +1329,8 @@ $$('.cat-pill').forEach(pill => pill.addEventListener('click', () => {
   $$('.cat-pill').forEach(p => p.classList.remove('on'));
   pill.classList.add('on');
   activityFilter = pill.dataset.cat;
-  activityCategoryFilter = 'all';  // reset sub-filter on group change
+  activityCategoryFilter = 'all';   // reset sub-filter on group change
+  subFilterExpanded = false;        // collapse "show less"
   activityPage = 1;
   renderSubFilter();
   renderActivitiesPicker();
