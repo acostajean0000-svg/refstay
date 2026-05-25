@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Email verified — Refstay</title>
+<meta name="robots" content="noindex,nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Plausible -->
+<script async src="https://plausible.io/js/pa-91gKqq-hi7bdalS3B80Ak.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  :root {
+    --primary: #FF385C;
+    --accent: #00D97E;
+    --ink: #0B1020;
+    --ink-2: #334155;
+    --muted: #64748B;
+    --bg: #F7F8FB;
+    --border: #E2E8F0;
+    --grad: linear-gradient(135deg, #FF385C 0%, #FF7A45 35%, #7C3AED 100%);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); font-family: 'Inter', -apple-system, sans-serif; min-height: 100vh; color: var(--ink); }
+  body { display: grid; place-items: center; padding: 24px; position: relative; overflow-x: hidden; }
+  body::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(at 20% 30%, #FFE2EC 0px, transparent 50%),
+                radial-gradient(at 80% 70%, #E0E7FF 0px, transparent 50%);
+    z-index: -1;
+  }
+
+  .card {
+    background: white;
+    max-width: 480px;
+    width: 100%;
+    border-radius: 24px;
+    padding: 44px 36px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, .12);
+    text-align: center;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 20px;
+    font-family: 'Space Grotesk', sans-serif;
+    margin-bottom: 28px;
+  }
+  .logo-mark {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--grad);
+    display: grid; place-items: center;
+    color: white; font-weight: 900;
+    box-shadow: 0 8px 20px rgba(255, 56, 92, .35);
+  }
+  .state { display: none; }
+  .state.show { display: block; animation: fadeIn .4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .icon-box {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 22px;
+    font-size: 40px;
+  }
+  .icon-box.success {
+    background: #DCFCE7;
+    color: var(--accent);
+    box-shadow: 0 0 0 10px rgba(0, 217, 126, 0.15);
+  }
+  .icon-box.error {
+    background: #FEE2E2;
+    color: #DC2626;
+  }
+  .icon-box.loading {
+    background: var(--bg);
+    color: var(--primary);
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid rgba(255, 56, 92, 0.15);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  h1 .grad {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.55;
+    margin-bottom: 24px;
+  }
+
+  .link-card {
+    background: linear-gradient(135deg, #F0FDF4 0%, #ECFEFF 100%);
+    border: 1px solid #BBF7D0;
+    border-radius: 14px;
+    padding: 18px;
+    margin: 18px 0;
+    text-align: left;
+  }
+  .link-card .label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .link-card .link-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .link-card .link-row input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 14px;
+    background: transparent;
+  }
+  .link-card .copy-btn {
+    background: var(--grad);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    color: white;
+    background: var(--grad);
+    box-shadow: 0 10px 24px rgba(255, 56, 92, .35);
+    margin-top: 8px;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    box-shadow: none;
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+  .btn-ghost:hover { color: var(--ink); }
+
+  .step-list {
+    text-align: left;
+    background: var(--bg);
+    border-radius: 14px;
+    padding: 18px;
+    margin: 16px 0;
+  }
+  .step-list .step-title {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .step-list ol {
+    padding-left: 22px;
+    color: var(--ink-2);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: var(--ink);
+    color: white;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform .25s ease;
+    z-index: 9999;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <a class="logo" href="/">
+    <span class="logo-mark">R</span>
+    <span>Refstay</span>
+  </a>
+
+  <!-- Loading state -->
+  <div class="state show" id="stateLoading">
+    <div class="icon-box loading">
+      <div class="spinner"></div>
+    </div>
+    <h1>Confirming your email...</h1>
+    <p class="sub">Hang tight — checking your verification link.</p>
+  </div>
+
+  <!-- Success state -->
+  <div class="state" id="stateSuccess">
+    <div class="icon-box success">🎉</div>
+    <h1>You're verified, <span class="grad" id="welcomeName">friend</span></h1>
+    <p class="sub">Your account is active. Below is your personal referral link — share it anywhere and earn 5% on every booking.</p>
+
+    <div class="link-card">
+      <div class="label">Your referral link</div>
+      <div class="link-row">
+        <input id="refLink" readonly />
+        <button class="copy-btn" id="copyLink">Copy</button>
+      </div>
+    </div>
+
+    <a class="btn" id="goDashboard" href="/dashboard">Go to my dashboard →</a>
+
+    <div class="step-list">
+      <div class="step-title">What's next</div>
+      <ol>
+        <li>Print your welcome card from the dashboard (3 min)</li>
+        <li>Leave it visible in your Airbnb</li>
+        <li>Get your first booking within 2–3 weeks</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div class="state" id="stateError">
+    <div class="icon-box error">⚠️</div>
+    <h1>Verification failed</h1>
+    <p class="sub" id="errorMsg">The verification link is invalid or expired. Try signing up again, or contact support if this keeps happening.</p>
+    <a class="btn" href="/#signup">Try signing up again</a>
+    <br>
+    <a class="btn btn-ghost" href="mailto:support@refstay.com">Email support</a>
+  </div>
+</div>
+
+<div class="toast" id="toast">Link copied!</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const SUPABASE_URL = 'https://nexsrqqoqerajjquoiqk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5leHNycXFvcWVyYWpqcXVvaXFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjU0NTYsImV4cCI6MjA5NTMwMTQ1Nn0.xBTu_YuVlLmdgb74yfOeBvwbsLFX4uNVjbmpILgEiTo';
+
+function track(name, props) { try { window.plausible && window.plausible(name, props ? { props } : undefined); } catch (e) {} }
+function copy(text) {
+  if (navigator.clipboard) navigator.clipboard.writeText(text);
+  else { const i = document.createElement('input'); i.value = text; document.body.appendChild(i); i.select(); document.execCommand('copy'); i.remove(); }
+}
+function showState(id) {
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('show'));
+  $('#' + id).classList.add('show');
+}
+function showToast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+(async function init() {
+  // Wait briefly for Supabase to load
+  await new Promise(r => setTimeout(r, 100));
+
+  if (!window.supabase || SUPABASE_ANON_KEY === 'REPLACE_WITH_ROTATED_ANON_KEY') {
+    $('#errorMsg').innerHTML = 'Verification system is being configured. Please try again in a few minutes or <a href="mailto:support@refstay.com" style="color:var(--primary);font-weight:700;">contact support</a>.';
+    showState('stateError');
+    return;
+  }
+
+  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Supabase puts auth tokens in the URL hash after email verification.
+  // The client picks them up automatically. We just need to wait for the session.
+  try {
+    const { data, error } = await client.auth.getSession();
+
+    if (error) throw error;
+
+    if (data.session && data.session.user) {
+      // Verified! Fetch the host profile to get their slug + name
+      const userId = data.session.user.id;
+      const { data: hostRow, error: hostErr } = await client
+        .from('hosts')
+        .select('slug, name, email')
+        .eq('id', userId)
+        .single();
+
+      if (hostErr || !hostRow) {
+        console.error('Host row not found:', hostErr);
+        $('#errorMsg').innerHTML = 'Account verified, but your profile is still syncing. <a href="/dashboard" style="color:var(--primary);font-weight:700;">Continue to dashboard</a> or refresh in a moment.';
+        showState('stateError');
+        return;
+      }
+
+      const firstName = (hostRow.name || 'friend').split(' ')[0];
+      $('#welcomeName').textContent = firstName;
+      $('#refLink').value = `https://refstay.com/r/${hostRow.slug}`;
+      $('#goDashboard').href = `/dashboard?host=${encodeURIComponent(hostRow.slug)}`;
+      showState('stateSuccess');
+      track('Email Verified', { slug: hostRow.slug });
+    } else {
+      // No active session — verification link probably already used or expired
+      $('#errorMsg').innerHTML = 'This verification link has expired or already been used. <a href="/dashboard" style="color:var(--primary);font-weight:700;">Try logging in</a> or sign up again.';
+      showState('stateError');
+    }
+  } catch (err) {
+    console.error('Verify error:', err);
+    $('#errorMsg').textContent = err.message || 'Something went wrong. Try again or contact support.';
+    showState('stateError');
+  }
+})();
+
+$('#copyLink').addEventListener('click', () => {
+  copy($('#refLink').value);
+  showToast('Link copied to clipboard!');
+  track('Link Copy', { source: 'verify' });
+});
+</script>
+
+</body>
+</html>

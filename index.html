@@ -27,6 +27,9 @@
 
 <!-- Privacy-friendly analytics by Plausible (site: refstay.com) -->
 <script async src="https://plausible.io/js/pa-91gKqq-hi7bdalS3B80Ak.js"></script>
+
+<!-- Supabase JS client (signup + auth) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
   plausible.init()
@@ -742,8 +745,13 @@
         </div>
         <div class="field" id="f-email">
           <label for="in-email">Email address</label>
-          <input type="email" id="in-email" name="email" placeholder="you@example.com" />
-          <div class="field-error">Please enter a valid email.</div>
+          <input type="email" id="in-email" name="email" placeholder="you@example.com" autocomplete="email" />
+          <div class="field-error" id="f-email-msg">Please enter a valid email.</div>
+        </div>
+        <div class="field" id="f-password">
+          <label for="in-password">Password <span style="opacity:.5;font-weight:500">(min 8 characters)</span></label>
+          <input type="password" id="in-password" name="password" placeholder="••••••••" autocomplete="new-password" />
+          <div class="field-error" id="f-password-msg">Password must be at least 8 characters.</div>
         </div>
         <div class="field" id="f-listing">
           <label for="in-listing">Your Airbnb listing URL <span style="opacity:.5;font-weight:500">(optional)</span></label>
@@ -759,17 +767,17 @@
       </form>
 
       <div class="signup-success" id="signupSuccess">
-        <div class="check">✓</div>
-        <h3>You're in, <span id="welcomeName">friend</span>!</h3>
-        <p>Your personal referral link is ready. Share it anywhere — every booking earns you cash.</p>
-        <div class="ref-link-box">
-          <input type="text" id="genLink" readonly />
-          <button id="copyLink">Copy</button>
-        </div>
-        <div class="share-row">
-          <button class="share-btn" data-share="whatsapp">📱 WhatsApp</button>
-          <button class="share-btn" data-share="email">✉️ Email</button>
-          <button class="share-btn" data-share="x">𝕏 Post on X</button>
+        <div class="check">📬</div>
+        <h3>Check your inbox, <span id="welcomeName">friend</span></h3>
+        <p>We just sent a verification link to <strong id="successEmail" style="color: white;">your email</strong>. Click it to activate your account.</p>
+        <p style="font-size: 13px; opacity: 0.7; margin-top: 16px;">Didn't get it? Check spam, or <a href="#signup" onclick="location.reload()" style="color: #FFC6D2; font-weight: 600;">try again</a>.</p>
+        <div style="margin-top: 24px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; text-align: left;">
+          <div style="font-size: 12px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">What happens next</div>
+          <ol style="margin: 0; padding-left: 18px; font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.7;">
+            <li>Click the link in your inbox</li>
+            <li>You'll land on your personalized dashboard</li>
+            <li>Your referral link will be ready to share</li>
+          </ol>
         </div>
       </div>
     </div>
@@ -1045,107 +1053,117 @@ $('#dash-copy').addEventListener('click', () => {
   track('Link Copy', { source: 'dashboard_preview' });
 });
 
-/* ============ SIGNUP ============ */
+/* ============ SIGNUP (Supabase Auth + Formspree backup) ============ */
 const form = $('#signupForm');
 const success = $('#signupSuccess');
 
-function slugify(s) {
-  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 20) || 'host';
-}
-function rand4() {
-  return Math.random().toString(36).slice(2, 6);
-}
+// Supabase credentials — refstay-prod project
+const SUPABASE_URL = 'https://nexsrqqoqerajjquoiqk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5leHNycXFvcWVyYWpqcXVvaXFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjU0NTYsImV4cCI6MjA5NTMwMTQ1Nn0.xBTu_YuVlLmdgb74yfOeBvwbsLFX4uNVjbmpILgEiTo';
 
-// Formspree integration — form ID is set in the form's action attribute above.
-// Set FORMSPREE_DEMO = true to bypass real submissions during local testing.
-const FORMSPREE_DEMO = false;
-if (FORMSPREE_DEMO) {
-  $('#demoNotice').style.display = 'block';
-  console.warn('[Refstay] Formspree is in demo mode. Set FORMSPREE_DEMO = false to collect real submissions.');
+// Initialize Supabase client
+let supabaseClient = null;
+try {
+  if (window.supabase && SUPABASE_ANON_KEY !== 'REPLACE_WITH_ROTATED_ANON_KEY') {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch (e) {
+  console.error('[Refstay] Supabase client init failed:', e);
 }
 
 form.addEventListener('submit', async e => {
   e.preventDefault();
   const name = $('#in-name').value.trim();
   const email = $('#in-email').value.trim();
-  let ok = true;
-  if (!name) { $('#f-name').classList.add('error'); ok = false; } else $('#f-name').classList.remove('error');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $('#f-email').classList.add('error'); ok = false; } else $('#f-email').classList.remove('error');
-  if (!ok) return;
+  const password = $('#in-password').value;
+  const listing = $('#in-listing').value.trim() || null;
 
-  // Generate the referral link first — we'll send it to Formspree too
-  const link = `https://refstay.com/r/${slugify(name)}-${rand4()}`;
-  $('#welcomeName').textContent = name.split(' ')[0];
-  $('#genLink').value = link;
-  $('#dash-url').textContent = link.replace('https://', '');
+  // Client-side validation
+  let ok = true;
+  if (!name || name.length < 2) {
+    $('#f-name').classList.add('error');
+    ok = false;
+  } else { $('#f-name').classList.remove('error'); }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    $('#f-email-msg').textContent = 'Please enter a valid email.';
+    $('#f-email').classList.add('error');
+    ok = false;
+  } else { $('#f-email').classList.remove('error'); }
+
+  if (!password || password.length < 8) {
+    $('#f-password-msg').textContent = 'Password must be at least 8 characters.';
+    $('#f-password').classList.add('error');
+    ok = false;
+  } else { $('#f-password').classList.remove('error'); }
+
+  if (!ok) return;
 
   // Disable button during submit
   const btn = $('#submitBtn');
   const originalLabel = btn.textContent;
-  btn.disabled = true; btn.style.opacity = '0.7'; btn.textContent = 'Generating...';
+  btn.disabled = true; btn.style.opacity = '0.7'; btn.textContent = 'Creating account...';
 
-  // POST to Formspree (skipped in demo mode)
-  if (!FORMSPREE_DEMO) {
-    try {
-      const data = new FormData(form);
-      data.append('referral_link', link);
-      const res = await fetch(form.action, {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: data,
-      });
-      if (!res.ok) throw new Error('Formspree returned ' + res.status);
-    } catch (err) {
-      console.error('[Refstay] Submission failed:', err);
-      btn.disabled = false; btn.style.opacity = '1'; btn.textContent = originalLabel;
-      showToast('Submission failed — check your connection');
-      return;
-    }
+  // Bail if Supabase isn't configured yet
+  if (!supabaseClient) {
+    $('#f-email-msg').innerHTML = 'Signup is being configured. Please try again in a few minutes or <a href="mailto:support@refstay.com" style="color:#FFC6D2;font-weight:700;">contact support</a>.';
+    $('#f-email').classList.add('error');
+    btn.disabled = false; btn.style.opacity = '1'; btn.textContent = originalLabel;
+    return;
   }
 
-  // Persist to localStorage so dashboard.html can read it
   try {
-    localStorage.setItem('refstay_user', JSON.stringify({
-      name, email,
-      listing: $('#in-listing').value.trim() || null,
-      referralLink: link,
-      slug: link.split('/').pop(),
-      joinedAt: new Date().toISOString(),
-    }));
-  } catch (e) { /* localStorage disabled — non-fatal */ }
+    // Sign up with Supabase Auth — trigger auto-creates the hosts row
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name, listing },
+        emailRedirectTo: `${location.origin}/verify.html`,
+      },
+    });
 
-  // Analytics
-  track('Signup', { source: 'landing', demo_mode: FORMSPREE_DEMO });
-
-  form.style.display = 'none';
-  success.classList.add('show');
-  setTimeout(() => {
-    showToast(FORMSPREE_DEMO ? 'Your referral link is live! (demo)' : 'Your referral link is live!');
-  }, 400);
-});
-
-// If user already signed up before, swap the success view in automatically
-(function hydrateReturningUser() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('refstay_user') || 'null');
-    if (saved && saved.referralLink) {
-      $('#welcomeName').textContent = saved.name.split(' ')[0];
-      $('#genLink').value = saved.referralLink;
-      $('#dash-url').textContent = saved.referralLink.replace('https://', '');
-      // Show success state on load
-      form.style.display = 'none';
-      success.classList.add('show');
-      // Replace section heading subtle hint
-      const sub = $('#signup .section-sub');
-      if (sub) sub.textContent = 'Welcome back — your referral link is ready below.';
+    if (error) {
+      // Map common Supabase errors to friendly messages
+      let msg = error.message || 'Signup failed. Try again.';
+      let fieldId = '#f-email';
+      let msgId = '#f-email-msg';
+      if (/already.*registered/i.test(msg) || /User already registered/i.test(msg)) {
+        msg = 'This email is already registered. <a href="dashboard.html" style="color:#FFC6D2;font-weight:700;">Log in instead</a>.';
+      } else if (/password/i.test(msg)) {
+        fieldId = '#f-password';
+        msgId = '#f-password-msg';
+      }
+      $(msgId).innerHTML = msg;
+      $(fieldId).classList.add('error');
+      btn.disabled = false; btn.style.opacity = '1'; btn.textContent = originalLabel;
+      track('Signup Failed', { reason: error.message });
+      return;
     }
-  } catch (e) { /* ignore */ }
-})();
 
-$('#copyLink').addEventListener('click', () => {
-  copy($('#genLink').value);
-  showToast('Referral link copied!');
-  track('Link Copy', { source: 'signup_success' });
+    // Fire-and-forget: notify Yoa via Formspree so she sees the new signup in her inbox
+    // (Supabase doesn't send admin notifications by default)
+    try {
+      const fd = new FormData(form);
+      fd.delete('password'); // never send password to Formspree
+      fd.append('user_id', data.user?.id || 'unknown');
+      fd.append('_subject', 'New Refstay signup — ' + name);
+      fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: fd });
+    } catch (notifyErr) { /* non-fatal */ }
+
+    // Show success state
+    $('#welcomeName').textContent = name.split(' ')[0];
+    $('#successEmail').textContent = email;
+    form.style.display = 'none';
+    success.classList.add('show');
+    success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    track('Signup', { source: 'landing', via: 'supabase' });
+  } catch (err) {
+    console.error('[Refstay] Signup error:', err);
+    $('#f-email-msg').textContent = 'Network error. Check your connection and try again.';
+    $('#f-email').classList.add('error');
+    btn.disabled = false; btn.style.opacity = '1'; btn.textContent = originalLabel;
+  }
 });
 
 $$('.share-btn').forEach(b => b.addEventListener('click', () => {
