@@ -244,26 +244,21 @@
       <span>Refstay</span>
     </a>
     <h1>Welcome back</h1>
-    <p class="sub">Log in to track your referrals and earnings.</p>
+    <p class="sub">Enter the email you signed up with. We'll pull up your referrals and earnings.</p>
 
     <form id="loginForm" novalidate>
       <div class="field" id="lf-email">
         <label for="li-email">Email address</label>
         <input type="email" id="li-email" placeholder="you@example.com" autocomplete="email" />
-        <div class="field-error">Please enter a valid email.</div>
+        <div class="field-error" id="lf-email-msg">Please enter a valid email.</div>
       </div>
-      <div class="field" id="lf-pw">
-        <label for="li-pw">Password</label>
-        <input type="password" id="li-pw" placeholder="••••••••" autocomplete="current-password" />
-        <div class="field-error">Password is required.</div>
-      </div>
-      <button class="btn btn-primary" type="submit">Log in →</button>
+      <button class="btn btn-primary" type="submit" id="loginSubmit">Open my dashboard →</button>
     </form>
 
     <div class="sep">or</div>
-    <button class="demo-btn" id="demoBtn">⚡ Continue with demo account</button>
+    <button class="demo-btn" id="demoBtn">⚡ View demo dashboard</button>
 
-    <p class="signup-link">Don't have an account? <a href="index.html#signup">Sign up</a></p>
+    <p class="signup-link">No account yet? <a href="index.html#signup">Sign up — takes 30 seconds</a></p>
   </div>
 </div>
 
@@ -317,6 +312,62 @@
         <div class="share-row">
           <button class="share-btn" data-share-overview="whatsapp">📱 WhatsApp</button>
           <button class="share-btn" data-share-overview="qr">📷 QR code</button>
+        </div>
+      </div>
+
+      <!-- KPIs: real numbers from hosts.json (updated monthly) -->
+      <div class="kpi-grid" id="kpiGrid">
+        <div class="kpi">
+          <div class="kpi-head"><div class="lbl">Clicks this month</div><div class="ic-bg b">👀</div></div>
+          <div class="val" id="kpiClicks">—</div>
+          <div class="delta" id="kpiClicksSub" style="color: var(--muted);">From your link</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head"><div class="lbl">Bookings this month</div><div class="ic-bg a">🎟️</div></div>
+          <div class="val" id="kpiBookings">—</div>
+          <div class="delta" id="kpiBookingsSub" style="color: var(--muted);">Confirmed via FareHarbor</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head"><div class="lbl">Total earned</div><div class="ic-bg d">💰</div></div>
+          <div class="val" id="kpiEarnings">$0</div>
+          <div class="delta" id="kpiEarningsSub" style="color: var(--muted);">Since you joined</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head"><div class="lbl">Pending payout</div><div class="ic-bg c">⏳</div></div>
+          <div class="val" id="kpiPending">$0</div>
+          <div class="delta" id="kpiPendingSub" style="color: var(--muted);">Next payout: —</div>
+        </div>
+      </div>
+
+      <!-- Recent bookings (only shows if user has bookings) -->
+      <div class="card" id="recentCard" style="display: none;">
+        <div class="card-head">
+          <div><h3>Recent bookings</h3><div class="sub">Last 5 guests who booked through your link.</div></div>
+        </div>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                <th style="padding: 10px 8px; color: var(--muted); font-weight: 600;">Date</th>
+                <th style="padding: 10px 8px; color: var(--muted); font-weight: 600;">Activity</th>
+                <th style="padding: 10px 8px; color: var(--muted); font-weight: 600; text-align: right;">Your cut</th>
+              </tr>
+            </thead>
+            <tbody id="recentBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Empty state when no bookings yet -->
+      <div class="card" id="emptyBookingsCard" style="display: none; background: linear-gradient(135deg, #FFF7ED 0%, #FFF1F2 100%); border: 1px solid #FED7AA;">
+        <div style="display: flex; align-items: start; gap: 14px;">
+          <div style="font-size: 26px;">🌱</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; font-size: 16px; margin-bottom: 6px;">No bookings yet — that's normal</div>
+            <div class="sub" style="line-height: 1.5;">
+              Most hosts see their first booking within 2–3 weeks of putting the link in their welcome book. Share your link with a few recent guests via WhatsApp to kickstart — most folks don't even know about Refstay yet.
+            </div>
+          </div>
         </div>
       </div>
 
@@ -385,8 +436,8 @@
       <div class="card">
         <div class="card-head"><div><h3>Common questions</h3></div></div>
         <details style="border-bottom: 1px solid var(--border); padding: 14px 0;">
-          <summary style="font-weight: 600; cursor: pointer;">When will I see real numbers in my dashboard?</summary>
-          <p style="color: var(--muted); margin-top: 10px; line-height: 1.6;">During pilot mode, real booking numbers come by email on the 5th of each month, not in the dashboard. We'll wire live metrics here once we cross 25+ active hosts — keeps the platform focused on what actually drives revenue (you sharing the link).</p>
+          <summary style="font-weight: 600; cursor: pointer;">How often are my stats updated?</summary>
+          <p style="color: var(--muted); margin-top: 10px; line-height: 1.6;">Bookings and earnings refresh monthly when we reconcile from FareHarbor (around the 1st–3rd of each month). Click counts refresh weekly. We'll move to real-time tracking once we cross 25 active hosts.</p>
         </details>
         <details style="border-bottom: 1px solid var(--border); padding: 14px 0;">
           <summary style="font-weight: 600; cursor: pointer;">How do I know my link is working?</summary>
@@ -426,16 +477,16 @@
       </div>
 
       <div class="card">
-        <div class="card-head"><div><h3>Customize your link</h3><div class="sub">Replace the random suffix with something memorable.</div></div></div>
+        <div class="card-head"><div><h3>Want a different slug?</h3><div class="sub">Your slug is set when you sign up. To change it, drop us an email — we'll update it within 24 hours so old links keep working during the transition.</div></div></div>
         <div class="field" style="display: flex; align-items: end; gap: 12px; margin: 0;">
           <div style="flex: 1; margin: 0;">
-            <label>Custom slug</label>
+            <label>Current slug</label>
             <div style="display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 12px; padding: 12px; background: var(--bg);">
               <span style="color: var(--muted); font-family: 'Space Grotesk';">refstay.com/r/</span>
-              <input id="customSlug" type="text" style="border: none; background: transparent; outline: none; flex: 1; font-family: 'Space Grotesk'; font-weight: 600; color: var(--ink); font-size: 15px;" placeholder="your-name" />
+              <input id="customSlug" type="text" readonly style="border: none; background: transparent; outline: none; flex: 1; font-family: 'Space Grotesk'; font-weight: 600; color: var(--ink); font-size: 15px; cursor: not-allowed;" />
             </div>
           </div>
-          <button class="btn btn-primary" id="saveSlug">Save</button>
+          <a class="btn btn-primary" id="requestSlugBtn" href="mailto:support@refstay.com?subject=Request%20slug%20change&body=Hi%20Refstay%20team%2C%0A%0AI'd%20like%20to%20change%20my%20referral%20slug.%0A%0ACurrent%3A%20%0ARequested%3A%20%0A%0AThanks!">✉️ Request change</a>
         </div>
       </div>
 
@@ -499,10 +550,13 @@
       <div class="settings-grid">
         <div class="card">
           <div class="card-head"><h3>Profile</h3></div>
-          <div class="field"><label>Full name</label><input id="setName" type="text" /></div>
-          <div class="field"><label>Email</label><input id="setEmail" type="email" /></div>
-          <div class="field"><label>Airbnb listing URL</label><input id="setListing" type="url" placeholder="https://airbnb.com/rooms/..." /></div>
-          <button class="btn btn-primary" id="saveProfile">Save changes</button>
+          <div class="field"><label>Full name</label><input id="setName" type="text" readonly style="background: var(--bg); cursor: not-allowed;" /></div>
+          <div class="field"><label>Email</label><input id="setEmail" type="email" readonly style="background: var(--bg); cursor: not-allowed;" /></div>
+          <div class="field"><label>Airbnb listing URL</label><input id="setListing" type="url" placeholder="https://airbnb.com/rooms/..." readonly style="background: var(--bg); cursor: not-allowed;" /></div>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <a class="btn btn-primary" id="requestUpdate" href="mailto:support@refstay.com?subject=Update%20my%20profile&body=Hi%20Refstay%20team%2C%0A%0APlease%20update%20my%20profile%3A%0A%0A-%20Name%3A%20%0A-%20Email%3A%20%0A-%20Listing%20URL%3A%20%0A%0AThanks!">✉️ Request update</a>
+            <div class="sub" style="font-size: 12px;">Profile changes are processed within 24 hours.</div>
+          </div>
         </div>
 
         <div class="card">
@@ -549,11 +603,17 @@ function showToast(msg) { const t = $('#toast'); $('#toastMsg').textContent = ms
 function copy(text) { if (navigator.clipboard) navigator.clipboard.writeText(text); else { const i = document.createElement('input'); i.value = text; document.body.appendChild(i); i.select(); document.execCommand('copy'); i.remove(); } }
 function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
-/* ============ AUTH ============ */
+/* ============ AUTH (hosts.json-backed) ============ */
 const STORAGE_KEY = 'refstay_user';
 function getUser() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { return null; } }
 function setUser(u) { localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }
-function logout() { localStorage.removeItem(STORAGE_KEY); track('Logout'); location.reload(); }
+function logout() {
+  localStorage.removeItem(STORAGE_KEY);
+  track('Logout');
+  // Strip any ?host= param on logout so we don't auto-re-login
+  if (location.search) location.href = location.pathname;
+  else location.reload();
+}
 
 function showLogin() { $('#loginScreen').classList.add('show'); $('#dashboard').classList.remove('show'); }
 function showDashboard(user) {
@@ -562,42 +622,132 @@ function showDashboard(user) {
   hydrate(user);
 }
 
-// Bootstrap
-const existing = getUser();
-if (existing) showDashboard(existing);
-else showLogin();
+// ---- hosts.json loader (cached for the session) ----
+let HOSTS = null;
+async function loadHosts() {
+  if (HOSTS) return HOSTS;
+  try {
+    const res = await fetch('/hosts.json', { cache: 'no-cache' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    HOSTS = Array.isArray(data.hosts) ? data.hosts : [];
+  } catch (err) {
+    console.error('Failed to load hosts.json:', err);
+    HOSTS = [];
+  }
+  return HOSTS;
+}
+
+function findHostByEmail(hosts, email) {
+  if (!email) return null;
+  const e = email.trim().toLowerCase();
+  return hosts.find(h => (h.email || '').toLowerCase() === e) || null;
+}
+function findHostBySlug(hosts, slug) {
+  if (!slug) return null;
+  const s = slug.trim().toLowerCase();
+  return hosts.find(h => (h.slug || '').toLowerCase() === s) || null;
+}
+
+// Convert a hosts.json entry into the legacy user object the rest of the app expects.
+function hostToUser(h) {
+  return {
+    slug: h.slug,
+    name: h.name,
+    email: h.email,
+    listing: h.listing || null,
+    referralLink: `https://refstay.com/r/${h.slug}`,
+    joinedAt: h.joined ? h.joined + 'T00:00:00.000Z' : new Date().toISOString(),
+    stats: h.stats || { clicksMonth: 0, bookingsMonth: 0, earningsTotal: 0, earningsPaid: 0, earningsPending: 0 },
+    recent: h.recent || [],
+    nextPayout: h.nextPayout || null,
+    lastPayout: h.lastPayout || null,
+    payoutMethod: h.payoutMethod || 'PayPal',
+  };
+}
+
+// ---- Bootstrap ----
+(async function bootstrap() {
+  const hosts = await loadHosts();
+  const params = new URLSearchParams(location.search);
+  const slugParam = params.get('host');
+  const emailParam = params.get('email');
+
+  // 1. URL shortcut — direct link to a host's dashboard
+  let host = null;
+  if (slugParam) host = findHostBySlug(hosts, slugParam);
+  if (!host && emailParam) host = findHostByEmail(hosts, emailParam);
+
+  if (host) {
+    const u = hostToUser(host);
+    setUser(u);
+    track('Login', { method: 'url' });
+    showDashboard(u);
+    return;
+  }
+
+  // 2. Cached user — refresh from hosts.json if still listed
+  const cached = getUser();
+  if (cached && cached.email) {
+    const fresh = findHostByEmail(hosts, cached.email);
+    if (fresh) {
+      const u = hostToUser(fresh);
+      setUser(u);
+      showDashboard(u);
+      return;
+    }
+    // Cached email no longer in hosts.json — fall through to login
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
+  // 3. Show login screen
+  showLogin();
+})();
 
 // Login form
-$('#loginForm').addEventListener('submit', e => {
+$('#loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const email = $('#li-email').value.trim();
-  const pw = $('#li-pw').value;
-  let ok = true;
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $('#lf-email').classList.add('error'); ok = false; } else $('#lf-email').classList.remove('error');
-  if (!pw) { $('#lf-pw').classList.add('error'); ok = false; } else $('#lf-pw').classList.remove('error');
-  if (!ok) return;
+  const msgEl = $('#lf-email-msg');
+  const fieldEl = $('#lf-email');
 
-  // Mock auth: accept any valid input. In production this hits your real auth endpoint.
-  const u = {
-    name: email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-    email,
-    listing: null,
-    referralLink: `https://refstay.com/r/${email.split('@')[0]}-${Math.random().toString(36).slice(2, 6)}`,
-    joinedAt: new Date().toISOString(),
-  };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    msgEl.textContent = 'Please enter a valid email.';
+    fieldEl.classList.add('error');
+    return;
+  }
+
+  const submitBtn = $('#loginSubmit');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Looking up…';
+
+  const hosts = await loadHosts();
+  const host = findHostByEmail(hosts, email);
+
+  if (!host) {
+    msgEl.innerHTML = 'We can\'t find that email. <a href="index.html#signup" style="color: var(--primary); font-weight: 600;">Sign up first</a> — it takes 30 seconds.';
+    fieldEl.classList.add('error');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Open my dashboard →';
+    track('Login Failed', { reason: 'not-found' });
+    return;
+  }
+
+  fieldEl.classList.remove('error');
+  const u = hostToUser(host);
   setUser(u);
   track('Login', { method: 'email' });
   showDashboard(u);
 });
 
-$('#demoBtn').addEventListener('click', () => {
-  const u = {
-    name: 'Maria Santos',
-    email: 'maria@superhost.com',
-    listing: 'https://airbnb.com/rooms/12345',
-    referralLink: 'https://refstay.com/r/maria-demo',
-    joinedAt: '2025-11-15T10:30:00.000Z',
-  };
+$('#demoBtn').addEventListener('click', async () => {
+  const hosts = await loadHosts();
+  const demo = findHostBySlug(hosts, 'demo') || findHostBySlug(hosts, 'maria-demo');
+  if (!demo) {
+    showToast('Demo unavailable — try again in a moment');
+    return;
+  }
+  const u = hostToUser(demo);
   setUser(u);
   track('Login', { method: 'demo' });
   showDashboard(u);
@@ -606,6 +756,14 @@ $('#demoBtn').addEventListener('click', () => {
 $('#logoutBtn').addEventListener('click', logout);
 
 /* ============ HYDRATE ============ */
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
 function hydrate(user) {
   const first = (user.name || 'friend').split(' ')[0];
   $('#firstName').textContent = first;
@@ -618,7 +776,7 @@ function hydrate(user) {
   $('#setEmail').value = user.email || '';
   $('#setListing').value = user.listing || '';
   // Pre-fill custom slug with current
-  const slug = user.referralLink.split('/').pop();
+  const slug = user.slug || user.referralLink.split('/').pop();
   $('#customSlug').value = slug;
   $('#overviewSlug').textContent = slug;
   // Member since
@@ -626,6 +784,48 @@ function hydrate(user) {
     const d = new Date(user.joinedAt);
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     $('#memberSince').textContent = `Member since ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  // ---- KPIs from hosts.json ----
+  const s = user.stats || {};
+  const clicks = s.clicksMonth || 0;
+  const bookings = s.bookingsMonth || 0;
+  const total = s.earningsTotal || 0;
+  const pending = s.earningsPending || 0;
+
+  $('#kpiClicks').textContent = clicks.toLocaleString();
+  $('#kpiBookings').textContent = bookings.toLocaleString();
+  $('#kpiEarnings').textContent = fmtMoney(total);
+  $('#kpiPending').textContent = fmtMoney(pending);
+
+  if (user.nextPayout) {
+    $('#kpiPendingSub').textContent = pending > 0
+      ? `Next payout: ${fmtDate(user.nextPayout)}`
+      : `Next payout: ${fmtDate(user.nextPayout)}`;
+  } else {
+    $('#kpiPendingSub').textContent = 'No payout scheduled';
+  }
+
+  // ---- Recent bookings table ----
+  const recent = Array.isArray(user.recent) ? user.recent.slice(0, 5) : [];
+  const recentCard = $('#recentCard');
+  const emptyCard = $('#emptyBookingsCard');
+  const recentBody = $('#recentBody');
+
+  if (recent.length > 0) {
+    recentCard.style.display = '';
+    emptyCard.style.display = 'none';
+    recentBody.innerHTML = recent.map(r => `
+      <tr style="border-bottom: 1px solid var(--border);">
+        <td style="padding: 12px 8px; color: var(--ink-2); white-space: nowrap;">${escapeHtml(fmtDate(r.date))}</td>
+        <td style="padding: 12px 8px; font-weight: 600;">${escapeHtml(r.activity || '—')}</td>
+        <td style="padding: 12px 8px; text-align: right; font-family: 'Space Grotesk'; font-weight: 700; color: var(--accent);">${fmtMoney(r.amount || 0)}</td>
+      </tr>
+    `).join('');
+  } else {
+    recentCard.style.display = 'none';
+    emptyCard.style.display = '';
+    recentBody.innerHTML = '';
   }
 
   renderActivitiesPicker();
@@ -874,37 +1074,16 @@ $$('.share-btn').forEach(b => b.addEventListener('click', () => {
   track('Share Click', { channel: ch, source: 'dashboard' });
 }));
 
-$('#saveSlug').addEventListener('click', () => {
-  const newSlug = $('#customSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
-  if (newSlug.length < 3) { showToast('Slug must be 3+ characters'); return; }
-  const user = getUser();
-  user.referralLink = `https://refstay.com/r/${newSlug}`;
-  setUser(user);
-  $('#linkInput').value = user.referralLink;
-  $('#customSlug').value = newSlug;
-  showToast('Link updated!');
-  track('Slug Change');
-});
+/* Slug + profile updates are intentionally email-driven during pilot
+   (hosts.json is the source of truth — clients can't write to it). */
 
-/* ============ SETTINGS ============ */
-$('#saveProfile').addEventListener('click', () => {
-  const user = getUser();
-  user.name = $('#setName').value.trim() || user.name;
-  user.email = $('#setEmail').value.trim() || user.email;
-  user.listing = $('#setListing').value.trim() || null;
-  setUser(user);
-  $('#userName').textContent = user.name;
-  $('#userEmail').textContent = user.email;
-  $('#firstName').textContent = user.name.split(' ')[0];
-  $('#userAv').textContent = user.name[0].toUpperCase();
-  showToast('Profile saved!');
-  track('Profile Update');
-});
+$('#requestSlugBtn')?.addEventListener('click', () => track('Slug Change Request'));
+$('#requestUpdate')?.addEventListener('click', () => track('Profile Update Request'));
 
 $('#deleteAcc').addEventListener('click', () => {
-  if (confirm('Delete your account? This cannot be undone.')) {
-    track('Account Delete');
-    logout();
+  if (confirm('Send a delete request to support? Your data is removed within 24 hours.')) {
+    track('Account Delete Request');
+    location.href = 'mailto:support@refstay.com?subject=Delete%20my%20account&body=Please%20delete%20my%20Refstay%20account%20and%20associated%20data.';
   }
 });
 

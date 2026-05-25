@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "updated": "2026-05-25",
+  "note": "Source of truth for per-host data. Update monthly after FareHarbor reconciliation. slug = unique URL segment (refstay.com/r/<slug>). email = login key. Add a new entry when a host signs up via Formspree.",
+  "hosts": [
+    {
+      "slug": "demo",
+      "name": "Demo Host",
+      "email": "demo@refstay.com",
+      "listing": null,
+      "joined": "2026-01-01",
+      "stats": {
+        "clicksMonth": 84,
+        "bookingsMonth": 5,
+        "earningsTotal": 127.50,
+        "earningsPaid": 102.50,
+        "earningsPending": 25.00
+      },
+      "recent": [
+        { "date": "2026-05-20", "activity": "Jet Ski 1hr Rental", "amount": 10.00 },
+        { "date": "2026-05-15", "activity": "Sunset Cruise", "amount": 15.00 },
+        { "date": "2026-04-28", "activity": "Yacht Half Day", "amount": 50.00 },
+        { "date": "2026-04-22", "activity": "Airboat Everglades Tour", "amount": 12.50 },
+        { "date": "2026-04-10", "activity": "Parasail Adventure", "amount": 15.00 }
+      ],
+      "nextPayout": "2026-06-05",
+      "lastPayout": "2026-05-05",
+      "payoutMethod": "PayPal"
+    },
+    {
+      "slug": "maria-demo",
+      "name": "Maria Santos",
+      "email": "maria@superhost.com",
+      "listing": "https://airbnb.com/rooms/12345",
+      "joined": "2025-11-15",
+      "stats": {
+        "clicksMonth": 47,
+        "bookingsMonth": 3,
+        "earningsTotal": 62.50,
+        "earningsPaid": 47.50,
+        "earningsPending": 15.00
+      },
+      "recent": [
+        { "date": "2026-05-18", "activity": "Jet Ski 2hr Rental", "amount": 15.00 },
+        { "date": "2026-05-10", "activity": "Sunset Sail Cruise", "amount": 22.50 },
+        { "date": "2026-04-22", "activity": "Yacht Day Charter", "amount": 25.00 }
+      ],
+      "nextPayout": "2026-06-05",
+      "lastPayout": "2026-05-05",
+      "payoutMethod": "PayPal"
+    },
+    {
+      "slug": "carlos-brickell",
+      "name": "Carlos Rodriguez",
+      "email": "carlos@brickellbnb.com",
+      "listing": null,
+      "joined": "2026-04-20",
+      "stats": {
+        "clicksMonth": 12,
+        "bookingsMonth": 0,
+        "earningsTotal": 0,
+        "earningsPaid": 0,
+        "earningsPending": 0
+      },
+      "recent": [],
+      "nextPayout": "2026-06-05",
+      "lastPayout": null,
+      "payoutMethod": "Zelle"
+    }
+  ]
+}
