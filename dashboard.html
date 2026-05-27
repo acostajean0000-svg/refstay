@@ -294,6 +294,28 @@
   .toast { position: fixed; bottom: 24px; right: 24px; z-index: 200; background: var(--ink); color: white; padding: 14px 20px; border-radius: 12px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px; transform: translateY(100px); opacity: 0; transition: all .35s cubic-bezier(.2,.8,.2,1); }
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast .ic { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; font-size: 13px; }
+
+  /* ============ QR MODAL ============ */
+  .qr-modal { position: fixed; inset: 0; z-index: 300; background: rgba(11,16,32,0.55); display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); animation: fadeIn .2s ease; }
+  .qr-modal.show { display: flex; }
+  .qr-box { background: white; border-radius: 20px; padding: 28px; max-width: 440px; width: 100%; box-shadow: 0 24px 80px rgba(0,0,0,0.25); position: relative; max-height: 92vh; overflow-y: auto; }
+  .qr-box .close { position: absolute; top: 14px; right: 14px; background: var(--bg); border: none; width: 34px; height: 34px; border-radius: 999px; cursor: pointer; font-size: 18px; color: var(--ink-2); display: grid; place-items: center; font-family: inherit; }
+  .qr-box .close:hover { background: var(--border); color: var(--ink); }
+  .qr-box .qr-title { font-size: 19px; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.01em; }
+  .qr-box .qr-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
+  .qr-toggle { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 3px; gap: 3px; margin-bottom: 18px; }
+  .qr-toggle button { flex: 1; background: transparent; border: none; padding: 9px 12px; border-radius: 9px; font-weight: 700; font-size: 13px; color: var(--muted); cursor: pointer; font-family: inherit; transition: all .15s; }
+  .qr-toggle button.on { background: white; color: var(--ink); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+  .qr-img-wrap { background: linear-gradient(135deg, #FFF8F4 0%, #FFE9DC 100%); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 14px; border: 1px solid var(--border); }
+  .qr-img-wrap img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 8px; }
+  .qr-url { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; font-family: 'Space Grotesk', monospace; font-size: 13px; font-weight: 600; text-align: center; word-break: break-all; margin-bottom: 14px; color: var(--ink-2); }
+  .qr-actions { display: flex; gap: 8px; }
+  .qr-actions button { flex: 1; padding: 12px 14px; border-radius: 11px; font-weight: 700; font-size: 14px; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--ink); font-family: inherit; transition: all .15s; }
+  .qr-actions button.primary { background: var(--ink); color: white; border-color: var(--ink); }
+  .qr-actions button.primary:hover { background: var(--primary); border-color: var(--primary); }
+  .qr-actions button:hover { border-color: var(--primary); color: var(--primary); }
+  .qr-actions button.primary:hover { color: white; }
+  .qr-tip { margin-top: 14px; padding: 12px; background: rgba(0,200,184,0.08); border-radius: 10px; font-size: 12px; color: var(--ink-2); line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -959,6 +981,35 @@ The weather looks 🔥 the next few days. Worth checking 👀</textarea>
 
 <div class="toast" id="toast"><div class="ic">✓</div><span id="toastMsg">Done!</span></div>
 
+<!-- ============ QR MODAL ============ -->
+<div class="qr-modal" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
+  <div class="qr-box">
+    <button class="close" id="qrCloseBtn" aria-label="Close">✕</button>
+    <div class="qr-title" id="qrTitle">📷 Your QR code</div>
+    <div class="qr-sub">Save the image and stick it in your welcome book, on the fridge, or anywhere your guests will see it. When they scan, they land on your hand-picked activities.</div>
+
+    <div class="qr-toggle">
+      <button data-qr-kind="g" class="on">⭐ Guest landing (recommended)</button>
+      <button data-qr-kind="r">🔗 Direct redirect</button>
+    </div>
+
+    <div class="qr-img-wrap">
+      <img id="qrImg" alt="QR code" width="280" height="280" />
+    </div>
+
+    <div class="qr-url" id="qrUrl">refstay.com/g/your-slug</div>
+
+    <div class="qr-actions">
+      <button id="qrDownloadBtn" class="primary">⬇️ Download PNG</button>
+      <button id="qrCopyBtn">📋 Copy URL</button>
+    </div>
+
+    <div class="qr-tip">
+      💡 <strong>Tip:</strong> The "Guest landing" QR shows your favorites first and lets guests browse all activities. The "Direct redirect" sends them straight to the booking site with your slug tracked. Both pay you the same 5%.
+    </div>
+  </div>
+</div>
+
 <script>
 const $ = (s, r=document) => r.querySelector(s);
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
@@ -1569,6 +1620,115 @@ $('#copyOverviewLink')?.addEventListener('click', () => {
   track('Link Copy', { source: 'overview' });
 });
 
+/* ============ QR MODAL ============ */
+// QR generation: qrserver.com API (same as the print assets, zero deps).
+// Two flavors:
+//   'g' — refstay.com/g/<slug>  (guest landing page, shows host's favorites)
+//   'r' — refstay.com/r/<slug>  (direct redirect to miami-site)
+let _currentQrKind = 'g';
+
+function qrUrlFor(kind, slug) {
+  return kind === 'r' ? `https://refstay.com/r/${slug}` : `https://refstay.com/g/${slug}`;
+}
+
+function qrImageUrl(targetUrl) {
+  // 500px PNG with a healthy margin for printability
+  return `https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=4&format=png&data=${encodeURIComponent(targetUrl)}`;
+}
+
+function openQrModal(kind) {
+  const user = getUser();
+  if (!user) { showToast('Log in to see your QR'); return; }
+  const slug = user.slug || (user.referralLink || '').split('/').pop();
+  if (!slug) { showToast('No slug available'); return; }
+  _currentQrKind = kind || 'g';
+  refreshQrModal(slug);
+  $('#qrModal').classList.add('show');
+  // Track open
+  track('QR Modal Open', { kind: _currentQrKind, slug });
+  // Trap escape key
+  document.addEventListener('keydown', _qrEscapeHandler);
+}
+function _qrEscapeHandler(e) { if (e.key === 'Escape') closeQrModal(); }
+
+function closeQrModal() {
+  $('#qrModal').classList.remove('show');
+  document.removeEventListener('keydown', _qrEscapeHandler);
+}
+
+function refreshQrModal(slug) {
+  const url = qrUrlFor(_currentQrKind, slug);
+  $('#qrImg').src = qrImageUrl(url);
+  $('#qrImg').alt = `QR code for ${url}`;
+  $('#qrUrl').textContent = url.replace(/^https?:\/\//, '');
+  $('#qrTitle').textContent = _currentQrKind === 'g'
+    ? '⭐ Your guest landing QR'
+    : '🔗 Your direct redirect QR';
+  // Sync toggle buttons
+  $$('.qr-toggle button').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.qrKind === _currentQrKind);
+  });
+}
+
+// Wire modal once on page load
+(function wireQrModal() {
+  const modal = $('#qrModal');
+  if (!modal) return;
+
+  // Close handlers
+  $('#qrCloseBtn')?.addEventListener('click', closeQrModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeQrModal(); });
+
+  // Toggle between /g/ and /r/
+  $$('.qr-toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _currentQrKind = btn.dataset.qrKind;
+      const user = getUser();
+      const slug = user && (user.slug || (user.referralLink || '').split('/').pop());
+      if (slug) {
+        refreshQrModal(slug);
+        track('QR Modal Toggle', { kind: _currentQrKind });
+      }
+    });
+  });
+
+  // Copy URL button
+  $('#qrCopyBtn')?.addEventListener('click', () => {
+    const url = 'https://' + ($('#qrUrl').textContent || '');
+    copy(url);
+    showToast('URL copied!');
+    track('QR Modal Copy', { kind: _currentQrKind });
+  });
+
+  // Download PNG — fetch the QR image and trigger a download
+  $('#qrDownloadBtn')?.addEventListener('click', async () => {
+    const user = getUser();
+    const slug = user && (user.slug || (user.referralLink || '').split('/').pop());
+    if (!slug) return;
+    const url = qrUrlFor(_currentQrKind, slug);
+    const imgUrl = qrImageUrl(url);
+    const filename = `refstay-qr-${_currentQrKind}-${slug}.png`;
+    try {
+      const res = await fetch(imgUrl);
+      const blob = await res.blob();
+      const objUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(objUrl), 1000);
+      showToast('QR downloaded!');
+      track('QR Modal Download', { kind: _currentQrKind, slug });
+    } catch (e) {
+      // Fallback: open the image in a new tab so the user can right-click → save
+      window.open(imgUrl, '_blank');
+      track('QR Modal Download Fallback', { kind: _currentQrKind });
+    }
+  });
+})();
+
 // Share buttons on the overview card (whatsapp, qr)
 $$('[data-share-overview]').forEach(b => b.addEventListener('click', () => {
   const link = $('#linkInputOverview').value;
@@ -1577,7 +1737,7 @@ $$('[data-share-overview]').forEach(b => b.addEventListener('click', () => {
     const msg = encodeURIComponent(`Hey! If you're booking jet skis, boats or tours in Miami, use this link — ${link}`);
     window.open(`https://wa.me/?text=${msg}`, '_blank');
   } else if (ch === 'qr') {
-    showToast('QR code feature coming soon');
+    openQrModal('g'); // default to guest landing
   }
   track('Share Click', { channel: ch, source: 'overview' });
 }));
@@ -1979,7 +2139,7 @@ $$('.share-btn').forEach(b => b.addEventListener('click', () => {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`,
   };
   if (ch === 'qr') {
-    showToast('QR code feature coming soon');
+    openQrModal('g');
   } else {
     window.open(map[ch], '_blank');
   }
