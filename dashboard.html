@@ -1421,17 +1421,18 @@ async function fetchUserDataFromSupabase(authUserId) {
   }
 
   // 2. Get recent bookings (last 5)
+  //    booking_date = activity date; created_at = booking timestamp
   const { data: bookings, error: bkErr } = await sb
     .from('bookings')
-    .select('date, activity, amount, status')
+    .select('booking_date, activity, amount, status, customer_name, gross_amount, created_at')
     .eq('host_id', authUserId)
-    .order('date', { ascending: false })
+    .order('booking_date', { ascending: false, nullsLast: true })
     .limit(5);
 
   // 3. Aggregate stats — get ALL bookings for this host, compute totals
   const { data: allBookings } = await sb
     .from('bookings')
-    .select('amount, status, date')
+    .select('amount, status, booking_date, created_at')
     .eq('host_id', authUserId);
 
   let earningsTotal = 0, earningsPaid = 0, earningsPending = 0, bookingsMonth = 0;
@@ -1440,7 +1441,9 @@ async function fetchUserDataFromSupabase(authUserId) {
     earningsTotal += Number(b.amount) || 0;
     if (b.status === 'paid') earningsPaid += Number(b.amount) || 0;
     else if (b.status === 'pending') earningsPending += Number(b.amount) || 0;
-    if (b.date && b.date.startsWith(thisMonth)) bookingsMonth++;
+    // Count toward this month using booking_date (activity date), fall back to created_at
+    const ts = b.booking_date || b.created_at || '';
+    if (ts && ts.startsWith(thisMonth)) bookingsMonth++;
   });
 
   return {
@@ -1452,7 +1455,13 @@ async function fetchUserDataFromSupabase(authUserId) {
     referralLink: `https://refstay.com/r/${host.slug}`,
     joinedAt: host.joined,
     stats: { clicksMonth: 0, bookingsMonth, earningsTotal, earningsPaid, earningsPending },
-    recent: (bookings || []).map(b => ({ date: b.date, activity: b.activity, amount: Number(b.amount) })),
+    recent: (bookings || []).map(b => ({
+      date: b.booking_date || (b.created_at ? b.created_at.slice(0, 10) : null),
+      activity: b.activity,
+      customer: b.customer_name,
+      amount: Number(b.amount),
+      gross: Number(b.gross_amount),
+    })),
     nextPayout: host.next_payout,
     lastPayout: host.last_payout,
     payoutMethod: host.payout_method,
@@ -1778,13 +1787,16 @@ function hydrate(user) {
   if (recent.length > 0) {
     recentCard.style.display = '';
     emptyCard.style.display = 'none';
-    recentBody.innerHTML = recent.map(r => `
+    recentBody.innerHTML = recent.map(r => {
+      const who = r.customer ? `<span style="color:var(--muted);font-weight:500;font-size:12px;">${escapeHtml(r.customer)} · </span>` : '';
+      return `
       <tr style="border-bottom: 1px solid var(--border);">
         <td style="padding: 12px 8px; color: var(--ink-2); white-space: nowrap;">${escapeHtml(fmtDate(r.date))}</td>
-        <td style="padding: 12px 8px; font-weight: 600;">${escapeHtml(r.activity || '—')}</td>
+        <td style="padding: 12px 8px; font-weight: 600;">${who}${escapeHtml(r.activity || '—')}</td>
         <td style="padding: 12px 8px; text-align: right; font-family: 'Space Grotesk'; font-weight: 700; color: var(--accent);">${fmtMoney(r.amount || 0)}</td>
       </tr>
-    `).join('');
+    `;
+    }).join('');
   } else {
     recentCard.style.display = 'none';
     emptyCard.style.display = '';
