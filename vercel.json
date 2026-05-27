@@ -5,6 +5,19 @@
     { "src": "/app", "headers": { "Location": "/dashboard" }, "status": 307 },
     { "src": "/r/(?<slug>[^/]+)/?$", "dest": "/r.html?slug=$slug" },
     { "src": "/dashboard/?$", "dest": "/dashboard.html" },
+    { "src": "/privacy/?$", "dest": "/privacy.html" },
+    { "src": "/terms/?$", "dest": "/terms.html" },
+    {
+      "src": "/(.*)",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+        "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload"
+      },
+      "continue": true
+    },
     { "handle": "filesystem" },
     { "src": "/(.*)", "status": 404, "dest": "/404.html" }
   ]
