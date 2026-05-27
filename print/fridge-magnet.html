@@ -212,7 +212,7 @@
 
   if (!host) host = { slug, name: 'your host' };
 
-  const referralUrl = `https://refstay.com/r/${host.slug}`;
+  const referralUrl = `https://refstay.com/g/${host.slug}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=4&data=${encodeURIComponent(referralUrl)}`;
 
   // Render 4 magnets (2x2 grid per sheet)
@@ -223,7 +223,7 @@
       <h2>Scan to <span class="grad">save</span><br>on local fun</h2>
       <div class="qr"><img src="${qrUrl}" alt="QR code" /></div>
       <div class="scan">📱 Scan with camera</div>
-      <div class="footer">refstay.com/r/${host.slug}</div>
+      <div class="footer">refstay.com/g/${host.slug}</div>
     </div>
   `;
   grid.innerHTML = magnetHtml.repeat(4);

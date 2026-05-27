@@ -286,7 +286,7 @@
 
       <div class="scan-cta">
         <div class="label">📱 Scan with your camera</div>
-        <div class="url" id="urlText">refstay.com/r/…</div>
+        <div class="url" id="urlText">refstay.com/g/…</div>
       </div>
 
       <div class="activities">
@@ -330,14 +330,14 @@
     host = { slug, name: 'your host' };
   }
 
-  const referralUrl = `https://refstay.com/r/${host.slug}`;
+  const referralUrl = `https://refstay.com/g/${host.slug}`;
   const firstName = (host.name || 'your host').split(' ')[0];
 
   // QR via free qrserver.com API — no JS lib needed, works in print
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=4&data=${encodeURIComponent(referralUrl)}`;
   document.getElementById('qrImg').src = qrUrl;
 
-  document.getElementById('urlText').textContent = `refstay.com/r/${host.slug}`;
+  document.getElementById('urlText').textContent = `refstay.com/g/${host.slug}`;
   document.getElementById('hostSig').textContent = firstName;
   document.getElementById('hostName').textContent = host.name || host.slug;
   document.title = `Welcome card — ${host.name || host.slug}`;

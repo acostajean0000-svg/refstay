@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Miami activity picks — Refstay</title>
+<meta name="description" content="Personally recommended Miami activities — jet ski, boats, sunset cruises, and more. Hand-picked by your host." />
+<meta name="robots" content="noindex,nofollow" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+
+<script async src="https://plausible.io/js/pa-91gKqq-hi7bdalS3B80Ak.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  :root {
+    --primary: #FF385C;
+    --primary-2: #FF7A45;
+    --accent: #00C8B8;
+    --gold: #F4B942;
+    --ink: #0B1020;
+    --ink-2: #334155;
+    --muted: #64748B;
+    --bg: #FFF8F4;
+    --card: #ffffff;
+    --border: #FEE4DC;
+    --grad: linear-gradient(135deg, #FF385C 0%, #FF7A45 35%, #7C3AED 100%);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); font-family: 'Inter', -apple-system, sans-serif; color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  body { min-height: 100vh; }
+
+  /* HERO */
+  .hero {
+    background: var(--grad);
+    color: white;
+    padding: 32px 20px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.2) 0px, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0px, transparent 50%);
+  }
+  .hero-inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+  .brand {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-weight: 800; font-size: 14px;
+    margin-bottom: 24px;
+    opacity: 0.95;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  .brand-mark {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    display: grid; place-items: center;
+    font-weight: 900; font-size: 16px;
+  }
+  .greeting {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(32px, 7vw, 44px);
+    font-weight: 700;
+    margin-bottom: 4px;
+    opacity: 0.95;
+  }
+  h1 {
+    font-size: clamp(28px, 6vw, 40px);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+  .hero-sub {
+    font-size: 16px;
+    opacity: 0.92;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.55;
+  }
+  .badge-from {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 20px;
+  }
+  .badge-from .avatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: white;
+    color: var(--primary);
+    display: grid; place-items: center;
+    font-weight: 800; font-size: 12px;
+  }
+
+  /* MAIN CONTENT */
+  .container {
+    max-width: 720px;
+    margin: -20px auto 0;
+    padding: 0 16px 40px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ACTIVITIES GRID */
+  .section-head {
+    margin: 32px 0 16px;
+    padding: 0 4px;
+  }
+  .section-head h2 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .section-head .sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  @media (min-width: 600px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(15,23,42,.06);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(15,23,42,.1); }
+  .card.fav { border-color: var(--gold); box-shadow: 0 4px 14px rgba(244,185,66,0.22); }
+  .card.fav .star-ribbon {
+    position: absolute; top: 10px; right: 10px;
+    background: var(--gold); color: white;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+  }
+  .fav-section {
+    background: linear-gradient(135deg, #FFF8E7 0%, #FFE9CC 100%);
+    border-radius: 18px;
+    padding: 18px 16px 20px;
+    margin: 24px 0 8px;
+    border: 1px solid #F4D58E;
+  }
+  .fav-section .section-head { margin: 0 0 14px; padding: 0; }
+  .fav-section h2 { font-size: 19px; }
+  .fav-section .sub { font-size: 13px; }
+  .card .img {
+    aspect-ratio: 4/3;
+    background-size: cover;
+    background-position: center;
+    background-color: #E2E8F0;
+    position: relative;
+  }
+  .card .badge {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .card .body {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .card .title {
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    color: var(--ink);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+    margin-top: auto;
+  }
+  .card .price {
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--ink);
+  }
+  .card .price small {
+    font-weight: 500;
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 2px;
+  }
+  .card .book-btn {
+    background: var(--grad);
+    color: white;
+    border: none;
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 6px 16px rgba(255,56,92,.25);
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-family: inherit;
+    transition: all .15s;
+  }
+  .card .book-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(255,56,92,.35); }
+
+  /* CATEGORY PILLS */
+  .pills {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 4px 8px;
+    margin-bottom: 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .pills::-webkit-scrollbar { display: none; }
+  .pill {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--ink);
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-family: inherit;
+  }
+  .pill:hover { border-color: var(--primary); }
+  .pill.on { background: var(--ink); color: white; border-color: var(--ink); }
+
+  /* CTA SECTION */
+  .browse-all {
+    margin-top: 32px;
+    padding: 24px 20px;
+    background: linear-gradient(135deg, #FFF1F2 0%, #FFE2EC 100%);
+    border-radius: 18px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .browse-all h3 {
+    font-size: 19px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .browse-all p {
+    color: var(--ink-2);
+    font-size: 14px;
+    margin-bottom: 14px;
+  }
+  .browse-all a {
+    display: inline-block;
+    background: var(--ink);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .browse-all a:hover { background: #1a2436; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 24px 16px 32px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .footer a { color: var(--primary); font-weight: 600; text-decoration: none; }
+  .footer .powered {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+
+  /* LOADING + ERROR STATES */
+  .loading, .error-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .loading .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="brand">
+      <span class="brand-mark">R</span>
+      <span>Refstay</span>
+    </div>
+    <div class="greeting">Hey there 👋</div>
+    <h1 id="heroTitle">Loading your <span style="opacity:0.7">recommendations…</span></h1>
+    <p class="hero-sub" id="heroSub">Hand-picked activities just for your Miami stay.</p>
+    <div class="badge-from" id="badgeFrom" style="display:none;">
+      <span class="avatar" id="hostAvatar">?</span>
+      <span>From <strong id="hostName">your host</strong></span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div id="content">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Finding the best activities…</p>
+    </div>
+  </div>
+
+  <div class="browse-all" id="browseAll" style="display:none;">
+    <h3>Want to see all <span id="totalCount">—</span> activities?</h3>
+    <p>Browse the full catalog of verified Miami operators.</p>
+    <a id="browseLink" href="#" target="_blank" rel="noopener">See all activities →</a>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="powered">Curated by <strong id="hostFooter">your host</strong> via Refstay</div>
+  <a href="https://refstay.com">refstay.com</a> · <a href="https://refstay.com/privacy">Privacy</a>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://nexsrqqoqerajjquoiqk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5leHNycXFvcWVyYWpqcXVvaXFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjU0NTYsImV4cCI6MjA5NTMwMTQ1Nn0.xBTu_YuVlLmdgb74yfOeBvwbsLFX4uNVjbmpILgEiTo';
+
+const $ = s => document.querySelector(s);
+const escapeHtml = s => (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const track = (name, props) => { try { window.plausible && window.plausible(name, props ? { props } : undefined); } catch(e){} };
+
+// Zone display labels
+const ZONE_LABELS = {
+  'miami': 'Miami', 'fort-lauderdale': 'Fort Lauderdale', 'palm-beach': 'Palm Beach',
+  'florida-keys': 'Florida Keys', 'everglades': 'Everglades', 'orlando': 'Orlando',
+  'west-florida': 'West Florida', 'gulf-coast': 'Gulf Coast', 'space-coast': 'Space Coast',
+  'northeast-fl': 'Northeast FL', 'central-fl': 'Central FL', 'punta-cana': 'Punta Cana',
+  'cancun': 'Cancún',
+};
+
+const CATEGORY_FILTERS = [
+  { id: 'all', label: 'All picks' },
+  { id: 'water', label: '🏄 Water' },
+  { id: 'boat', label: '🛥️ Boats' },
+  { id: 'land', label: '🏍️ Land' },
+  { id: 'tour', label: '🗺️ Tours' },
+];
+
+let HOST = null;
+let ACTIVITIES = [];
+let activeFilter = 'all';
+
+// Build a per-host FareHarbor booking URL with ref baked in
+function buildBookUrl(activity, hostSlug) {
+  const params = new URLSearchParams({
+    'asn': 'fhdn',
+    'asn-ref': 'miamistylerentals',
+    'ref': `miamistylerentals-${hostSlug}`,
+    'bookable-only': 'yes',
+    'full-items': 'yes',
+    'marketplace': 'yes',
+    'flow': 'no',
+  });
+  return `https://fareharbor.com/embeds/book/${activity.o}/items/${activity.id}/?${params.toString()}`;
+}
+
+function activityKey(a) { return String(a.id || a.s || a.t || ''); }
+
+function cardHtml(a, isFav) {
+  const url = buildBookUrl(a, HOST.slug);
+  const cat = a.c || 'Activity';
+  const priceLabel = a.p ? `$${a.p}<small> from</small>` : 'See site';
+  return `
+    <div class="card ${isFav ? 'fav' : ''}">
+      <div class="img" style="background-image: url('${escapeHtml(a.i)}');">
+        ${isFav ? '<span class="star-ribbon">★ Host pick</span>' : `<span class="badge">${escapeHtml(cat)}</span>`}
+      </div>
+      <div class="body">
+        <div class="title">${escapeHtml(a.t)}</div>
+        <div class="meta">
+          <div class="price">${priceLabel}</div>
+        </div>
+        <a class="book-btn" href="${escapeHtml(url)}" target="_blank" rel="noopener" data-cat="${escapeHtml(cat)}" data-fav="${isFav ? 1 : 0}">Book now →</a>
+      </div>
+    </div>
+  `;
+}
+
+function renderActivities() {
+  const content = $('#content');
+
+  // Split: host's starred favorites (in host.favorites) vs the rest
+  const favKeys = new Set((HOST.favorites || []).map(String));
+  const zonePool = ACTIVITIES.filter(a => (a.z || 'miami') === HOST.zone);
+
+  // Favorites = all favorited items in the host's zone (no category filter — they're handpicked)
+  const favItems = Array.from(favKeys).map(k => zonePool.find(a => activityKey(a) === k)).filter(Boolean);
+
+  // The rest, filtered + sorted
+  let picks = zonePool.filter(a => !favKeys.has(activityKey(a)));
+  if (activeFilter !== 'all') {
+    picks = picks.filter(a => a.g === activeFilter);
+  }
+  picks.sort((a, b) => (b.p || 0) - (a.p || 0));
+  const top = picks.slice(0, 12 - Math.min(favItems.length, 6)); // leave room when many favs
+
+  $('#totalCount').textContent = zonePool.length;
+
+  if (favItems.length === 0 && top.length === 0) {
+    content.innerHTML = '<div class="error-state"><p>No activities matched that filter.</p></div>';
+    return;
+  }
+
+  let html = '';
+
+  // FAVORITES SECTION (only when host has favorites AND we're not filtered, OR favs match filter)
+  // Show favs even when filtered? Yes — they're hand-picked, deserve persistent visibility.
+  if (favItems.length > 0) {
+    html += '<div class="fav-section">';
+    html += '<div class="section-head">';
+    html += `<h2>★ ${escapeHtml((HOST.name || 'Host').split(' ')[0])}'s top picks</h2>`;
+    html += '<div class="sub">Hand-starred — what your host actually recommends.</div>';
+    html += '</div>';
+    html += '<div class="grid">';
+    favItems.forEach(a => { html += cardHtml(a, true); });
+    html += '</div>';
+    html += '</div>';
+  }
+
+  // CATEGORY PILLS (for the rest)
+  html += '<div class="section-head" style="margin-top:28px;"><h2>More to explore</h2><div class="sub">All hand-vetted operators in your zone.</div></div>';
+  html += '<div class="pills">';
+  CATEGORY_FILTERS.forEach(f => {
+    const on = f.id === activeFilter ? 'on' : '';
+    html += `<button class="pill ${on}" data-cat="${f.id}">${f.label}</button>`;
+  });
+  html += '</div>';
+
+  html += '<div class="grid">';
+  top.forEach(a => { html += cardHtml(a, false); });
+  html += '</div>';
+
+  content.innerHTML = html;
+
+  // Wire pill clicks
+  document.querySelectorAll('.pill').forEach(p => p.addEventListener('click', () => {
+    activeFilter = p.dataset.cat;
+    track('Guest Filter', { category: activeFilter, host: HOST.slug });
+    renderActivities();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }));
+
+  // Wire book button tracking
+  document.querySelectorAll('.book-btn').forEach(btn => btn.addEventListener('click', () => {
+    track('Guest Book Click', {
+      category: btn.dataset.cat,
+      host: HOST.slug,
+      from_favorite: btn.dataset.fav === '1',
+    });
+  }));
+
+  // Show browse-all
+  $('#browseAll').style.display = 'block';
+  $('#browseLink').href = `https://miamijetskiboatrentals.com/?ref=${HOST.slug}`;
+}
+
+async function init() {
+  // Extract slug from URL (either ?slug= or /g/<slug>)
+  const params = new URLSearchParams(location.search);
+  let slug = params.get('slug') || '';
+  if (!slug) {
+    const m = location.pathname.match(/^\/g\/([^\/]+)/);
+    if (m) slug = m[1];
+  }
+  slug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 64);
+
+  if (!slug) {
+    $('#content').innerHTML = '<div class="error-state"><h2>No host specified</h2><p>This page needs to be opened from a host\'s link.</p><p style="margin-top:14px;"><a href="https://refstay.com" style="color: var(--primary); font-weight: 600;">Visit refstay.com →</a></p></div>';
+    return;
+  }
+
+  // Fetch host data via RPC
+  try {
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data, error } = await sb.rpc('get_host_display', { host_slug: slug });
+    if (error) throw error;
+    if (!data || data.length === 0) throw new Error('Host not found');
+    HOST = data[0];
+  } catch (err) {
+    console.warn('Host lookup failed, using fallback:', err);
+    // Fallback: use slug-only with miami as default zone
+    HOST = { slug, name: 'your host', zone: 'miami', favorites: [] };
+  }
+
+  // Fetch activities catalog
+  try {
+    const res = await fetch('/activities.json', { cache: 'force-cache' });
+    ACTIVITIES = await res.json();
+  } catch (err) {
+    $('#content').innerHTML = '<div class="error-state"><p>Couldn\'t load activities. Please refresh.</p></div>';
+    return;
+  }
+
+  // Update hero
+  const firstName = (HOST.name || 'your host').split(' ')[0];
+  const zoneLabel = ZONE_LABELS[HOST.zone] || HOST.zone;
+  $('#heroTitle').innerHTML = `${escapeHtml(firstName)}'s top <strong>${escapeHtml(zoneLabel)}</strong> picks`;
+  $('#heroSub').textContent = `Hand-picked activities for your stay. Book direct — your host earns 5% to keep recommending the best spots.`;
+  $('#hostName').textContent = firstName;
+  $('#hostAvatar').textContent = firstName[0].toUpperCase();
+  $('#hostFooter').textContent = firstName;
+  $('#badgeFrom').style.display = 'inline-flex';
+  document.title = `${firstName}'s ${zoneLabel} picks — Refstay`;
+
+  // Render activities
+  renderActivities();
+
+  // Track page view with slug as prop
+  track('Guest Landing View', { host: HOST.slug, zone: HOST.zone });
+}
+
+init();
+</script>
+
+</body>
+</html>

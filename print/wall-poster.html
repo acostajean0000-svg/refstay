@@ -303,7 +303,7 @@
         <div class="scan-label">📱 Scan with your phone</div>
         <h2>Book your<br>Miami adventure</h2>
         <div class="desc">Open your camera app, point at the QR code, then tap the notification to see all activities.</div>
-        <div class="url" id="urlText">refstay.com/r/…</div>
+        <div class="url" id="urlText">refstay.com/g/…</div>
       </div>
     </div>
 
@@ -337,12 +337,12 @@
 
   if (!host) host = { slug, name: 'your host' };
 
-  const referralUrl = `https://refstay.com/r/${host.slug}`;
+  const referralUrl = `https://refstay.com/g/${host.slug}`;
   const firstName = (host.name || 'your host').split(' ')[0];
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=700x700&margin=4&data=${encodeURIComponent(referralUrl)}`;
 
   document.getElementById('qrImg').src = qrUrl;
-  document.getElementById('urlText').textContent = `refstay.com/r/${host.slug}`;
+  document.getElementById('urlText').textContent = `refstay.com/g/${host.slug}`;
   document.getElementById('hostSig').textContent = firstName;
   document.getElementById('hostName').textContent = host.name || host.slug;
   document.title = `Wall poster — ${host.name || host.slug}`;

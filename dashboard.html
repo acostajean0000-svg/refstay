@@ -100,6 +100,11 @@
   .sidebar nav button:hover { background: rgba(255,255,255,0.06); color: white; }
   .sidebar nav button.active { background: var(--grad-hero); color: white; box-shadow: 0 8px 20px rgba(255, 56, 92, .3); }
   .sidebar nav .ic { width: 18px; text-align: center; }
+  .sidebar .bottom { display: flex; flex-direction: column; gap: 10px; }
+  .sidebar .lang-toggle { display: inline-flex; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 2px; align-self: stretch; }
+  .sidebar .lang-toggle button { flex: 1; background: transparent; border: none; color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 700; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-family: inherit; letter-spacing: 0.6px; }
+  .sidebar .lang-toggle button:hover { color: white; }
+  .sidebar .lang-toggle button.on { background: white; color: var(--ink); }
   .sidebar .bottom { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; margin-top: 16px; }
   .sidebar .bottom button { width: 100%; }
 
@@ -210,6 +215,27 @@
   .activity-card .copy-btn.done { background: var(--accent); }
   .activity-card .preview-btn { background: white; border: 1px solid var(--border); color: var(--ink); padding: 10px 12px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-grid; place-items: center; }
   .activity-card .preview-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .activity-card .fav-btn { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; border-radius: 999px; background: rgba(255,255,255,0.92); backdrop-filter: blur(6px); border: none; cursor: pointer; font-size: 18px; line-height: 1; display: grid; place-items: center; transition: transform .12s, background .15s; padding: 0; color: var(--muted); }
+  .activity-card .fav-btn:hover { transform: scale(1.1); background: white; }
+  .activity-card .fav-btn.on { background: var(--gold, #F4B942); color: white; }
+  .activity-card .fav-btn.on:hover { background: #E5A721; }
+  .activity-card.is-fav { border-color: var(--gold, #F4B942); box-shadow: 0 4px 14px rgba(244,185,66,0.18); }
+  .wa-tpl { background: white; border: 1px solid var(--border); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .wa-tpl .tpl-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .wa-tpl .tpl-label { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; }
+  .wa-tpl textarea { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-family: inherit; font-size: 13px; line-height: 1.5; resize: vertical; min-height: 80px; background: var(--bg); color: var(--ink); }
+  .wa-tpl textarea:focus { outline: none; border-color: var(--primary); background: white; }
+  .wa-tpl .tpl-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .wa-tpl button { padding: 9px 14px; border-radius: 9px; font-weight: 700; font-size: 13px; cursor: pointer; border: 1px solid var(--border); background: white; color: var(--ink); font-family: inherit; }
+  .wa-tpl button.primary { background: #25D366; color: white; border-color: #25D366; }
+  .wa-tpl button.primary:hover { background: #1FB857; }
+  .wa-tpl button:hover { border-color: var(--primary); color: var(--primary); }
+  .wa-tpl button.primary:hover { color: white; }
+  .fav-empty { padding: 48px 24px; text-align: center; color: var(--muted); border: 2px dashed var(--border); border-radius: var(--radius); background: white; }
+  .fav-empty .icon { font-size: 36px; margin-bottom: 12px; }
+  .fav-empty .title { font-weight: 700; color: var(--ink); margin-bottom: 6px; font-size: 16px; }
+  .fav-empty .sub { font-size: 13px; line-height: 1.5; max-width: 380px; margin: 0 auto 16px; }
+  .fav-empty .go-btn { display: inline-block; background: var(--ink); color: white; padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 13px; text-decoration: none; border: none; cursor: pointer; font-family: inherit; }
 
   /* ============ SETTINGS ============ */
   .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
@@ -228,13 +254,35 @@
   /* ============ RESPONSIVE ============ */
   @media (max-width: 900px) {
     .dash.show { grid-template-columns: 1fr; }
-    .sidebar { padding: 14px; }
-    .sidebar nav { flex-direction: row; overflow-x: auto; flex: none; }
-    .sidebar .bottom { display: none; }
-    .main { padding: 20px; }
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .sidebar { padding: 12px 14px; position: sticky; top: 0; z-index: 50; }
+    .sidebar nav { flex-direction: row; overflow-x: auto; flex: none; gap: 6px; scrollbar-width: none; }
+    .sidebar nav::-webkit-scrollbar { display: none; }
+    .sidebar nav button { white-space: nowrap; padding: 9px 12px; font-size: 13px; flex-shrink: 0; }
+    .sidebar nav button .ic { display: none; }
+    .sidebar .me { display: none; }
+    .sidebar .bottom { display: flex; flex-direction: row; gap: 8px; align-items: center; }
+    .sidebar .bottom .lang-toggle { align-self: center; padding: 1px; }
+    .sidebar .bottom .lang-toggle button { padding: 4px 7px; font-size: 10px; }
+    .sidebar .bottom .btn { padding: 6px 12px; font-size: 12px; flex: 1; }
+    .main { padding: 18px 16px 80px; }
+    .topbar { gap: 10px; margin-bottom: 18px; }
+    .topbar h1 { font-size: 22px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .kpi { padding: 14px; }
+    .kpi .val { font-size: 22px; }
+    .kpi .lbl { font-size: 11px; }
     .settings-grid { grid-template-columns: 1fr; }
-    .kpi .val { font-size: 24px; }
+    .card { padding: 16px; }
+    .link-box { flex-direction: column; align-items: stretch; gap: 8px; }
+    .link-box button { width: 100%; }
+    .share-row { flex-wrap: wrap; gap: 6px; }
+    .share-btn { flex: 1 1 calc(50% - 3px); min-width: 0; font-size: 12px; padding: 9px 8px; }
+    .activities-grid { grid-template-columns: 1fr; gap: 12px; }
+    .activity-card .img { aspect-ratio: 16 / 9; }
+    .wa-tpl { padding: 14px; }
+    .wa-tpl textarea { font-size: 12px; }
+    /* Print assets list — 1 col on mobile */
+    .print-asset, .print-card { width: 100%; }
   }
 
   /* tab content */
@@ -299,14 +347,19 @@
       </div>
     </div>
     <nav>
-      <button class="active" data-tab="overview"><span class="ic">🏠</span> Overview</button>
-      <button data-tab="link"><span class="ic">🔗</span> Your link</button>
-      <button data-tab="activities"><span class="ic">🎟️</span> Direct links</button>
-      <button data-tab="print"><span class="ic">🖨️</span> Print assets</button>
-      <button data-tab="settings"><span class="ic">⚙️</span> Settings</button>
+      <button class="active" data-tab="overview"><span class="ic">🏠</span> <span data-i18n="dash.nav.overview">Overview</span></button>
+      <button data-tab="link"><span class="ic">🔗</span> <span data-i18n="dash.nav.link">Your link</span></button>
+      <button data-tab="activities"><span class="ic">🎟️</span> <span data-i18n="dash.nav.activities">Direct links</span></button>
+      <button data-tab="favorites"><span class="ic">⭐</span> <span data-i18n="dash.nav.favorites">Favorites</span> <span id="favBadge" style="margin-left:auto;background:var(--gold,#F4B942);color:white;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;display:none;">0</span></button>
+      <button data-tab="print"><span class="ic">🖨️</span> <span data-i18n="dash.nav.print">Print assets</span></button>
+      <button data-tab="settings"><span class="ic">⚙️</span> <span data-i18n="dash.nav.settings">Settings</span></button>
     </nav>
     <div class="bottom">
-      <button class="btn btn-danger" id="logoutBtn">🚪 Log out</button>
+      <div class="lang-toggle" aria-label="Language">
+        <button type="button" data-lang-toggle="en">EN</button>
+        <button type="button" data-lang-toggle="es">ES</button>
+      </div>
+      <button class="btn btn-danger" id="logoutBtn">🚪 <span data-i18n="dash.nav.logout">Log out</span></button>
     </div>
   </aside>
 
@@ -341,22 +394,22 @@
       <!-- KPIs: real numbers from Supabase bookings table (refreshed each load) -->
       <div class="kpi-grid" id="kpiGrid">
         <div class="kpi">
-          <div class="kpi-head"><div class="lbl">Clicks this month</div><div class="ic-bg b">👀</div></div>
+          <div class="kpi-head"><div class="lbl" data-i18n="kpi.clicks">Clicks this month</div><div class="ic-bg b">👀</div></div>
           <div class="val" id="kpiClicks">—</div>
           <div class="delta" id="kpiClicksSub" style="color: var(--muted);">From your link</div>
         </div>
         <div class="kpi">
-          <div class="kpi-head"><div class="lbl">Bookings this month</div><div class="ic-bg a">🎟️</div></div>
+          <div class="kpi-head"><div class="lbl" data-i18n="kpi.bookings">Bookings this month</div><div class="ic-bg a">🎟️</div></div>
           <div class="val" id="kpiBookings">—</div>
           <div class="delta" id="kpiBookingsSub" style="color: var(--muted);">Confirmed via FareHarbor</div>
         </div>
         <div class="kpi">
-          <div class="kpi-head"><div class="lbl">Total earned</div><div class="ic-bg d">💰</div></div>
+          <div class="kpi-head"><div class="lbl" data-i18n="kpi.earnings">Total earned</div><div class="ic-bg d">💰</div></div>
           <div class="val" id="kpiEarnings">$0</div>
           <div class="delta" id="kpiEarningsSub" style="color: var(--muted);">Since you joined</div>
         </div>
         <div class="kpi">
-          <div class="kpi-head"><div class="lbl">Pending payout</div><div class="ic-bg c">⏳</div></div>
+          <div class="kpi-head"><div class="lbl" data-i18n="kpi.pending">Pending payout</div><div class="ic-bg c">⏳</div></div>
           <div class="val" id="kpiPending">$0</div>
           <div class="delta" id="kpiPendingSub" style="color: var(--muted);">Next payout: —</div>
         </div>
@@ -480,7 +533,7 @@
     <!-- ============ LINK ============ -->
     <div class="tab-pane" data-pane="link">
       <div class="topbar">
-        <div><h1>Your referral link</h1><div class="sub">Share anywhere — every booking earns you 5%.</div></div>
+        <div><h1 data-i18n="dash.title.link">Your referral link</h1><div class="sub">Share anywhere — every booking earns you 5%.</div></div>
       </div>
 
       <div class="link-card">
@@ -496,6 +549,77 @@
           <button class="share-btn" data-share="x">𝕏 Post on X</button>
           <button class="share-btn" data-share="facebook">📘 Facebook</button>
           <button class="share-btn" data-share="qr">📷 Show QR code</button>
+        </div>
+      </div>
+
+      <!-- ============ WHATSAPP MESSAGE TEMPLATES ============ -->
+      <div class="card" style="background: linear-gradient(135deg, #E8F8EC 0%, #E1F5FE 100%); border: 1px solid #B8E5C2;">
+        <div class="card-head"><div>
+          <h3>📱 WhatsApp message templates</h3>
+          <div class="sub">Tap "Send via WhatsApp" — it opens with the message pre-filled. Edit it, then hit send. Each template covers a different moment in the guest's stay.</div>
+        </div></div>
+
+        <div style="display: grid; gap: 14px; margin-top: 12px;">
+
+          <!-- Template 1: Pre-arrival -->
+          <div class="wa-tpl" data-tpl="prearrival">
+            <div class="tpl-head">
+              <div class="tpl-label">✈️ Pre-arrival (2 days before check-in)</div>
+            </div>
+            <textarea data-tpl-text>Hey! Excited to host you 🌴 Quick tip — if you're planning jet skis, boats, or sunset cruises, I've put together my top picks here: {GUEST_LINK}
+
+You'll get the same prices as booking direct, but I get a small thank-you, which helps me keep recommending the best operators. Any questions before you arrive?</textarea>
+            <div class="tpl-actions">
+              <button class="primary" data-tpl-send>📱 Send via WhatsApp</button>
+              <button data-tpl-copy>📋 Copy text</button>
+            </div>
+          </div>
+
+          <!-- Template 2: Check-in day -->
+          <div class="wa-tpl" data-tpl="checkin">
+            <div class="tpl-head">
+              <div class="tpl-label">🏖️ Check-in day</div>
+            </div>
+            <textarea data-tpl-text>Welcome! Hope you settled in 🏝️ A few guests have asked what's good around here — here's my hand-picked list of activities + tours: {GUEST_LINK}
+
+All bookable instantly. If you want a specific recommendation, just message me!</textarea>
+            <div class="tpl-actions">
+              <button class="primary" data-tpl-send>📱 Send via WhatsApp</button>
+              <button data-tpl-copy>📋 Copy text</button>
+            </div>
+          </div>
+
+          <!-- Template 3: Mid-stay -->
+          <div class="wa-tpl" data-tpl="midstay">
+            <div class="tpl-head">
+              <div class="tpl-label">☀️ Mid-stay nudge</div>
+            </div>
+            <textarea data-tpl-text>Hope you're having a great time! Quick reminder — if you haven't yet, the jet ski / boat operators I trust most are here: {GUEST_LINK}
+
+The weather looks 🔥 the next few days. Worth checking 👀</textarea>
+            <div class="tpl-actions">
+              <button class="primary" data-tpl-send>📱 Send via WhatsApp</button>
+              <button data-tpl-copy>📋 Copy text</button>
+            </div>
+          </div>
+
+          <!-- Template 4: Short & friendly -->
+          <div class="wa-tpl" data-tpl="short">
+            <div class="tpl-head">
+              <div class="tpl-label">⚡ Short & friendly</div>
+            </div>
+            <textarea data-tpl-text>My local picks for jet ski / boats / tours 👇
+{GUEST_LINK}</textarea>
+            <div class="tpl-actions">
+              <button class="primary" data-tpl-send>📱 Send via WhatsApp</button>
+              <button data-tpl-copy>📋 Copy text</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="margin-top: 14px; padding: 12px; background: rgba(255,255,255,0.6); border-radius: 10px; font-size: 12px; color: var(--ink-2);">
+          <strong>💡 Tip:</strong> <span id="tplLinkTip">Your guest link is</span> <code id="tplLinkInline" style="background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px;">refstay.com/g/…</code> — replace <code>{GUEST_LINK}</code> in the templates above with this. It auto-fills when you send.
         </div>
       </div>
 
@@ -528,7 +652,7 @@
     <div class="tab-pane" data-pane="activities">
       <div class="topbar">
         <div>
-          <h1>Direct booking links</h1>
+          <h1 data-i18n="dash.title.activities">Direct booking links</h1>
           <div class="sub">Recommend a specific activity to a guest. Each link is pre-tagged with your slug — works on partner sites, WhatsApp, Instagram, anywhere.</div>
         </div>
       </div>
@@ -578,11 +702,57 @@
       </div>
     </div>
 
+    <!-- ============ FAVORITES ============ -->
+    <div class="tab-pane" data-pane="favorites">
+      <div class="topbar">
+        <div>
+          <h1 data-i18n="dash.title.favorites">⭐ Your favorites</h1>
+          <div class="sub">Star up to 10 activities you actually recommend. These show up first on your guest landing page at <code id="favLandingUrl" style="background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px;font-size:13px;">refstay.com/g/…</code> — what guests see when they scan your QR code.</div>
+        </div>
+      </div>
+
+      <div class="card" style="background: linear-gradient(135deg, #FFF8E7 0%, #FFE4D6 100%); border: 1px solid #F4D58E; margin-bottom: 18px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="font-size:28px;">💡</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;margin-bottom:2px;">How favorites work</div>
+            <div class="sub" style="font-size:13px;line-height:1.5;">Go to <strong>Direct links</strong>, tap the ☆ on activities you'd personally recommend, and they'll appear here. Guests who scan your QR code see them first.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WhatsApp share for guest landing page -->
+      <div id="favGuestShare" style="display:none;background:white;border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="font-size:22px;">📱</div>
+          <div style="font-weight:700;font-size:15px;">Share your guest landing page</div>
+        </div>
+        <div class="sub" style="font-size:13px;margin-bottom:12px;">One link, all your favorites. Send this to incoming guests before they arrive.</div>
+        <div class="link-box" style="margin-bottom:10px;">
+          <input type="text" id="guestLandingLink" readonly />
+          <button id="copyGuestLink">Copy</button>
+        </div>
+        <div class="share-row" style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="share-btn" data-share-guest="whatsapp">📱 WhatsApp</button>
+          <button class="share-btn" data-share-guest="email">✉️ Email</button>
+          <button class="share-btn" data-share-guest="sms">💬 SMS</button>
+        </div>
+      </div>
+
+      <div id="favoritesGrid" class="activities-grid"></div>
+      <div id="favoritesEmpty" class="fav-empty" style="display:none;">
+        <div class="icon">⭐</div>
+        <div class="title">No favorites yet</div>
+        <div class="sub">Head to <strong>Direct links</strong> and tap ☆ on activities you'd personally recommend. They'll show here and on your guest landing page.</div>
+        <button class="go-btn" id="favGoToActivities">Browse activities →</button>
+      </div>
+    </div>
+
     <!-- ============ PRINT ASSETS ============ -->
     <div class="tab-pane" data-pane="print">
       <div class="topbar">
         <div>
-          <h1>Print assets for your Airbnb</h1>
+          <h1 data-i18n="dash.title.print">Print assets for your Airbnb</h1>
           <div class="sub">Welcome cards, fridge magnets, posters & welcome-book inserts — each pre-personalized with your QR code. Print from your browser, leave them in your unit, guests scan and book.</div>
         </div>
       </div>
@@ -723,7 +893,7 @@
 
     <!-- ============ SETTINGS ============ -->
     <div class="tab-pane" data-pane="settings">
-      <div class="topbar"><div><h1>Settings</h1><div class="sub">Profile, payouts, and notifications.</div></div></div>
+      <div class="topbar"><div><h1 data-i18n="dash.title.settings">Settings</h1><div class="sub">Profile, payouts, and notifications.</div></div></div>
 
       <div class="settings-grid">
         <div class="card">
@@ -796,6 +966,118 @@ let _currentUser = null;
 function getUser() { return _currentUser; }
 function setUser(u) { _currentUser = u; }
 
+/* ============ FAVORITES STATE ============ */
+// In-memory Set of activity keys the host has starred. Synced to Supabase on toggle.
+// Up to 10 entries; surfaced first on /g/<slug>.
+const FAVORITES = new Set();
+const MAX_FAVORITES = 10;
+
+function activityKey(a) {
+  if (!a) return '';
+  return String(a.id || a.s || a.t || '');
+}
+
+function findActivityByKey(key) {
+  if (!key || !Array.isArray(ACTIVITIES)) return null;
+  return ACTIVITIES.find(a => activityKey(a) === key) || null;
+}
+
+async function saveFavoritesToSupabase() {
+  const user = getUser();
+  if (!user || user.isDemo || !sb) return;
+  try {
+    const list = Array.from(FAVORITES);
+    const { error } = await sb
+      .from('hosts')
+      .update({ favorites: list })
+      .eq('slug', user.slug);
+    if (error) console.error('Save favorites failed:', error);
+  } catch (e) { console.error('Save favorites error:', e); }
+}
+
+function updateFavBadge() {
+  const badge = $('#favBadge');
+  if (!badge) return;
+  const n = FAVORITES.size;
+  if (n > 0) { badge.textContent = String(n); badge.style.display = ''; }
+  else { badge.style.display = 'none'; }
+}
+
+function toggleFavorite(key) {
+  if (!key) return;
+  if (FAVORITES.has(key)) {
+    FAVORITES.delete(key);
+    showToast('Removed from favorites');
+    track('Favorite Removed', { key });
+  } else {
+    if (FAVORITES.size >= MAX_FAVORITES) {
+      showToast(`Max ${MAX_FAVORITES} favorites — remove one first`);
+      return;
+    }
+    FAVORITES.add(key);
+    showToast('★ Added to favorites — guests see this first');
+    track('Favorite Added', { key });
+  }
+  // Optimistic UI update — refresh both grids
+  refreshFavoriteUI();
+  saveFavoritesToSupabase();
+}
+
+function refreshFavoriteUI() {
+  updateFavBadge();
+  // Update star state on Direct Links grid (don't full re-render — preserves pagination/scroll)
+  document.querySelectorAll('#activitiesGrid .activity-card').forEach(card => {
+    const k = card.dataset.favkey;
+    const isFav = FAVORITES.has(k);
+    card.classList.toggle('is-fav', isFav);
+    const btn = card.querySelector('.fav-btn');
+    if (btn) {
+      btn.classList.toggle('on', isFav);
+      btn.textContent = isFav ? '★' : '☆';
+      btn.title = isFav ? 'Remove from favorites' : 'Add to favorites';
+    }
+  });
+  // Re-render Favorites tab
+  renderFavoritesTab();
+}
+
+function renderFavoritesTab() {
+  const grid = $('#favoritesGrid');
+  const empty = $('#favoritesEmpty');
+  const share = $('#favGuestShare');
+  if (!grid || !empty) return;
+
+  const user = getUser();
+  const slug = (user && user.slug) || '';
+  const guestLink = `https://refstay.com/g/${slug}`;
+
+  // Update inline guest link
+  const inline = $('#favLandingUrl');
+  if (inline && slug) inline.textContent = `refstay.com/g/${slug}`;
+  const guestInput = $('#guestLandingLink');
+  if (guestInput) guestInput.value = guestLink;
+
+  if (FAVORITES.size === 0) {
+    grid.innerHTML = '';
+    empty.style.display = '';
+    if (share) share.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  if (share) share.style.display = '';
+
+  // Build list in insertion order
+  const keys = Array.from(FAVORITES);
+  const items = keys.map(k => findActivityByKey(k)).filter(Boolean);
+  if (items.length === 0) {
+    grid.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);grid-column:1/-1;">Loading favorites…</div>';
+    return;
+  }
+  grid.innerHTML = items.map((a, i) => activityCardHtml(a, slug, i)).join('');
+  wireActivityCards(grid, slug);
+}
+
 function showLogin() { $('#loginScreen').classList.add('show'); $('#dashboard').classList.remove('show'); }
 function showDashboard(user) {
   setUser(user); // store globally so getUser() callers (activities picker, print assets) can access it
@@ -841,7 +1123,7 @@ async function fetchUserDataFromSupabase(authUserId) {
   // 1. Get host profile
   const { data: host, error: hostErr } = await sb
     .from('hosts')
-    .select('slug, name, email, listing, joined, payout_method, last_payout, next_payout, zone')
+    .select('slug, name, email, listing, joined, payout_method, last_payout, next_payout, zone, favorites')
     .eq('id', authUserId)
     .single();
 
@@ -886,6 +1168,7 @@ async function fetchUserDataFromSupabase(authUserId) {
     nextPayout: host.next_payout,
     lastPayout: host.last_payout,
     payoutMethod: host.payout_method,
+    favorites: Array.isArray(host.favorites) ? host.favorites : [],
   };
 }
 
@@ -1099,6 +1382,17 @@ function hydrate(user) {
   }
   renderActivitiesPicker();
   wirePrintAssets(user);
+
+  // ---- Favorites: hydrate from user.favorites ----
+  FAVORITES.clear();
+  (Array.isArray(user.favorites) ? user.favorites : []).forEach(k => FAVORITES.add(String(k)));
+  updateFavBadge();
+  // Update guest-link references everywhere
+  const guestLink = `https://refstay.com/g/${slug}`;
+  const inline = $('#tplLinkInline'); if (inline) inline.textContent = `refstay.com/g/${slug}`;
+  const favLanding = $('#favLandingUrl'); if (favLanding) favLanding.textContent = `refstay.com/g/${slug}`;
+  const guestInput = $('#guestLandingLink'); if (guestInput) guestInput.value = guestLink;
+  renderFavoritesTab();
 }
 
 /* ============ TABS ============ */
@@ -1306,34 +1600,48 @@ function renderActivitiesPicker() {
     return;
   }
 
-  grid.innerHTML = visible.map((a, i) => {
-    const url = buildActivityUrl(a, slug);
-    const previewUrl = `https://miamijetskiboatrentals.com/${a.s}`;
-    const estEarn = Math.round((a.p || 0) * 0.05);
-    return `
-      <div class="activity-card" data-idx="${i}">
-        <div class="img" style="background-image: url('${escapeHtml(a.i)}');">
-          <span class="cat-badge">${escapeHtml(a.c)}</span>
+  grid.innerHTML = visible.map((a, i) => activityCardHtml(a, slug, i)).join('');
+
+  // Wire copy buttons + fav buttons
+  wireActivityCards($('#activitiesGrid'), slug);
+
+  if (loadMore) loadMore.style.display = visibleCount < total ? '' : 'none';
+}
+
+// Build the HTML for one activity card (used by both Direct Links + Favorites tab)
+function activityCardHtml(a, slug, i) {
+  const url = buildActivityUrl(a, slug);
+  const previewUrl = `https://miamijetskiboatrentals.com/${a.s}`;
+  const estEarn = Math.round((a.p || 0) * 0.05);
+  const favKey = activityKey(a);
+  const isFav = FAVORITES.has(favKey);
+  return `
+    <div class="activity-card ${isFav ? 'is-fav' : ''}" data-idx="${i}" data-favkey="${escapeHtml(favKey)}">
+      <div class="img" style="background-image: url('${escapeHtml(a.i)}');">
+        <span class="cat-badge">${escapeHtml(a.c)}</span>
+        <button class="fav-btn ${isFav ? 'on' : ''}" data-favkey="${escapeHtml(favKey)}" title="${isFav ? 'Remove from favorites' : 'Add to favorites'}" aria-label="Toggle favorite">${isFav ? '★' : '☆'}</button>
+      </div>
+      <div class="body">
+        <div class="title">${escapeHtml(a.t)}</div>
+        <div class="meta">
+          <div>
+            <div class="price">${a.p ? '$' + a.p : 'See site'}${a.p ? '<small> from</small>' : ''}</div>
+            ${a.p ? `<div class="earn">You earn ~$${estEarn}/booking</div>` : ''}
+          </div>
         </div>
-        <div class="body">
-          <div class="title">${escapeHtml(a.t)}</div>
-          <div class="meta">
-            <div>
-              <div class="price">${a.p ? '$' + a.p : 'See site'}${a.p ? '<small> from</small>' : ''}</div>
-              ${a.p ? `<div class="earn">You earn ~$${estEarn}/booking</div>` : ''}
-            </div>
-          </div>
-          <div class="row">
-            <button class="copy-btn" data-url="${escapeHtml(url)}" data-cat="${escapeHtml(a.c)}">Copy booking link</button>
-            <a class="preview-btn" href="${escapeHtml(previewUrl)}" target="_blank" rel="noopener" title="Preview activity page">↗</a>
-          </div>
+        <div class="row">
+          <button class="copy-btn" data-url="${escapeHtml(url)}" data-cat="${escapeHtml(a.c)}">Copy booking link</button>
+          <a class="preview-btn" href="${escapeHtml(previewUrl)}" target="_blank" rel="noopener" title="Preview activity page">↗</a>
         </div>
       </div>
-    `;
-  }).join('');
+    </div>
+  `;
+}
 
-  // Wire copy buttons
-  $$('#activitiesGrid .copy-btn').forEach(btn => {
+// Wire copy + fav buttons inside a grid container
+function wireActivityCards(container, slug) {
+  if (!container) return;
+  container.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const url = btn.dataset.url;
       const cat = btn.dataset.cat;
@@ -1346,8 +1654,12 @@ function renderActivitiesPicker() {
       track('Activity Link Copy', { category: cat, slug });
     });
   });
-
-  if (loadMore) loadMore.style.display = visibleCount < total ? '' : 'none';
+  container.querySelectorAll('.fav-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleFavorite(btn.dataset.favkey);
+    });
+  });
 }
 
 // Zone display labels — keyed by zone slug
@@ -1517,6 +1829,63 @@ $$('.share-btn').forEach(b => b.addEventListener('click', () => {
   track('Share Click', { channel: ch, source: 'dashboard' });
 }));
 
+/* ============ WHATSAPP TEMPLATES ============ */
+// Each template's "Send via WhatsApp" replaces {GUEST_LINK} placeholder with the host's
+// real /g/<slug> URL and opens wa.me with the message pre-filled.
+function tplGuestLink() {
+  const u = getUser();
+  const slug = (u && u.slug) || '';
+  return slug ? `https://refstay.com/g/${slug}` : 'https://refstay.com';
+}
+function tplText(tplEl) {
+  const ta = tplEl.querySelector('[data-tpl-text]');
+  return (ta ? ta.value : '').replace(/\{GUEST_LINK\}/g, tplGuestLink());
+}
+$$('.wa-tpl').forEach(tpl => {
+  const tplName = tpl.dataset.tpl;
+  tpl.querySelector('[data-tpl-send]')?.addEventListener('click', () => {
+    const msg = tplText(tpl);
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    track('WhatsApp Template Send', { template: tplName });
+  });
+  tpl.querySelector('[data-tpl-copy]')?.addEventListener('click', (e) => {
+    const msg = tplText(tpl);
+    copy(msg);
+    showToast('Message copied — paste into WhatsApp');
+    const btn = e.target;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied';
+    setTimeout(() => { btn.textContent = orig; }, 1400);
+    track('WhatsApp Template Copy', { template: tplName });
+  });
+});
+
+/* ============ FAVORITES TAB: guest landing share ============ */
+$('#copyGuestLink')?.addEventListener('click', () => {
+  const v = $('#guestLandingLink')?.value || '';
+  if (v) { copy(v); showToast('Guest link copied!'); track('Guest Link Copy'); }
+});
+$$('[data-share-guest]').forEach(b => b.addEventListener('click', () => {
+  const link = $('#guestLandingLink')?.value || '';
+  if (!link) return;
+  const ch = b.dataset.shareGuest;
+  const msg = `My hand-picked activities for your stay 🌴 ${link}`;
+  let url = '';
+  if (ch === 'whatsapp') url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  else if (ch === 'email') url = `mailto:?subject=${encodeURIComponent('Activities for your stay')}&body=${encodeURIComponent(msg)}`;
+  else if (ch === 'sms') url = `sms:?&body=${encodeURIComponent(msg)}`;
+  if (url) window.open(url, '_blank');
+  track('Guest Link Share', { channel: ch });
+}));
+
+// "Browse activities →" button in empty favorites state
+$('#favGoToActivities')?.addEventListener('click', () => {
+  $$('.sidebar nav button').forEach(x => x.classList.remove('active'));
+  $$('.sidebar nav button[data-tab="activities"]')[0]?.classList.add('active');
+  $$('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === 'activities'));
+  track('Tab View', { tab: 'activities', source: 'fav-empty' });
+});
+
 /* Slug + profile updates are intentionally email-driven during pilot
    (hosts.json is the source of truth — clients can't write to it). */
 
@@ -1535,7 +1904,7 @@ function wirePrintAssets(user) {
   });
   // Show the host's actual slug in the QR check helper text
   const qrCheck = $('#qrCheckUrl');
-  if (qrCheck && slug) qrCheck.textContent = `refstay.com/r/${slug}`;
+  if (qrCheck && slug) qrCheck.textContent = `refstay.com/g/${slug}`;
 }
 
 $('#deleteAcc').addEventListener('click', () => {
@@ -1548,6 +1917,16 @@ $('#deleteAcc').addEventListener('click', () => {
 /* CSV export removed — Referrals tab no longer exists in pilot mode.
    Hosts receive their referral list via monthly email report instead. */
 
+</script>
+
+<!-- ============ I18N (EN/ES) ============ -->
+<script src="i18n.js"></script>
+<script>
+  (function () {
+    if (window.Refstay && window.Refstay.i18n) {
+      window.Refstay.i18n.init();
+    }
+  })();
 </script>
 </body>
 </html>

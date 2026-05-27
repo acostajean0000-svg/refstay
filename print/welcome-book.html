@@ -328,7 +328,7 @@
         <div class="qr">
           <img id="qrImg" alt="QR code to browse Miami activities" />
         </div>
-        <div class="url" id="urlText">refstay.com/r/…</div>
+        <div class="url" id="urlText">refstay.com/g/…</div>
         <div class="helper">Open your camera, point at the QR code, tap the notification.</div>
       </div>
     </div>
@@ -376,12 +376,12 @@
 
   if (!host) host = { slug, name: 'your host' };
 
-  const referralUrl = `https://refstay.com/r/${host.slug}`;
+  const referralUrl = `https://refstay.com/g/${host.slug}`;
   const firstName = (host.name || 'your host').split(' ')[0];
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=4&data=${encodeURIComponent(referralUrl)}`;
 
   document.getElementById('qrImg').src = qrUrl;
-  document.getElementById('urlText').textContent = `refstay.com/r/${host.slug}`;
+  document.getElementById('urlText').textContent = `refstay.com/g/${host.slug}`;
   document.getElementById('hostSig').textContent = firstName;
   document.getElementById('hostName').textContent = host.name || host.slug;
   document.title = `Welcome book — ${host.name || host.slug}`;

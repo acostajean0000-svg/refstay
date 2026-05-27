@@ -100,6 +100,11 @@
   .nav-links a { color: var(--ink-2); font-weight: 500; font-size: 15px; transition: color .2s; }
   .nav-links a:hover { color: var(--primary); }
   .nav-cta { display: flex; gap: 12px; align-items: center; }
+  .lang-toggle { display: inline-flex; background: rgba(11,16,32,0.05); border: 1px solid rgba(11,16,32,0.08); border-radius: 8px; padding: 2px; }
+  .lang-toggle button { background: transparent; border: none; color: var(--muted); font-size: 11px; font-weight: 700; padding: 5px 9px; border-radius: 6px; cursor: pointer; font-family: inherit; letter-spacing: 0.6px; }
+  .lang-toggle button:hover { color: var(--ink); }
+  .lang-toggle button.on { background: white; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  @media (max-width: 700px) { .lang-toggle { order: -1; } }
 
   .btn {
     display: inline-flex; align-items: center; gap: 8px;
@@ -462,7 +467,11 @@
       <a href="#faq">FAQ</a>
     </nav>
     <div class="nav-cta">
-      <a class="btn btn-ghost" href="dashboard.html">Log in</a>
+      <div class="lang-toggle" aria-label="Language">
+        <button type="button" data-lang-toggle="en">EN</button>
+        <button type="button" data-lang-toggle="es">ES</button>
+      </div>
+      <a class="btn btn-ghost" href="dashboard.html" data-i18n="nav.login">Log in</a>
       <a class="btn btn-primary" href="#signup">Get my link →</a>
     </div>
   </div>
@@ -472,14 +481,14 @@
 <section class="hero">
   <div class="container hero-inner">
     <div>
-      <div class="hero-eyebrow"><span class="dot"></span> Built for Miami Airbnb hosts · earn 5% on every activity booking</div>
-      <h1>Your guests already book <span class="grad">jet skis, boats & tours.</span> Now you get paid when they do.</h1>
-      <p class="hero-sub">
+      <div class="hero-eyebrow"><span class="dot"></span> <span data-i18n="hero.eyebrow">Built for Miami Airbnb hosts · earn 5% on every activity booking</span></div>
+      <h1 data-i18n="hero.h1.html" data-i18n-html>Your guests already book <span class="grad">jet skis, boats & tours.</span> Now you get paid when they do.</h1>
+      <p class="hero-sub" data-i18n="hero.subtitle">
         Drop one link in your welcome book or WhatsApp it to checking-in guests. Every jet ski rental, yacht charter, or boat tour they book through it pays you 5% — tracked automatically, deposited monthly.
       </p>
       <div class="hero-ctas">
-        <a class="btn btn-primary btn-lg" href="#signup">Get my referral link</a>
-        <a class="btn btn-outline btn-lg" href="#calculator">See how much you'd earn</a>
+        <a class="btn btn-primary btn-lg" href="#signup" data-i18n="hero.cta">Get my referral link</a>
+        <a class="btn btn-outline btn-lg" href="#calculator" data-i18n="hero.demo">See how much you'd earn</a>
       </div>
       <div class="hero-trust">
         <div class="trust-stat"><div class="num">2,000+</div><div class="lbl">Activities & operators</div></div>
@@ -541,27 +550,27 @@
 <section class="section" id="how">
   <div class="container">
     <div class="section-head">
-      <div class="section-eyebrow">How it works</div>
-      <h2>Three steps. <span class="grad">No selling required.</span></h2>
-      <p class="section-sub">Your guests are already asking "what should we do in Miami?" — now you have an answer that pays you back.</p>
+      <div class="section-eyebrow" data-i18n="how.eyebrow">How it works</div>
+      <h2 data-i18n="how.title.html" data-i18n-html>Three steps. <span class="grad">No selling required.</span></h2>
+      <p class="section-sub" data-i18n="how.sub">Your guests are already asking "what should we do in Miami?" — now you have an answer that pays you back.</p>
     </div>
 
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
-        <h3>Get your link in 60 seconds</h3>
+        <h3 data-i18n="how.step1.title">Get your link in 60 seconds</h3>
         <p>Sign up with your name, email, and Airbnb listing. We instantly generate a short, memorable link tied to your account — like <code style="background:var(--bg-soft);padding:2px 8px;border-radius:6px;font-size:13px;color:var(--primary-2);">refstay.com/r/your-name</code>.</p>
         <div class="step-illu">🔗</div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
-        <h3>Drop it where guests look</h3>
+        <h3 data-i18n="how.step2.title">Drop it where guests look</h3>
         <p>Add it to your welcome book under "Things to do nearby." WhatsApp it to guests at check-in. Put a QR code on the fridge or by the keys. Stick it in your Airbnb auto-message.</p>
         <div class="step-illu">📲</div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
-        <h3>Get paid every month</h3>
+        <h3 data-i18n="how.step3.title">Get paid every month</h3>
         <p>Your guest books a jet ski, boat charter, or tour. You earn 5% — tracked automatically. Real-time dashboard, monthly payouts via Stripe or PayPal. Zero invoicing.</p>
         <div class="step-illu">💸</div>
       </div>
@@ -1237,6 +1246,16 @@ $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
     if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   }
 }));
+</script>
+
+<!-- ============ I18N (EN/ES) ============ -->
+<script src="i18n.js"></script>
+<script>
+  (function () {
+    if (window.Refstay && window.Refstay.i18n) {
+      window.Refstay.i18n.init();
+    }
+  })();
 </script>
 </body>
 </html>
