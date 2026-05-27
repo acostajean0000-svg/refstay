@@ -295,6 +295,26 @@
   .toast.show { transform: translateY(0); opacity: 1; }
   .toast .ic { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; font-size: 13px; }
 
+  /* ============ ONBOARDING ============ */
+  .onb-step { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: white; border: 1px solid var(--border); border-radius: 12px; transition: all .15s; }
+  .onb-step:hover { border-color: var(--primary); }
+  .onb-step.done { opacity: 0.55; background: var(--bg); }
+  .onb-step.done:hover { border-color: var(--border); }
+  .onb-step .check { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border); background: white; display: grid; place-items: center; cursor: pointer; flex-shrink: 0; transition: all .15s; font-size: 14px; }
+  .onb-step .check:hover { border-color: var(--primary); }
+  .onb-step.done .check { background: var(--accent); border-color: var(--accent); color: white; cursor: default; }
+  .onb-step .label { flex: 1; }
+  .onb-step .label .title { font-weight: 700; font-size: 14px; color: var(--ink); }
+  .onb-step.done .label .title { text-decoration: line-through; color: var(--muted); }
+  .onb-step .label .help { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+  .onb-step .go-btn { background: var(--ink); color: white; border: none; padding: 7px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; font-family: inherit; flex-shrink: 0; }
+  .onb-step .go-btn:hover { background: var(--primary); }
+  .onb-step.done .go-btn { display: none; }
+  .onb-done-banner { padding: 18px; background: linear-gradient(135deg, #E8F8EC 0%, #E1F5FE 100%); border: 1px solid #B8E5C2; border-radius: 14px; text-align: center; }
+  .onb-done-banner .ic { font-size: 30px; margin-bottom: 6px; }
+  .onb-done-banner .title { font-weight: 800; font-size: 16px; margin-bottom: 4px; }
+  .onb-done-banner .sub { font-size: 13px; color: var(--ink-2); }
+
   /* ============ QR MODAL ============ */
   .qr-modal { position: fixed; inset: 0; z-index: 300; background: rgba(11,16,32,0.55); display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); animation: fadeIn .2s ease; }
   .qr-modal.show { display: flex; }
@@ -435,6 +455,25 @@
           <div class="val" id="kpiPending">$0</div>
           <div class="delta" id="kpiPendingSub" style="color: var(--muted);">Next payout: —</div>
         </div>
+      </div>
+
+      <!-- Onboarding checklist (hidden once all 5 steps complete) -->
+      <div class="card" id="onboardingCard" style="display: none; background: linear-gradient(135deg, #FFFAF0 0%, #FFF1F2 100%); border: 1px solid #FFE0D0;">
+        <div class="card-head" style="margin-bottom: 12px;">
+          <div style="flex:1;">
+            <h3>🚀 Get your first booking</h3>
+            <div class="sub">5 quick steps to go from signup to your first 5% commission.</div>
+          </div>
+          <div id="onbProgress" style="font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:18px;color:var(--primary);"></div>
+        </div>
+
+        <!-- Progress bar -->
+        <div style="height:8px;background:white;border-radius:999px;overflow:hidden;margin-bottom:18px;border:1px solid var(--border);">
+          <div id="onbBar" style="height:100%;background:linear-gradient(90deg, #FF385C 0%, #FF7A45 100%);border-radius:999px;width:0%;transition:width 0.4s cubic-bezier(0.2,0.8,0.2,1);"></div>
+        </div>
+
+        <!-- Step list -->
+        <div id="onbSteps" style="display:grid;gap:10px;"></div>
       </div>
 
       <!-- Click activity (14-day mini chart + top sources) -->
@@ -1110,6 +1149,186 @@ function refreshFavoriteUI() {
   renderFavoritesTab();
 }
 
+/* ============ ONBOARDING ============ */
+// 5-step activation checklist shown in Overview. Each step has a stable id,
+// label, helper copy, action label, and an action that jumps to the right tab
+// (or just marks itself done for manual steps like "I added it to my welcome
+// book"). Some steps auto-detect (e.g. favorites_added flips when host has > 0
+// favorites). State is persisted to hosts.onboarding_done.
+
+const ONB_STEPS = [
+  {
+    id: 'link_copied',
+    title: 'Copy your referral link',
+    help: 'Grab your unique link — paste it anywhere guests will see it.',
+    action: 'Copy now',
+    run: () => {
+      const linkInput = $('#linkInputOverview') || $('#linkInput');
+      if (linkInput && linkInput.value) {
+        copy(linkInput.value);
+        showToast('Link copied!');
+        markOnboardingDone('link_copied');
+      } else {
+        showToast('Link not ready yet — refresh');
+      }
+    },
+  },
+  {
+    id: 'favorites_added',
+    title: 'Star at least 1 favorite activity',
+    help: 'Pick what you actually recommend — guests see these first.',
+    action: 'Pick favorites',
+    run: () => goToTab('activities'),
+  },
+  {
+    id: 'qr_downloaded',
+    title: 'Download or print your QR code',
+    help: 'For your welcome book, fridge magnet, or wall poster.',
+    action: 'Get QR',
+    run: () => openQrModal('g'),
+  },
+  {
+    id: 'shared_whatsapp',
+    title: 'Share your link via WhatsApp',
+    help: 'Use one of the pre-filled message templates — takes 30 seconds.',
+    action: 'Share now',
+    run: () => goToTab('link'),
+  },
+  {
+    id: 'added_welcome_book',
+    title: 'Add the link to your welcome book',
+    help: 'Open Airbnb → your listing → House manual → paste the link under "Things to do".',
+    action: "I've done it",
+    run: () => {
+      markOnboardingDone('added_welcome_book');
+      showToast("Nice — you're all set up! 🎉");
+    },
+  },
+];
+
+function goToTab(tab) {
+  $$('.sidebar nav button').forEach(x => x.classList.remove('active'));
+  $$(`.sidebar nav button[data-tab="${tab}"]`)[0]?.classList.add('active');
+  $$('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === tab));
+  track('Tab View', { tab, source: 'onboarding' });
+}
+
+const ONB_DONE = new Set();
+
+function markOnboardingDone(stepId, opts) {
+  opts = opts || {};
+  if (ONB_DONE.has(stepId)) return;
+  ONB_DONE.add(stepId);
+  renderOnboarding();
+  if (!opts.skipSync) saveOnboardingToSupabase();
+  track('Onboarding Step Done', { step: stepId });
+  // Celebrate when fully done
+  if (ONB_DONE.size === ONB_STEPS.length) {
+    setTimeout(() => showToast('🎉 All set up! Now share your link with your guests.'), 400);
+    track('Onboarding Complete');
+  }
+}
+
+async function saveOnboardingToSupabase() {
+  const user = getUser();
+  if (!user || user.isDemo || !sb) return;
+  try {
+    const { error } = await sb
+      .from('hosts')
+      .update({ onboarding_done: Array.from(ONB_DONE) })
+      .eq('slug', user.slug);
+    if (error) console.error('Save onboarding failed:', error);
+  } catch (e) { console.error('Save onboarding error:', e); }
+}
+
+function renderOnboarding() {
+  const card = $('#onboardingCard');
+  if (!card) return;
+
+  // Auto-detect step: favorites_added is true if host has any favorites
+  if (FAVORITES.size > 0) ONB_DONE.add('favorites_added');
+
+  const total = ONB_STEPS.length;
+  const done = ONB_STEPS.filter(s => ONB_DONE.has(s.id)).length;
+  const pct = Math.round((done / total) * 100);
+
+  // Update progress bar + counter
+  const bar = $('#onbBar'); if (bar) bar.style.width = pct + '%';
+  const counter = $('#onbProgress'); if (counter) counter.textContent = `${done}/${total}`;
+
+  const grid = $('#onbSteps');
+  if (!grid) return;
+
+  if (done === total) {
+    // Show celebration banner instead of the list
+    grid.innerHTML = `
+      <div class="onb-done-banner">
+        <div class="ic">🎉</div>
+        <div class="title">You're set up!</div>
+        <div class="sub">Your link is in the wild. Most hosts see their first booking within 2–3 weeks. Watch this space.</div>
+      </div>
+    `;
+    // Hide the whole card after a moment so it stops nagging
+    setTimeout(() => { card.style.display = 'none'; }, 8000);
+    return;
+  }
+
+  // Render step list
+  grid.innerHTML = ONB_STEPS.map((s, i) => {
+    const isDone = ONB_DONE.has(s.id);
+    return `
+      <div class="onb-step ${isDone ? 'done' : ''}" data-step="${s.id}">
+        <div class="check" data-step-check="${s.id}" title="${isDone ? 'Completed' : 'Mark as done'}">${isDone ? '✓' : i + 1}</div>
+        <div class="label">
+          <div class="title">${escapeHtml(s.title)}</div>
+          <div class="help">${escapeHtml(s.help)}</div>
+        </div>
+        <button class="go-btn" data-step-go="${s.id}">${escapeHtml(s.action)}</button>
+      </div>
+    `;
+  }).join('');
+
+  // Wire action buttons
+  grid.querySelectorAll('[data-step-go]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const step = ONB_STEPS.find(s => s.id === btn.dataset.stepGo);
+      if (step && step.run) step.run();
+    });
+  });
+  // Wire the circle-checks for manual toggling (let users tick a step without running the action)
+  grid.querySelectorAll('[data-step-check]').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.dataset.stepCheck;
+      if (!ONB_DONE.has(id)) markOnboardingDone(id);
+    });
+  });
+
+  card.style.display = '';
+}
+
+function hookOnboardingAutoDetect() {
+  // Mark link_copied when any link-copy button is clicked
+  ['#copyMainLink', '#copyOverviewLink'].forEach(sel => {
+    const el = $(sel);
+    if (el) el.addEventListener('click', () => markOnboardingDone('link_copied'), { once: false });
+  });
+  // Mark shared_whatsapp when any WhatsApp share or template send is clicked
+  document.addEventListener('click', (e) => {
+    const t = e.target;
+    if (!(t instanceof Element)) return;
+    if (t.closest('[data-share="whatsapp"], [data-share-overview="whatsapp"], [data-share-guest="whatsapp"], [data-tpl-send]')) {
+      markOnboardingDone('shared_whatsapp');
+    }
+  }, { passive: true, capture: true });
+  // Mark qr_downloaded when the download or print button is used
+  $('#qrDownloadBtn')?.addEventListener('click', () => markOnboardingDone('qr_downloaded'), { once: false });
+  document.addEventListener('click', (e) => {
+    const t = e.target;
+    if (!(t instanceof Element)) return;
+    if (t.closest('.print-asset')) markOnboardingDone('qr_downloaded');
+  }, { passive: true, capture: true });
+}
+
 function renderFavoritesTab() {
   const grid = $('#favoritesGrid');
   const empty = $('#favoritesEmpty');
@@ -1192,7 +1411,7 @@ async function fetchUserDataFromSupabase(authUserId) {
   // 1. Get host profile
   const { data: host, error: hostErr } = await sb
     .from('hosts')
-    .select('slug, name, email, listing, joined, payout_method, last_payout, next_payout, zone, favorites')
+    .select('slug, name, email, listing, joined, payout_method, last_payout, next_payout, zone, favorites, onboarding_done')
     .eq('id', authUserId)
     .single();
 
@@ -1238,6 +1457,7 @@ async function fetchUserDataFromSupabase(authUserId) {
     lastPayout: host.last_payout,
     payoutMethod: host.payout_method,
     favorites: Array.isArray(host.favorites) ? host.favorites : [],
+    onboarding_done: Array.isArray(host.onboarding_done) ? host.onboarding_done : [],
   };
 }
 
@@ -1595,6 +1815,14 @@ function hydrate(user) {
   FAVORITES.clear();
   (Array.isArray(user.favorites) ? user.favorites : []).forEach(k => FAVORITES.add(String(k)));
   updateFavBadge();
+
+  // ---- Onboarding: hydrate completed steps + render checklist ----
+  ONB_DONE.clear();
+  (Array.isArray(user.onboarding_done) ? user.onboarding_done : []).forEach(k => ONB_DONE.add(String(k)));
+  // Demo accounts already "did it all" so the widget hides
+  if (user.isDemo) ONB_STEPS.forEach(s => ONB_DONE.add(s.id));
+  renderOnboarding();
+  hookOnboardingAutoDetect();
   // Update guest-link references everywhere
   const guestLink = `https://refstay.com/g/${slug}`;
   const inline = $('#tplLinkInline'); if (inline) inline.textContent = `refstay.com/g/${slug}`;
