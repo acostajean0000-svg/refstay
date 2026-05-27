@@ -14,6 +14,9 @@
   plausible.init()
 </script>
 
+<!-- Supabase JS — used to log this click into the clicks table (fire and forget) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
   :root {
     --primary: #FF385C;
@@ -155,10 +158,30 @@
   // 3. Track the click in Plausible
   safe(() => window.plausible && window.plausible('Referral Click', { props: { slug: slug || 'unknown' } }));
 
-  // 4. Update document title for accessibility
+  // 4. Track in Supabase clicks table — host-specific aggregates for dashboard.
+  //    Fire-and-forget: don't wait, don't block redirect on failure.
+  safe(() => {
+    if (!slug) return;
+    if (!window.supabase) return;
+    const SB_URL = 'https://nexsrqqoqerajjquoiqk.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5leHNycXFvcWVyYWpqcXVvaXFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjU0NTYsImV4cCI6MjA5NTMwMTQ1Nn0.xBTu_YuVlLmdgb74yfOeBvwbsLFX4uNVjbmpILgEiTo';
+    const sb = window.supabase.createClient(SB_URL, SB_KEY);
+    // Sanitize referrer to just the hostname (privacy + storage size)
+    let refHost = null;
+    try { if (document.referrer) refHost = new URL(document.referrer).hostname; } catch (e) {}
+    const ua = (navigator.userAgent || '').slice(0, 200);
+    sb.from('clicks').insert({
+      host_slug: slug,
+      kind: 'r',
+      referrer: refHost,
+      user_agent: ua,
+    }).then(() => {}, () => {});
+  });
+
+  // 5. Update document title for accessibility
   if (slug) document.title = 'Redirecting (ref: ' + slug + ') — Refstay';
 
-  // 5. Redirect after a short delay so analytics fires reliably
+  // 6. Redirect after a short delay so analytics fires reliably
   setTimeout(() => { window.location.replace(dest); }, REDIRECT_DELAY_MS);
 })();
 </script>

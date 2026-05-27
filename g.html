@@ -578,6 +578,21 @@ async function init() {
 
   // Track page view with slug as prop
   track('Guest Landing View', { host: HOST.slug, zone: HOST.zone });
+
+  // Log to Supabase clicks table — host-specific aggregates for dashboard.
+  // Fire-and-forget: don't block render on failure.
+  try {
+    const sb2 = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let refHost = null;
+    try { if (document.referrer) refHost = new URL(document.referrer).hostname; } catch (e) {}
+    const ua = (navigator.userAgent || '').slice(0, 200);
+    sb2.from('clicks').insert({
+      host_slug: HOST.slug,
+      kind: 'g',
+      referrer: refHost,
+      user_agent: ua,
+    }).then(() => {}, () => {});
+  } catch (e) { /* ignore */ }
 }
 
 init();

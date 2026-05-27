@@ -415,6 +415,24 @@
         </div>
       </div>
 
+      <!-- Click activity (14-day mini chart + top sources) -->
+      <div class="card" id="clicksCard" style="display: none;">
+        <div class="card-head" style="margin-bottom: 14px;">
+          <div>
+            <h3>📈 Click activity</h3>
+            <div class="sub">Last 14 days — visits to your referral link and guest landing page.</div>
+          </div>
+          <div style="display:flex;gap:10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;">
+            <div style="display:inline-flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:3px;background:var(--primary);display:inline-block;"></span>Referral (/r/)</div>
+            <div style="display:inline-flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:3px;background:var(--accent);display:inline-block;"></span>Landing (/g/)</div>
+          </div>
+        </div>
+        <div id="clicksChart" style="display:grid;grid-template-columns:repeat(14, 1fr);gap:6px;align-items:end;height:120px;margin-bottom:14px;"></div>
+        <div id="clicksXAxis" style="display:grid;grid-template-columns:repeat(14, 1fr);gap:6px;font-size:10px;color:var(--muted);text-align:center;font-weight:600;"></div>
+
+        <div id="clicksSources" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--border);"></div>
+      </div>
+
       <!-- Recent bookings (only shows if user has bookings) -->
       <div class="card" id="recentCard" style="display: none;">
         <div class="card-head">
@@ -1172,6 +1190,142 @@ async function fetchUserDataFromSupabase(authUserId) {
   };
 }
 
+/* ============ CLICK STATS ============ */
+// Fetches click data for the logged-in host and renders:
+//   - KPI count "Clicks this month"
+//   - 14-day mini bar chart (referral + landing stacked)
+//   - Top 5 referrer sources
+async function loadClickStats(host) {
+  if (!sb || !host || !host.slug || host.isDemo) {
+    // Demo mode: hardcoded mock data so the chart UI is visible
+    if (host && host.isDemo) {
+      renderClicksChart(genDemoClickData());
+      renderClicksSources([
+        { source: 'whatsapp.com', n: 42 },
+        { source: 'instagram.com', n: 18 },
+        { source: 'Direct', n: 24 },
+      ]);
+      $('#clicksCard').style.display = '';
+      $('#kpiClicks').textContent = '84';
+    }
+    return;
+  }
+  try {
+    // Pull all clicks from last 14 days for this host (limit 5000 — defensive)
+    const since = new Date(Date.now() - 14 * 86400000).toISOString();
+    const { data: rows, error } = await sb
+      .from('clicks')
+      .select('kind, ts, referrer')
+      .eq('host_slug', host.slug)
+      .gte('ts', since)
+      .order('ts', { ascending: true })
+      .limit(5000);
+    if (error) { console.warn('Clicks fetch failed:', error); return; }
+
+    // Aggregate by day + kind
+    const buckets = {}; // { '2026-05-20': { r: 3, g: 1 } }
+    (rows || []).forEach(r => {
+      const day = (r.ts || '').slice(0, 10);
+      if (!day) return;
+      buckets[day] = buckets[day] || { r: 0, g: 0 };
+      buckets[day][r.kind] = (buckets[day][r.kind] || 0) + 1;
+    });
+
+    // Build 14 contiguous days
+    const days = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000);
+      const key = d.toISOString().slice(0, 10);
+      days.push({ key, label: (d.getMonth() + 1) + '/' + d.getDate(), r: (buckets[key] || {}).r || 0, g: (buckets[key] || {}).g || 0 });
+    }
+    renderClicksChart(days);
+
+    // KPI: this calendar month total
+    const thisMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+    let monthCount = 0;
+    (rows || []).forEach(r => { if ((r.ts || '').startsWith(thisMonth)) monthCount++; });
+    $('#kpiClicks').textContent = monthCount.toLocaleString();
+    $('#kpiClicksSub').textContent = monthCount === 0 ? 'No clicks yet — share your link!' : `Across /r/ + /g/`;
+
+    // Top sources (last 14 days)
+    const sourceMap = {};
+    (rows || []).forEach(r => {
+      const s = r.referrer && r.referrer.trim() ? r.referrer.trim() : 'Direct';
+      sourceMap[s] = (sourceMap[s] || 0) + 1;
+    });
+    const sources = Object.entries(sourceMap)
+      .map(([source, n]) => ({ source, n }))
+      .sort((a, b) => b.n - a.n)
+      .slice(0, 6);
+    renderClicksSources(sources);
+
+    // Show card only if there's actual data (or always — let's always show for UI consistency)
+    $('#clicksCard').style.display = '';
+  } catch (e) { console.error('loadClickStats:', e); }
+}
+
+function renderClicksChart(days) {
+  const chart = $('#clicksChart');
+  const axis = $('#clicksXAxis');
+  if (!chart || !axis) return;
+  const max = Math.max(1, ...days.map(d => d.r + d.g));
+  chart.innerHTML = days.map(d => {
+    const total = d.r + d.g;
+    const tip = `${d.label}: ${total} click${total === 1 ? '' : 's'}\n• Referral: ${d.r}\n• Landing: ${d.g}`;
+    const rHeight = total > 0 ? (d.r / max) * 100 : 0;
+    const gHeight = total > 0 ? (d.g / max) * 100 : 0;
+    return `
+      <div title="${tip.replace(/"/g, '&quot;')}" style="display:flex;flex-direction:column-reverse;align-items:center;gap:2px;height:100%;cursor:default;">
+        ${total === 0 ? '<div style="width:100%;height:4px;background:var(--border);border-radius:2px;"></div>' : ''}
+        ${d.r > 0 ? `<div style="width:100%;height:${rHeight}%;background:var(--primary);border-radius:3px 3px 0 0;min-height:3px;"></div>` : ''}
+        ${d.g > 0 ? `<div style="width:100%;height:${gHeight}%;background:var(--accent);border-radius:3px 3px 0 0;min-height:3px;"></div>` : ''}
+      </div>
+    `;
+  }).join('');
+  // Axis labels — show every 2nd day to avoid crowding
+  axis.innerHTML = days.map((d, i) => `<div>${i % 2 === 0 ? d.label : ''}</div>`).join('');
+}
+
+function renderClicksSources(sources) {
+  const el = $('#clicksSources');
+  if (!el) return;
+  if (!sources || sources.length === 0) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px;">No traffic yet. Share your link on WhatsApp or paste it into your welcome book to see sources here.</div>';
+    return;
+  }
+  const total = sources.reduce((s, x) => s + x.n, 0);
+  let html = '<div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--ink-2);text-transform:uppercase;letter-spacing:0.06em;">Top sources (last 14 days)</div>';
+  html += '<div style="display:grid;gap:8px;">';
+  sources.forEach(s => {
+    const pct = Math.round((s.n / total) * 100);
+    html += `
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="flex:1;font-size:14px;font-weight:600;">${escapeHtml(s.source)}</div>
+        <div style="flex:2;height:8px;background:var(--border);border-radius:999px;overflow:hidden;">
+          <div style="width:${pct}%;height:100%;background:var(--primary);border-radius:999px;"></div>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;min-width:50px;text-align:right;">${s.n} <span style="color:var(--muted);font-weight:500;">(${pct}%)</span></div>
+      </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// Demo data for the demo mode chart
+function genDemoClickData() {
+  const days = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000);
+    days.push({
+      key: d.toISOString().slice(0, 10),
+      label: (d.getMonth() + 1) + '/' + d.getDate(),
+      r: Math.floor(Math.random() * 6) + (i < 7 ? 2 : 0),
+      g: Math.floor(Math.random() * 4),
+    });
+  }
+  return days;
+}
+
 // Bootstrap — runs once on page load
 (async function bootstrap() {
   const params = new URLSearchParams(location.search);
@@ -1382,6 +1536,9 @@ function hydrate(user) {
   }
   renderActivitiesPicker();
   wirePrintAssets(user);
+
+  // ---- Click stats: fetch from Supabase + render chart + sources ----
+  loadClickStats(user);
 
   // ---- Favorites: hydrate from user.favorites ----
   FAVORITES.clear();
