@@ -543,12 +543,10 @@
         </div>
       </div>
 
-      <!-- Zone selector -->
-      <div style="display: flex; gap: 6px; margin-bottom: 14px; align-items: center; flex-wrap: wrap;">
+      <!-- Zone selector (rendered dynamically based on host's primary zone) -->
+      <div id="zoneSelector" style="display: flex; gap: 6px; margin-bottom: 14px; align-items: center; flex-wrap: wrap;">
         <span style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-right: 4px;">Zone:</span>
-        <button class="zone-pill on" data-zone="miami">🌴 Miami</button>
-        <button class="zone-pill" data-zone="punta-cana">🇩🇴 Punta Cana</button>
-        <button class="zone-pill" data-zone="all">All zones</button>
+        <!-- pills injected by renderZonePicker() -->
       </div>
 
       <div style="display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;">
@@ -1088,16 +1086,17 @@ function hydrate(user) {
   // Default zone filter = host's primary zone (so PC host sees PC activities by default)
   if (user.zone && user.zone !== activityZoneFilter) {
     activityZoneFilter = user.zone;
-    // Update visual active state on zone pills
-    $$('.zone-pill').forEach(p => p.classList.toggle('on', p.dataset.zone === activityZoneFilter));
-    // Reset sub-filters when zone changes
     activityFilter = 'all';
     activityCategoryFilter = 'all';
     activityPage = 1;
     $$('.cat-pill').forEach(p => p.classList.toggle('on', p.dataset.cat === 'all'));
-    renderSubFilter();
   }
 
+  // Re-render zone picker so host's zone appears first
+  if (activitiesLoaded) {
+    renderZonePicker();
+    renderSubFilter();
+  }
   renderActivitiesPicker();
   wirePrintAssets(user);
 }
@@ -1351,29 +1350,105 @@ function renderActivitiesPicker() {
   if (loadMore) loadMore.style.display = visibleCount < total ? '' : 'none';
 }
 
+// Zone display labels — keyed by zone slug
+const ZONE_LABELS = {
+  'miami':           '🌴 Miami',
+  'fort-lauderdale': '🏖️ Ft. Lauderdale',
+  'palm-beach':      '🌊 Palm Beach',
+  'florida-keys':    '🐬 Florida Keys',
+  'everglades':      '🐊 Everglades',
+  'orlando':         '🎢 Orlando',
+  'west-florida':    '🌴 West FL',
+  'gulf-coast':      '🌅 Gulf Coast',
+  'space-coast':     '🚀 Space Coast',
+  'northeast-fl':    '⛱️ NE Florida',
+  'central-fl':      '🌳 Central FL',
+  'punta-cana':      '🇩🇴 Punta Cana',
+  'cancun':          '🇲🇽 Cancún',
+};
+
+// Render zone pills — host's primary zone first, then a few popular, then "+ more"
+function renderZonePicker() {
+  const container = $('#zoneSelector');
+  if (!container || !activitiesLoaded) return;
+
+  // Count activities per zone
+  const counts = new Map();
+  ACTIVITIES.forEach(a => {
+    const z = a.z || 'miami';
+    counts.set(z, (counts.get(z) || 0) + 1);
+  });
+
+  const user = getUser();
+  const hostZone = (user && user.zone) || 'miami';
+
+  // Order: host's zone first, then by count desc
+  const sorted = [...counts.entries()].sort((a, b) => {
+    if (a[0] === hostZone) return -1;
+    if (b[0] === hostZone) return 1;
+    return b[1] - a[1];
+  });
+
+  // Build pills (max 5 visible by default + "+ N more" expander)
+  const MAX_VISIBLE = 5;
+  const visible = zoneExpanded ? sorted : sorted.slice(0, MAX_VISIBLE);
+  const hidden = sorted.length - visible.length;
+
+  let html = '<span style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-right: 4px;">Zone:</span>';
+  visible.forEach(([z, n]) => {
+    const isOn = activityZoneFilter === z ? 'on' : '';
+    const label = ZONE_LABELS[z] || z;
+    html += `<button class="zone-pill ${isOn}" data-zone="${escapeHtml(z)}">${label}<span style="opacity:0.7;font-weight:500;margin-left:4px;">(${n})</span></button>`;
+  });
+  // "All zones" pill always at the end
+  const totalAll = ACTIVITIES.length;
+  const allOn = activityZoneFilter === 'all' ? 'on' : '';
+  html += `<button class="zone-pill ${allOn}" data-zone="all">All zones<span style="opacity:0.7;font-weight:500;margin-left:4px;">(${totalAll})</span></button>`;
+  // Expander
+  if (hidden > 0 && !zoneExpanded) {
+    html += `<button class="zone-pill" id="zoneMoreBtn" style="border-style: dashed; color: var(--primary); border-color: var(--primary);">+ ${hidden} more zones</button>`;
+  } else if (zoneExpanded && sorted.length > MAX_VISIBLE) {
+    html += `<button class="zone-pill" id="zoneLessBtn" style="border-style: dashed; color: var(--muted); border-color: var(--border);">Show less</button>`;
+  }
+  container.innerHTML = html;
+
+  // Wire click handlers
+  $$('#zoneSelector .zone-pill[data-zone]').forEach(pill => pill.addEventListener('click', () => {
+    activityZoneFilter = pill.dataset.zone;
+    activityFilter = 'all';
+    activityCategoryFilter = 'all';
+    subFilterExpanded = false;
+    activityPage = 1;
+    $$('.cat-pill').forEach(p => p.classList.toggle('on', p.dataset.cat === 'all'));
+    renderZonePicker();
+    renderSubFilter();
+    renderActivitiesPicker();
+    track('Activity Zone', { zone: activityZoneFilter });
+  }));
+
+  const moreBtn = $('#zoneMoreBtn');
+  if (moreBtn) moreBtn.addEventListener('click', () => {
+    zoneExpanded = true;
+    renderZonePicker();
+  });
+  const lessBtn = $('#zoneLessBtn');
+  if (lessBtn) lessBtn.addEventListener('click', () => {
+    zoneExpanded = false;
+    renderZonePicker();
+  });
+}
+let zoneExpanded = false;
+
 // Async bootstrap: load catalog, then render
 async function initActivitiesCatalog() {
   await loadActivitiesCatalog();
+  renderZonePicker();
   renderSubFilter();
   renderActivitiesPicker();
 }
 initActivitiesCatalog();
 
-// Wire ZONE pills — switches between Miami / Punta Cana / All
-$$('.zone-pill').forEach(pill => pill.addEventListener('click', () => {
-  $$('.zone-pill').forEach(p => p.classList.remove('on'));
-  pill.classList.add('on');
-  activityZoneFilter = pill.dataset.zone;
-  // Reset sub-filters when zone changes
-  activityFilter = 'all';
-  activityCategoryFilter = 'all';
-  subFilterExpanded = false;
-  activityPage = 1;
-  $$('.cat-pill').forEach(p => p.classList.toggle('on', p.dataset.cat === 'all'));
-  renderSubFilter();
-  renderActivitiesPicker();
-  track('Activity Zone', { zone: activityZoneFilter });
-}));
+// Zone pills are wired dynamically inside renderZonePicker() — no static handler needed here
 
 // Wire PRIMARY group filter pills — reset category sub-filter when group changes
 $$('.cat-pill').forEach(pill => pill.addEventListener('click', () => {
