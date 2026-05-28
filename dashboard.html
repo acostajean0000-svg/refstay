@@ -1541,13 +1541,19 @@ async function fetchUserDataFromSupabase(authUserId) {
     .eq('host_id', authUserId);
 
   let earningsTotal = 0, earningsPaid = 0, earningsPending = 0, bookingsMonth = 0;
-  const thisMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+  // Use the host's LOCAL month (e.g. EDT) rather than UTC. A booking made at
+  // Apr 30 11pm EDT is still April from the host's perspective even though
+  // the UTC timestamp says May 1.
+  const now = new Date();
+  const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   (allBookings || []).forEach(b => {
     earningsTotal += Number(b.amount) || 0;
     if (b.status === 'paid') earningsPaid += Number(b.amount) || 0;
     else if (b.status === 'pending') earningsPending += Number(b.amount) || 0;
-    // Count toward this month using booking_date (activity date), fall back to created_at
-    const ts = b.booking_date || b.created_at || '';
+    // "Bookings this month" counts when the BOOKING WAS MADE, not when the
+    // activity happens. Matches host intuition: "how many sales did I close
+    // this month" — even if the guest is going kayaking 6 months from now.
+    const ts = b.created_at || b.booking_date || '';
     if (ts && ts.startsWith(thisMonth)) bookingsMonth++;
   });
 
@@ -1627,7 +1633,9 @@ async function loadClickStats(host) {
     renderClicksChart(days);
 
     // KPI: this calendar month total
-    const thisMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+    // Use local-time YYYY-MM to match the host's perceived month
+    const nowK = new Date();
+    const thisMonth = `${nowK.getFullYear()}-${String(nowK.getMonth() + 1).padStart(2, '0')}`;
     let monthCount = 0;
     (rows || []).forEach(r => { if ((r.ts || '').startsWith(thisMonth)) monthCount++; });
     $('#kpiClicks').textContent = monthCount.toLocaleString();
@@ -1836,9 +1844,21 @@ $('#logoutBtn').addEventListener('click', logout);
 /* ============ HYDRATE ============ */
 function fmtDate(iso) {
   if (!iso) return '—';
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // Date-only strings (YYYY-MM-DD) must be parsed as LOCAL time. If you do
+  // `new Date('2026-07-01')` JS treats it as UTC midnight, which then shifts
+  // back to "Jun 30, 8pm" in any timezone west of UTC. We split + construct
+  // explicitly to keep the calendar date intact.
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (m) {
+    const y = parseInt(m[1], 10);
+    const mo = parseInt(m[2], 10) - 1;
+    const d = parseInt(m[3], 10);
+    return `${months[mo]} ${d}, ${y}`;
+  }
+  // ISO with time/timezone — JS handles correctly
   const d = new Date(iso);
   if (isNaN(d.getTime())) return iso;
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 }
 

@@ -8,6 +8,9 @@
     { "src": "/dashboard/?$", "dest": "/dashboard.html" },
     { "src": "/privacy/?$", "dest": "/privacy.html" },
     { "src": "/terms/?$", "dest": "/terms.html" },
+    { "src": "/for-hosts/?$", "dest": "/for-hosts.html" },
+    { "src": "/hosts/?$", "headers": { "Location": "/for-hosts" }, "status": 301 },
+    { "src": "/earn/?$", "headers": { "Location": "/for-hosts" }, "status": 301 },
     {
       "src": "/(.*)",
       "headers": {
