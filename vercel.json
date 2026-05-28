@@ -10,6 +10,8 @@
     { "src": "/terms/?$", "dest": "/terms.html" },
     { "src": "/for-hosts/?$", "dest": "/for-hosts.html" },
     { "src": "/para-anfitriones/?$", "dest": "/para-anfitriones.html" },
+    { "src": "/blog/?$", "dest": "/blog/index.html" },
+    { "src": "/blog/([a-z0-9-]+)/?$", "dest": "/blog/$1.html" },
     { "src": "/hosts/?$", "headers": { "Location": "/for-hosts" }, "status": 301 },
     { "src": "/earn/?$", "headers": { "Location": "/for-hosts" }, "status": 301 },
     { "src": "/anfitriones/?$", "headers": { "Location": "/para-anfitriones" }, "status": 301 },
