@@ -9,8 +9,11 @@
     { "src": "/privacy/?$", "dest": "/privacy.html" },
     { "src": "/terms/?$", "dest": "/terms.html" },
     { "src": "/for-hosts/?$", "dest": "/for-hosts.html" },
+    { "src": "/para-anfitriones/?$", "dest": "/para-anfitriones.html" },
     { "src": "/hosts/?$", "headers": { "Location": "/for-hosts" }, "status": 301 },
     { "src": "/earn/?$", "headers": { "Location": "/for-hosts" }, "status": 301 },
+    { "src": "/anfitriones/?$", "headers": { "Location": "/para-anfitriones" }, "status": 301 },
+    { "src": "/para-hosts/?$", "headers": { "Location": "/para-anfitriones" }, "status": 301 },
     {
       "src": "/(.*)",
       "headers": {

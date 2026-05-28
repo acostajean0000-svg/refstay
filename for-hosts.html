@@ -6,11 +6,19 @@
 
 <!-- ============ SEO META TAGS ============ -->
 <title>How Miami Airbnb Hosts Earn Passive Income — Refstay (5% on Every Activity Booking)</title>
+
+<!-- Google Search Console verification -->
+<meta name="google-site-verification" content="PvxhuMGCCIa_7HEYAXSjY2EHYn0IciqYZ5mXm1ZwOtI" />
 <meta name="description" content="The complete guide for Miami Airbnb hosts: how to earn 5% commission on jet skis, boats, tours, and 2,000+ activities your guests already book. Free to join. Paid monthly. No contracts." />
 <meta name="keywords" content="airbnb host income, earn money airbnb, miami airbnb host, welcome book ideas airbnb, airbnb guest recommendations, vacation rental commission, passive income airbnb, side income hosting, short term rental tips, airbnb host referral program, miami activity referrals" />
 <meta name="author" content="Refstay" />
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large" />
 <link rel="canonical" href="https://refstay.com/for-hosts" />
+
+<!-- hreflang — language variants -->
+<link rel="alternate" hreflang="en" href="https://refstay.com/for-hosts" />
+<link rel="alternate" hreflang="es" href="https://refstay.com/para-anfitriones" />
+<link rel="alternate" hreflang="x-default" href="https://refstay.com/for-hosts" />
 
 <!-- Open Graph (Facebook, LinkedIn, WhatsApp previews) -->
 <meta property="og:title" content="How Miami Airbnb Hosts Earn $200-$500/mo — Refstay Guide" />
@@ -178,8 +186,9 @@
   .nav-links a:hover { color: var(--primary); }
   .nav-cta { display: flex; gap: 12px; align-items: center; }
   .lang-toggle { display: inline-flex; background: rgba(11,16,32,0.05); border: 1px solid rgba(11,16,32,0.08); border-radius: 8px; padding: 2px; }
-  .lang-toggle button { background: transparent; border: none; color: var(--muted); font-size: 11px; font-weight: 700; padding: 5px 9px; border-radius: 6px; cursor: pointer; font-family: inherit; letter-spacing: 0.6px; }
-  .lang-toggle button.on { background: white; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .lang-toggle button, .lang-toggle a { background: transparent; border: none; color: var(--muted); font-size: 11px; font-weight: 700; padding: 5px 9px; border-radius: 6px; cursor: pointer; font-family: inherit; letter-spacing: 0.6px; text-decoration: none; display: inline-block; }
+  .lang-toggle button:hover, .lang-toggle a:hover { color: var(--ink); }
+  .lang-toggle button.on, .lang-toggle a.on { background: white; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 
   .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all .2s; cursor: pointer; border: none; font-family: inherit; }
   .btn-ghost { background: transparent; color: var(--ink); }
@@ -441,8 +450,8 @@
     </nav>
     <div class="nav-cta">
       <div class="lang-toggle" aria-label="Language">
-        <button type="button" data-lang-toggle="en">EN</button>
-        <button type="button" data-lang-toggle="es">ES</button>
+        <a href="/for-hosts" class="on">EN</a>
+        <a href="/para-anfitriones">ES</a>
       </div>
       <a class="btn btn-primary" href="/#signup">Get my link →</a>
     </div>
@@ -952,16 +961,6 @@
     <span>Made with ♥ for hosts everywhere</span>
   </div>
 </footer>
-
-<!-- I18N -->
-<script src="/i18n.js"></script>
-<script>
-  (function () {
-    if (window.Refstay && window.Refstay.i18n) {
-      window.Refstay.i18n.init();
-    }
-  })();
-</script>
 
 <!-- Smooth scroll for anchor links -->
 <script>
