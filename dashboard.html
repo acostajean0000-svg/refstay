@@ -976,13 +976,62 @@ The weather looks 🔥 the next few days. Worth checking 👀</textarea>
 
       <div class="settings-grid">
         <div class="card">
-          <div class="card-head"><h3>Profile</h3></div>
-          <div class="field"><label>Full name</label><input id="setName" type="text" readonly style="background: var(--bg); cursor: not-allowed;" /></div>
-          <div class="field"><label>Email</label><input id="setEmail" type="email" readonly style="background: var(--bg); cursor: not-allowed;" /></div>
-          <div class="field"><label>Airbnb listing URL</label><input id="setListing" type="url" placeholder="https://airbnb.com/rooms/..." readonly style="background: var(--bg); cursor: not-allowed;" /></div>
-          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <a class="btn btn-primary" id="requestUpdate" href="mailto:support@refstay.com?subject=Update%20my%20profile&body=Hi%20Refstay%20team%2C%0A%0APlease%20update%20my%20profile%3A%0A%0A-%20Name%3A%20%0A-%20Email%3A%20%0A-%20Listing%20URL%3A%20%0A%0AThanks!">✉️ Request update</a>
-            <div class="sub" style="font-size: 12px;">Profile changes are processed within 24 hours.</div>
+          <div class="card-head">
+            <div style="flex:1;">
+              <h3>Profile</h3>
+              <div class="sub">Update your details — changes save instantly.</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Full name</label>
+            <input id="setName" type="text" placeholder="Your name" />
+          </div>
+
+          <div class="field">
+            <label>Email</label>
+            <input id="setEmail" type="email" readonly style="background: var(--bg); cursor: not-allowed;" />
+            <div class="sub" style="font-size: 11px; margin-top: 4px;">
+              Email changes require re-verification — <a href="mailto:support@refstay.com?subject=Change%20my%20email" style="color: var(--primary); font-weight: 600;">contact support</a>.
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Airbnb listing URL <span style="color: var(--muted); font-weight: 400; font-size: 12px;">(optional)</span></label>
+            <input id="setListing" type="url" placeholder="https://airbnb.com/rooms/..." />
+          </div>
+
+          <div class="field">
+            <label>Your primary zone</label>
+            <select id="setZone" style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 14px; background: white; color: var(--ink); appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22><path d=%22M1 1l5 5 5-5%22 stroke=%22%2364748B%22 stroke-width=%221.5%22 fill=%22none%22/></svg>'); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;">
+              <optgroup label="South Florida">
+                <option value="miami">🌴 Miami</option>
+                <option value="fort-lauderdale">🏖️ Fort Lauderdale</option>
+                <option value="palm-beach">🌊 Palm Beach</option>
+                <option value="florida-keys">🐬 Florida Keys</option>
+                <option value="everglades">🐊 Everglades</option>
+              </optgroup>
+              <optgroup label="Other Florida">
+                <option value="orlando">🎢 Orlando</option>
+                <option value="west-florida">🌴 West Florida</option>
+                <option value="gulf-coast">🌅 Gulf Coast</option>
+                <option value="space-coast">🚀 Space Coast</option>
+                <option value="northeast-fl">⛱️ Northeast FL</option>
+                <option value="central-fl">🌳 Central FL</option>
+              </optgroup>
+              <optgroup label="Caribbean">
+                <option value="punta-cana">🇩🇴 Punta Cana</option>
+                <option value="cancun">🇲🇽 Cancún</option>
+              </optgroup>
+            </select>
+            <div class="sub" style="font-size: 11px; margin-top: 4px;">Defines which activities show first on your dashboard + guest landing page.</div>
+          </div>
+
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 6px;">
+            <button class="btn btn-primary" id="saveProfileBtn" type="button">Save changes</button>
+            <span id="profileSavedStatus" style="font-size: 13px; color: var(--accent); font-weight: 600; display: none;">✓ Saved</span>
+            <div style="flex: 1;"></div>
+            <a href="mailto:support@refstay.com?subject=Change%20my%20slug" style="font-size: 12px; color: var(--muted);">Change my slug →</a>
           </div>
         </div>
 
@@ -1768,6 +1817,9 @@ function hydrate(user) {
   $('#setName').value = user.name || '';
   $('#setEmail').value = user.email || '';
   $('#setListing').value = user.listing || '';
+  // Zone selector — pre-select the host's current zone
+  const zoneSelect = $('#setZone');
+  if (zoneSelect) zoneSelect.value = user.zone || 'miami';
   // Pre-fill custom slug with current
   const slug = user.slug || user.referralLink.split('/').pop();
   $('#customSlug').value = slug;
@@ -2475,7 +2527,102 @@ $('#favGoToActivities')?.addEventListener('click', () => {
    (hosts.json is the source of truth — clients can't write to it). */
 
 $('#requestSlugBtn')?.addEventListener('click', () => track('Slug Change Request'));
-$('#requestUpdate')?.addEventListener('click', () => track('Profile Update Request'));
+
+/* ============ PROFILE EDITING (Settings tab) ============ */
+$('#saveProfileBtn')?.addEventListener('click', async () => {
+  const user = getUser();
+  if (!user) return;
+  if (user.isDemo) {
+    showToast('Demo mode — log in to save changes');
+    return;
+  }
+  if (!sb) {
+    showToast('Connection lost — refresh the page');
+    return;
+  }
+
+  const name = ($('#setName').value || '').trim().slice(0, 80);
+  const listing = ($('#setListing').value || '').trim().slice(0, 500);
+  const zone = $('#setZone')?.value || user.zone || 'miami';
+
+  // Light client-side validation
+  if (name.length < 2) {
+    showToast('Name needs at least 2 characters');
+    $('#setName').focus();
+    return;
+  }
+  if (listing && !/^https?:\/\//i.test(listing)) {
+    showToast('Listing URL must start with http:// or https://');
+    $('#setListing').focus();
+    return;
+  }
+
+  const saveBtn = $('#saveProfileBtn');
+  const status = $('#profileSavedStatus');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving…';
+
+  try {
+    const { error } = await sb
+      .from('hosts')
+      .update({
+        name,
+        listing: listing || null,
+        zone,
+      })
+      .eq('slug', user.slug);
+    if (error) throw error;
+
+    // Sync in-memory user
+    user.name = name;
+    user.listing = listing || null;
+    user.zone = zone;
+    setUser(user);
+
+    // Refresh the visible bits that depend on name/zone
+    const first = name.split(' ')[0];
+    $('#firstName').textContent = first;
+    $('#userName').textContent = name;
+    $('#userAv').textContent = (name || 'H')[0].toUpperCase();
+
+    // Zone changed → re-render activity picker so the new zone bubbles to top
+    if (activitiesLoaded) {
+      activityZoneFilter = zone;
+      renderZonePicker();
+      renderSubFilter();
+      renderActivitiesPicker();
+    }
+
+    if (status) {
+      status.style.display = '';
+      setTimeout(() => { if (status) status.style.display = 'none'; }, 3500);
+    }
+    showToast('Profile updated');
+    track('Profile Saved', { zone_changed: zone !== user.zone });
+  } catch (e) {
+    console.error('Save profile failed:', e);
+    let msg = 'Save failed — try again';
+    if (e && e.message && /zone/i.test(e.message)) msg = 'Invalid zone — pick from the list';
+    showToast(msg);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save changes';
+  }
+});
+
+// Hide the "Saved" indicator when the host edits any profile field again
+$$('#setName, #setListing, #setZone').forEach(el => {
+  el?.addEventListener('input', () => {
+    const s = $('#profileSavedStatus');
+    if (s) s.style.display = 'none';
+  });
+});
+$$('#setZone').forEach(el => {
+  el?.addEventListener('change', () => {
+    const s = $('#profileSavedStatus');
+    if (s) s.style.display = 'none';
+  });
+});
 
 /* ============ WELCOME MESSAGE (Settings tab) ============ */
 function updateWelcomeCount() {
