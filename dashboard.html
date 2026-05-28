@@ -1035,6 +1035,42 @@ The weather looks 🔥 the next few days. Worth checking 👀</textarea>
           </div>
         </div>
 
+        <div class="card" style="grid-column: 1 / -1;">
+          <div class="card-head">
+            <div style="flex:1;">
+              <h3>🔗 Tracking links</h3>
+              <div class="sub">One main link, plus optional aliases — one per Airbnb unit, or per channel (Instagram, welcome book, etc). Each tracks separately but earnings flow to the same account.</div>
+            </div>
+            <button class="btn btn-primary" id="addAliasBtn" type="button">+ Add link</button>
+          </div>
+
+          <div id="aliasesList" style="display: grid; gap: 10px; margin-top: 14px;">
+            <div style="padding: 14px; color: var(--muted); font-size: 13px;">Loading…</div>
+          </div>
+
+          <!-- Add alias form (hidden by default) -->
+          <div id="aliasForm" style="display: none; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 14px;">
+            <div style="font-weight: 700; margin-bottom: 10px;">Create a new tracking link</div>
+            <div class="field" style="margin-bottom: 10px;">
+              <label>Alias (URL slug)</label>
+              <div style="display: flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; background: white;">
+                <span style="color: var(--muted); font-family: 'Space Grotesk', monospace; font-size: 14px;">refstay.com/r/</span>
+                <input id="aliasInput" type="text" maxlength="64" placeholder="jean-brickell" style="border: none; outline: none; flex: 1; font-family: 'Space Grotesk', monospace; font-weight: 600; font-size: 14px; color: var(--ink); padding: 0;" />
+              </div>
+              <div class="sub" style="font-size: 11px; margin-top: 4px;">Lowercase letters, numbers, hyphens only. 3–64 characters.</div>
+            </div>
+            <div class="field" style="margin-bottom: 10px;">
+              <label>Label <span style="color: var(--muted); font-weight: 400; font-size: 12px;">(optional, only you see this)</span></label>
+              <input id="aliasLabel" type="text" maxlength="80" placeholder="Brickell unit / Instagram bio / etc." />
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button class="btn btn-primary" id="aliasSaveBtn" type="button">Create link</button>
+              <button class="btn" id="aliasCancelBtn" type="button" style="background: white; border: 1px solid var(--border); color: var(--ink);">Cancel</button>
+              <span id="aliasErr" style="font-size: 12px; color: #DC2626; font-weight: 600;"></span>
+            </div>
+          </div>
+        </div>
+
         <div class="card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #FFFBF0 0%, #FFF1E6 100%); border: 1px solid #F4D58E;">
           <div class="card-head">
             <div style="flex:1;">
@@ -1903,6 +1939,9 @@ function hydrate(user) {
   const wmUrl = $('#welcomeLandingUrl'); if (wmUrl) wmUrl.textContent = `refstay.com/g/${slug}`;
   const wmPreview = $('#welcomePreviewLink'); if (wmPreview) wmPreview.href = `https://refstay.com/g/${slug}`;
 
+  // ---- Tracking links / aliases: fetch from Supabase + render list ----
+  loadAliases();
+
   // ---- Favorites: hydrate from user.favorites ----
   FAVORITES.clear();
   (Array.isArray(user.favorites) ? user.favorites : []).forEach(k => FAVORITES.add(String(k)));
@@ -2623,6 +2662,201 @@ $$('#setZone').forEach(el => {
     if (s) s.style.display = 'none';
   });
 });
+
+/* ============ TRACKING LINKS / ALIASES (Settings tab) ============ */
+// In-memory cache of the host's aliases. The main slug is always shown first
+// (and isn't deletable).
+let ALIASES = [];
+
+async function loadAliases() {
+  const user = getUser();
+  if (!user || user.isDemo || !sb) {
+    renderAliasesList(user && user.isDemo ? [{ alias: 'demo-instagram', label: 'Instagram bio (demo)', is_demo: true }] : []);
+    return;
+  }
+  try {
+    const { data, error } = await sb
+      .from('host_aliases')
+      .select('id, alias, label, created_at')
+      .order('created_at', { ascending: true });
+    if (error) throw error;
+    ALIASES = Array.isArray(data) ? data : [];
+    renderAliasesList(ALIASES);
+  } catch (e) {
+    console.error('loadAliases failed:', e);
+    renderAliasesList([]);
+  }
+}
+
+function renderAliasesList(aliases) {
+  const list = $('#aliasesList');
+  if (!list) return;
+  const user = getUser();
+  const mainSlug = (user && user.slug) || 'your-slug';
+
+  let html = '';
+
+  // Main slug row — always shown, never deletable
+  html += aliasRowHtml({
+    alias: mainSlug,
+    label: 'Main link (default)',
+    isMain: true,
+  });
+
+  if (aliases.length === 0) {
+    html += `<div style="padding: 14px; color: var(--muted); font-size: 12px; text-align: center;">No additional tracking links yet. Click <strong>+ Add link</strong> above to create one per Airbnb unit or per sharing channel.</div>`;
+  } else {
+    aliases.forEach(a => {
+      html += aliasRowHtml({
+        id: a.id,
+        alias: a.alias,
+        label: a.label,
+        isMain: false,
+        isDemo: a.is_demo,
+      });
+    });
+  }
+
+  list.innerHTML = html;
+
+  // Wire row buttons
+  list.querySelectorAll('[data-alias-copy]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      copy(btn.dataset.aliasCopy);
+      showToast('Link copied!');
+      track('Alias Copy', { alias: btn.dataset.aliasSlug });
+    });
+  });
+  list.querySelectorAll('[data-alias-qr]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const slug = btn.dataset.aliasSlug;
+      openQrModalForSlug(slug);
+    });
+  });
+  list.querySelectorAll('[data-alias-delete]').forEach(btn => {
+    btn.addEventListener('click', () => deleteAlias(btn.dataset.aliasId, btn.dataset.aliasSlug));
+  });
+}
+
+function aliasRowHtml({ id, alias, label, isMain, isDemo }) {
+  const url = `https://refstay.com/r/${alias}`;
+  const safeAlias = escapeHtml(alias);
+  const safeLabel = escapeHtml(label || '');
+  const labelHtml = safeLabel ? `<div style="font-weight: 700; font-size: 14px; color: var(--ink);">${safeLabel}${isMain ? ' <span style="color:var(--muted);font-weight:400;font-size:12px;">— always active</span>' : ''}</div>` : '';
+  const deleteBtn = (isMain || isDemo)
+    ? ''
+    : `<button data-alias-delete data-alias-id="${escapeHtml(String(id))}" data-alias-slug="${safeAlias}" title="Delete this alias" style="background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 13px;">Delete</button>`;
+  return `
+    <div style="background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;">
+      ${labelHtml}
+      <div style="display: flex; align-items: center; gap: 10px; margin-top: ${labelHtml ? '6px' : '0'};">
+        <code style="flex: 1; background: var(--bg); padding: 8px 12px; border-radius: 8px; font-family: 'Space Grotesk', monospace; font-size: 13px; font-weight: 600; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(url)}</code>
+        <button data-alias-copy="${escapeHtml(url)}" data-alias-slug="${safeAlias}" style="background: var(--ink); color: white; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 700; font-size: 13px;">Copy</button>
+        <button data-alias-qr data-alias-slug="${safeAlias}" title="Show QR code" style="background: white; border: 1px solid var(--border); color: var(--ink); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 13px;">📷 QR</button>
+        ${deleteBtn}
+      </div>
+    </div>
+  `;
+}
+
+function openQrModalForSlug(slug) {
+  // Override _currentQrKind + use the slug instead of user.slug
+  const user = getUser();
+  if (!user) return;
+  _currentQrKind = 'g';
+  // Stash original slug, force-set on user, render, then restore
+  const orig = user.slug;
+  user.slug = slug;
+  refreshQrModal(slug);
+  user.slug = orig;
+  $('#qrModal').classList.add('show');
+  document.addEventListener('keydown', _qrEscapeHandler);
+  track('QR Modal Open', { kind: _currentQrKind, slug, via: 'alias' });
+}
+
+// Show/hide the add-alias form
+$('#addAliasBtn')?.addEventListener('click', () => {
+  const form = $('#aliasForm');
+  if (form) form.style.display = '';
+  $('#aliasInput')?.focus();
+  $('#aliasErr').textContent = '';
+});
+$('#aliasCancelBtn')?.addEventListener('click', () => {
+  $('#aliasForm').style.display = 'none';
+  $('#aliasInput').value = '';
+  $('#aliasLabel').value = '';
+  $('#aliasErr').textContent = '';
+});
+
+// Live-clean the alias input (lowercase, allowed chars only)
+$('#aliasInput')?.addEventListener('input', (e) => {
+  const v = (e.target.value || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 64);
+  if (v !== e.target.value) e.target.value = v;
+  $('#aliasErr').textContent = '';
+});
+
+$('#aliasSaveBtn')?.addEventListener('click', async () => {
+  const user = getUser();
+  const errEl = $('#aliasErr');
+  if (!user || user.isDemo) { showToast('Demo mode — sign in to add aliases'); return; }
+  if (!sb) { showToast('Connection lost — refresh'); return; }
+
+  const alias = ($('#aliasInput').value || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 64);
+  const label = ($('#aliasLabel').value || '').trim().slice(0, 80);
+
+  if (alias.length < 3) { errEl.textContent = 'Alias must be at least 3 characters'; return; }
+  if (alias === user.slug) { errEl.textContent = "That's already your main slug"; return; }
+  if (ALIASES.some(a => a.alias === alias)) { errEl.textContent = 'You already have that alias'; return; }
+
+  const saveBtn = $('#aliasSaveBtn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Creating…';
+  try {
+    const { data, error } = await sb
+      .from('host_aliases')
+      .insert({ host_id: user.id || (await sb.auth.getUser()).data.user.id, alias, label: label || null })
+      .select()
+      .single();
+    if (error) {
+      let msg = error.message || 'Could not create alias';
+      if (/duplicate/i.test(msg) || /conflict/i.test(msg) || /unique/i.test(msg)) {
+        msg = 'That alias is already taken by another host';
+      } else if (/check constraint/i.test(msg)) {
+        msg = 'Alias must be 3–64 lowercase letters, numbers, hyphens';
+      }
+      errEl.textContent = msg;
+      throw error;
+    }
+    ALIASES.push(data);
+    renderAliasesList(ALIASES);
+    $('#aliasInput').value = '';
+    $('#aliasLabel').value = '';
+    $('#aliasForm').style.display = 'none';
+    showToast('Tracking link created!');
+    track('Alias Created', { alias });
+  } catch (e) {
+    console.error('Create alias failed:', e);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Create link';
+  }
+});
+
+async function deleteAlias(id, alias) {
+  if (!confirm(`Delete the alias "${alias}"? Past clicks and bookings under it stay in your records, but the link will stop working.`)) return;
+  if (!sb) return;
+  try {
+    const { error } = await sb.from('host_aliases').delete().eq('id', id);
+    if (error) throw error;
+    ALIASES = ALIASES.filter(a => String(a.id) !== String(id));
+    renderAliasesList(ALIASES);
+    showToast('Tracking link deleted');
+    track('Alias Deleted', { alias });
+  } catch (e) {
+    console.error('Delete alias failed:', e);
+    showToast('Delete failed — try again');
+  }
+}
 
 /* ============ WELCOME MESSAGE (Settings tab) ============ */
 function updateWelcomeCount() {

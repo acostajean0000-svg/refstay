@@ -109,16 +109,19 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'Server misconfigured (Supabase env)' });
   }
 
+  // Resolve the slug to a host_id. The slug might be either:
+  //   (a) the host's primary slug (hosts.slug), or
+  //   (b) one of their tracking aliases (host_aliases.alias).
+  // resolve_host_id() handles both. We keep the original alias in host_slug
+  // so per-alias stats group correctly in the dashboard.
   let hostId = null;
   try {
-    const { data: host } = await supabase
-      .from('hosts')
-      .select('id')
-      .eq('slug', hostSlug)
-      .maybeSingle();
-    if (host) hostId = host.id;
+    const { data: resolved, error: rpcErr } = await supabase
+      .rpc('resolve_host_id', { input_slug: hostSlug });
+    if (rpcErr) throw rpcErr;
+    if (resolved) hostId = resolved;
   } catch (e) {
-    console.error('[webhook] host lookup error:', e);
+    console.error('[webhook] host resolve error:', e);
   }
   // Even if host_id is null (host not found / pending signup), still log the
   // booking — keyed by slug. The host may have signed up afterwards.
