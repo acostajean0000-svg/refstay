@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin — Refstay</title>
+<meta name="robots" content="noindex,nofollow" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  :root {
+    --primary: #FF385C; --primary-2: #7C3AED; --accent: #00D97E; --gold: #F4B942;
+    --ink: #0B1020; --ink-2: #334155; --muted: #64748B;
+    --bg: #FFFFFF; --bg-soft: #F8FAFC; --border: #E2E8F0;
+    --shadow-sm: 0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.04);
+    --shadow-md: 0 8px 24px rgba(15,23,42,.08);
+    --grad-hero: linear-gradient(135deg, #FF385C 0%, #FF7A45 35%, #7C3AED 100%);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; color: var(--ink); background: var(--bg-soft); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, h4 { font-family: 'Space Grotesk', 'Inter', sans-serif; letter-spacing: -0.02em; margin: 0; }
+  p { margin: 0; }
+  a { color: inherit; text-decoration: none; }
+
+  .topbar { background: var(--ink); color: white; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar .left { display: flex; align-items: center; gap: 14px; }
+  .topbar .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; font-family: 'Space Grotesk'; color: white; }
+  .topbar .logo-mark { width: 32px; height: 32px; border-radius: 8px; background: var(--grad-hero); display: grid; place-items: center; color: white; font-weight: 900; }
+  .topbar .badge { background: var(--gold); color: var(--ink); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; }
+  .topbar .right { display: flex; align-items: center; gap: 14px; }
+  .topbar .user-email { font-size: 13px; color: rgba(255,255,255,0.7); }
+  .topbar a.dash-link { color: rgba(255,255,255,0.85); font-size: 13px; font-weight: 600; padding: 7px 12px; border-radius: 8px; }
+  .topbar a.dash-link:hover { background: rgba(255,255,255,0.08); }
+  .topbar button.logout { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 7px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .topbar button.logout:hover { background: rgba(255,255,255,0.1); }
+
+  .main { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+  /* Loading / auth gate states */
+  .gate { min-height: 70vh; display: grid; place-items: center; padding: 20px; text-align: center; }
+  .gate-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 40px 36px; max-width: 480px; box-shadow: var(--shadow-md); }
+  .gate-card h2 { font-size: 22px; margin-bottom: 10px; }
+  .gate-card p { color: var(--muted); margin-bottom: 22px; }
+  .gate-card .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 18px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* KPI cards */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 28px; }
+  .kpi { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+  .kpi .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; margin-bottom: 8px; }
+  .kpi .val { font-family: 'Space Grotesk'; font-weight: 800; font-size: 28px; line-height: 1; color: var(--ink); }
+  .kpi .sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .kpi.featured { background: linear-gradient(135deg, #FFFBF0 0%, #ECFDF5 100%); border-color: #BBE5C9; }
+  .kpi.warning { background: linear-gradient(135deg, #FFF8F4 0%, #FFE9DC 100%); border-color: #FFD3DD; }
+
+  /* Sections */
+  .section { background: white; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 22px; overflow: hidden; }
+  .section-head { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  .section-head h3 { font-size: 17px; font-weight: 800; }
+  .section-head .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .section-head .count { background: var(--bg-soft); padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; color: var(--ink-2); }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th { background: var(--bg-soft); padding: 10px 14px; text-align: left; font-weight: 700; color: var(--ink-2); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td { padding: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tbody tr:hover { background: var(--bg-soft); }
+  td.num, th.num { text-align: right; font-family: 'Space Grotesk'; font-weight: 700; white-space: nowrap; }
+  td.center, th.center { text-align: center; }
+  td.muted { color: var(--muted); font-size: 13px; }
+  td .slug { font-family: 'Space Grotesk', monospace; font-size: 13px; font-weight: 600; color: var(--ink); }
+  td .email { font-size: 12px; color: var(--muted); }
+
+  .badge-status { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .badge-status.pending { background: rgba(244,185,66,0.15); color: #92590E; }
+  .badge-status.paid { background: rgba(0,217,126,0.12); color: #047857; }
+  .badge-status.canceled { background: rgba(100,116,139,0.15); color: var(--muted); }
+
+  .badge-method { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--bg-soft); color: var(--ink); }
+
+  .btn { background: var(--ink); color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .btn:hover { background: var(--primary); }
+  .btn.primary { background: var(--grad-hero); }
+  .btn.success { background: var(--accent); }
+  .btn.success:hover { background: #00B868; }
+  .btn:disabled { opacity: 0.6; cursor: wait; }
+  .btn-sm { padding: 5px 10px; font-size: 11px; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--ink-2); }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); background: white; }
+
+  .empty { padding: 40px 20px; text-align: center; color: var(--muted); }
+  .empty .icon { font-size: 32px; margin-bottom: 10px; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; z-index: 200; background: var(--ink); color: white; padding: 14px 20px; border-radius: 12px; box-shadow: 0 24px 60px rgba(15,23,42,.25); display: flex; align-items: center; gap: 10px; transform: translateY(100px); opacity: 0; transition: all .35s cubic-bezier(.2,.8,.2,1); font-size: 14px; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: var(--accent); }
+  .toast.error { background: #DC2626; }
+
+  /* Tabs */
+  .tab-row { display: flex; gap: 4px; padding: 0 6px; background: var(--bg-soft); border-radius: 10px; margin-bottom: 22px; max-width: 540px; }
+  .tab-row button { background: transparent; border: none; padding: 9px 18px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; font-family: inherit; border-radius: 7px; margin: 4px 0; }
+  .tab-row button.on { background: white; color: var(--ink); box-shadow: var(--shadow-sm); }
+  .tab-pane { display: none; }
+  .tab-pane.on { display: block; }
+
+  @media (max-width: 800px) {
+    .topbar { flex-wrap: wrap; gap: 10px; }
+    .main { padding: 14px; }
+    .section { overflow-x: auto; }
+    table { min-width: 700px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="left">
+    <a class="logo" href="/">
+      <span class="logo-mark">R</span>
+      <span>Refstay</span>
+    </a>
+    <span class="badge">⚡ Admin</span>
+  </div>
+  <div class="right">
+    <a class="dash-link" href="/dashboard.html">← Back to host dashboard</a>
+    <span class="user-email" id="userEmail">—</span>
+    <button class="logout" id="logoutBtn">Log out</button>
+  </div>
+</div>
+
+<!-- LOADING GATE -->
+<div id="loadingGate" class="gate">
+  <div class="gate-card">
+    <div class="spinner"></div>
+    <h2>Loading admin dashboard…</h2>
+    <p>Checking permissions and pulling platform data.</p>
+  </div>
+</div>
+
+<!-- ACCESS DENIED GATE -->
+<div id="deniedGate" class="gate" style="display:none;">
+  <div class="gate-card">
+    <div style="font-size: 48px; margin-bottom: 14px;">🔒</div>
+    <h2>Admin access only</h2>
+    <p>You don't have admin privileges. If this is unexpected, contact the platform owner.</p>
+    <a href="/dashboard.html" class="btn primary" style="display: inline-block; padding: 12px 24px;">Go to your dashboard →</a>
+  </div>
+</div>
+
+<!-- LOGIN REDIRECT GATE -->
+<div id="loginGate" class="gate" style="display:none;">
+  <div class="gate-card">
+    <div style="font-size: 48px; margin-bottom: 14px;">🔐</div>
+    <h2>Sign in required</h2>
+    <p>Admin dashboard is protected. Sign in to continue.</p>
+    <a href="/dashboard.html" class="btn primary" style="display: inline-block; padding: 12px 24px;">Go to login →</a>
+  </div>
+</div>
+
+<!-- MAIN ADMIN UI -->
+<main class="main" id="main" style="display:none;">
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi featured">
+      <div class="lbl">💰 Pending Payouts</div>
+      <div class="val" id="kpiPending">—</div>
+      <div class="sub" id="kpiPendingSub">across all hosts</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Total Hosts</div>
+      <div class="val" id="kpiHosts">—</div>
+      <div class="sub" id="kpiHostsSub">— this month</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Bookings (this month)</div>
+      <div class="val" id="kpiBookings">—</div>
+      <div class="sub" id="kpiBookingsSub">— total all-time</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Commission (this month)</div>
+      <div class="val" id="kpiCommission">—</div>
+      <div class="sub" id="kpiCommissionSub">— total all-time</div>
+    </div>
+    <div class="kpi">
+      <div class="lbl">Clicks (this month)</div>
+      <div class="val" id="kpiClicks">—</div>
+      <div class="sub" id="kpiClicksSub">— total all-time</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-row">
+    <button class="on" data-tab="payouts">💸 Payout queue</button>
+    <button data-tab="hosts">👥 All hosts</button>
+    <button data-tab="bookings">📊 Bookings</button>
+  </div>
+
+  <!-- PAYOUT QUEUE -->
+  <div class="tab-pane on" data-pane="payouts">
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <h3>💸 Payout queue (this month)</h3>
+          <div class="sub">Hosts owed $25+ from completed bookings of prior months. Process the 5th of each month.</div>
+        </div>
+        <span class="count" id="payoutCount">—</span>
+      </div>
+      <div id="payoutTableWrap">
+        <div class="empty"><div class="icon">⏳</div><div>Loading…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALL HOSTS -->
+  <div class="tab-pane" data-pane="hosts">
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <h3>👥 All hosts</h3>
+          <div class="sub">Every signed-up host with their stats.</div>
+        </div>
+        <span class="count" id="hostsCount">—</span>
+      </div>
+      <div id="hostsTableWrap">
+        <div class="empty"><div class="icon">⏳</div><div>Loading…</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKINGS -->
+  <div class="tab-pane" data-pane="bookings">
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <h3>📊 Recent bookings</h3>
+          <div class="sub">Last 100 bookings across all hosts.</div>
+        </div>
+        <span class="count" id="bookingsCount">—</span>
+      </div>
+      <div id="bookingsTableWrap">
+        <div class="empty"><div class="icon">⏳</div><div>Loading…</div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"><span id="toastMsg">Done!</span></div>
+
+<script>
+'use strict';
+
+const SUPABASE_URL = 'https://nexsrqqoqerajjquoiqk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5leHNycXFvcWVyYWpqcXVvaXFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjU0NTYsImV4cCI6MjA5NTMwMTQ1Nn0.xBTu_YuVlLmdgb74yfOeBvwbsLFX4uNVjbmpILgEiTo';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+function fmtMoney(n) { return '$' + (Number(n) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmtNum(n) { return (Number(n) || 0).toLocaleString(); }
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  if (m) return `${months[+m[2]-1]} ${+m[3]}, ${m[1]}`;
+  return iso;
+}
+function fmtRelative(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '—';
+  const diff = (Date.now() - d.getTime()) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  if (diff < 86400 * 30) return Math.floor(diff / 86400) + 'd ago';
+  return fmtDate(iso);
+}
+function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function maskDest(value, method) {
+  if (!value) return '—';
+  if (method === 'zelle' && /^\+?\d/.test(value)) {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length >= 4) return '***-***-' + digits.slice(-4);
+  }
+  const at = value.indexOf('@');
+  if (at > 1) return value[0] + '***' + value.slice(at);
+  return '***';
+}
+function copy(text) {
+  if (navigator.clipboard) navigator.clipboard.writeText(text);
+}
+function showToast(msg, kind) {
+  const t = $('#toast');
+  $('#toastMsg').textContent = msg;
+  t.classList.remove('success', 'error');
+  if (kind) t.classList.add(kind);
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+let CURRENT_USER = null;
+
+async function init() {
+  // Check auth + admin status
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session || !session.user) {
+    $('#loadingGate').style.display = 'none';
+    $('#loginGate').style.display = '';
+    return;
+  }
+
+  CURRENT_USER = session.user;
+  $('#userEmail').textContent = CURRENT_USER.email;
+
+  // Check admin via the RPC
+  const { data: isAdmin, error: adminErr } = await sb.rpc('is_admin');
+  if (adminErr || !isAdmin) {
+    $('#loadingGate').style.display = 'none';
+    $('#deniedGate').style.display = '';
+    return;
+  }
+
+  // We're admin — load everything
+  $('#loadingGate').style.display = 'none';
+  $('#main').style.display = '';
+
+  loadOverview();
+  loadPayoutQueue();
+  loadHosts();
+  loadBookings();
+}
+
+async function loadOverview() {
+  try {
+    const { data, error } = await sb.rpc('admin_overview');
+    if (error) throw error;
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) return;
+    $('#kpiHosts').textContent = fmtNum(row.total_hosts);
+    $('#kpiHostsSub').textContent = `+${fmtNum(row.hosts_this_month)} this month`;
+    $('#kpiBookings').textContent = fmtNum(row.bookings_this_month);
+    $('#kpiBookingsSub').textContent = `${fmtNum(row.total_bookings)} all-time`;
+    $('#kpiCommission').textContent = fmtMoney(row.commission_this_month);
+    $('#kpiCommissionSub').textContent = `${fmtMoney(row.total_commission)} all-time`;
+    $('#kpiPending').textContent = fmtMoney(row.pending_commission);
+    $('#kpiClicks').textContent = fmtNum(row.clicks_this_month);
+    $('#kpiClicksSub').textContent = `${fmtNum(row.total_clicks)} all-time`;
+  } catch (e) {
+    console.error('overview failed:', e);
+  }
+}
+
+async function loadPayoutQueue() {
+  try {
+    const since = '2000-01-01'; // arbitrary, we filter by booking_date below
+    // Pull all pending bookings + join host info
+    const { data: rows, error } = await sb
+      .from('bookings')
+      .select('host_id, host_slug, amount, booking_date, hosts:host_id(name, email, payout_method, payout_destination, payout_recipient_name, payout_country)')
+      .eq('status', 'pending')
+      .lt('booking_date', new Date().toISOString().slice(0, 8) + '01'); // before this month
+    if (error) throw error;
+
+    // Group by host
+    const byHost = new Map();
+    (rows || []).forEach(r => {
+      if (!r.host_id) return;
+      const h = byHost.get(r.host_id) || {
+        host_id: r.host_id,
+        host_slug: r.host_slug,
+        host_name: r.hosts && r.hosts.name,
+        host_email: r.hosts && r.hosts.email,
+        payout_method: r.hosts && r.hosts.payout_method,
+        payout_destination: r.hosts && r.hosts.payout_destination,
+        payout_recipient_name: r.hosts && r.hosts.payout_recipient_name,
+        payout_country: r.hosts && r.hosts.payout_country,
+        count: 0, total: 0,
+      };
+      h.count += 1;
+      h.total += Number(r.amount) || 0;
+      byHost.set(r.host_id, h);
+    });
+
+    const queue = Array.from(byHost.values())
+      .filter(h => h.total >= 25)
+      .sort((a, b) => b.total - a.total);
+
+    $('#payoutCount').textContent = queue.length;
+
+    const wrap = $('#payoutTableWrap');
+    if (queue.length === 0) {
+      wrap.innerHTML = `<div class="empty"><div class="icon">🎉</div><div><strong>Nothing to pay this month.</strong></div><div style="font-size:13px;margin-top:6px;">All eligible bookings have been paid out.</div></div>`;
+      return;
+    }
+
+    let html = `<table>
+      <thead><tr>
+        <th>Host</th>
+        <th>Method</th>
+        <th>Destination</th>
+        <th>Recipient</th>
+        <th class="num">Bookings</th>
+        <th class="num">Owed</th>
+        <th class="center">Action</th>
+      </tr></thead><tbody>`;
+    queue.forEach(h => {
+      const methodOk = !!h.payout_method && !!h.payout_destination;
+      html += `<tr>
+        <td>
+          <div class="slug">${escapeHtml(h.host_slug)}</div>
+          <div class="email">${escapeHtml(h.host_email || '')}</div>
+        </td>
+        <td>${methodOk ? `<span class="badge-method">${methodLabel(h.payout_method)}</span>` : `<span style="color:#DC2626;font-weight:700;font-size:12px;">⚠️ NOT SET</span>`}</td>
+        <td>
+          ${h.payout_destination ? `
+            <button class="btn btn-sm btn-ghost" data-copy="${escapeHtml(h.payout_destination)}" title="Click to copy">${escapeHtml(maskDest(h.payout_destination, h.payout_method))}</button>
+          ` : '—'}
+        </td>
+        <td>${escapeHtml(h.payout_recipient_name || '—')}</td>
+        <td class="num">${h.count}</td>
+        <td class="num" style="color: var(--accent); font-size: 16px;">${fmtMoney(h.total)}</td>
+        <td class="center">
+          ${methodOk ? `
+            <button class="btn success btn-sm" data-mark-paid="${escapeHtml(h.host_id)}" data-amount="${h.total}" data-slug="${escapeHtml(h.host_slug)}">✓ Mark paid</button>
+          ` : `<span style="font-size:11px;color:var(--muted);">need payout info</span>`}
+        </td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+
+    // Wire copy buttons
+    wrap.querySelectorAll('[data-copy]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        copy(btn.dataset.copy);
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 1500);
+      });
+    });
+
+    // Wire "Mark paid" buttons
+    wrap.querySelectorAll('[data-mark-paid]').forEach(btn => {
+      btn.addEventListener('click', () => markPaid(btn));
+    });
+  } catch (e) {
+    console.error('payout queue failed:', e);
+    $('#payoutTableWrap').innerHTML = `<div class="empty"><div class="icon">❌</div><div>Failed to load payout queue.</div></div>`;
+  }
+}
+
+function methodLabel(m) {
+  if (m === 'paypal') return '🅿️ PayPal';
+  if (m === 'zelle') return '⚡ Zelle';
+  if (m === 'wise') return '🌍 Wise';
+  if (m === 'check') return '📮 Check';
+  return m || '—';
+}
+
+async function markPaid(btn) {
+  const hostId = btn.dataset.markPaid;
+  const amount = Number(btn.dataset.amount);
+  const slug = btn.dataset.slug;
+  if (!confirm(`Mark all pending bookings for ${slug} as PAID? This sends ${fmtMoney(amount)} from their balance to paid status. Make sure you've already sent the payment.`)) return;
+
+  btn.disabled = true;
+  btn.textContent = 'Updating…';
+  try {
+    const { data, error } = await sb.rpc('admin_mark_paid', { target_host_id: hostId });
+    if (error) throw error;
+    showToast(`✓ Marked ${slug} as paid — ${fmtMoney(amount)}`, 'success');
+    // Reload payout queue + overview
+    loadPayoutQueue();
+    loadOverview();
+  } catch (e) {
+    console.error('mark paid failed:', e);
+    showToast('Failed: ' + (e.message || 'try again'), 'error');
+    btn.disabled = false;
+    btn.textContent = '✓ Mark paid';
+  }
+}
+
+async function loadHosts() {
+  try {
+    const { data: hosts, error } = await sb
+      .from('hosts')
+      .select('id, slug, name, email, zone, joined, payout_method, is_admin')
+      .order('joined', { ascending: false });
+    if (error) throw error;
+
+    // For each host, get their stats (we'll do this with another query for efficiency)
+    const { data: bookingStats } = await sb
+      .from('bookings')
+      .select('host_id, amount, status');
+    const { data: clickStats } = await sb
+      .from('clicks')
+      .select('host_slug');
+
+    const bookingsByHost = new Map();
+    (bookingStats || []).forEach(b => {
+      if (!b.host_id) return;
+      const s = bookingsByHost.get(b.host_id) || { count: 0, earnings: 0, pending: 0 };
+      s.count += 1;
+      s.earnings += Number(b.amount) || 0;
+      if (b.status === 'pending') s.pending += Number(b.amount) || 0;
+      bookingsByHost.set(b.host_id, s);
+    });
+
+    const clicksBySlug = new Map();
+    (clickStats || []).forEach(c => {
+      clicksBySlug.set(c.host_slug, (clicksBySlug.get(c.host_slug) || 0) + 1);
+    });
+
+    $('#hostsCount').textContent = (hosts || []).length;
+
+    let html = `<table>
+      <thead><tr>
+        <th>Host</th>
+        <th>Zone</th>
+        <th>Joined</th>
+        <th class="num">Clicks</th>
+        <th class="num">Bookings</th>
+        <th class="num">Total earned</th>
+        <th class="num">Pending</th>
+        <th>Status</th>
+      </tr></thead><tbody>`;
+    (hosts || []).forEach(h => {
+      const stats = bookingsByHost.get(h.id) || { count: 0, earnings: 0, pending: 0 };
+      const clicks = clicksBySlug.get(h.slug) || 0;
+      const hasPayout = !!h.payout_method;
+      html += `<tr>
+        <td>
+          <div class="slug">${escapeHtml(h.slug)}${h.is_admin ? ' <span style="background:var(--gold);color:white;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:800;">ADMIN</span>' : ''}</div>
+          <div class="email">${escapeHtml(h.name || '—')} · ${escapeHtml(h.email || '')}</div>
+        </td>
+        <td>${escapeHtml(h.zone || '—')}</td>
+        <td class="muted">${fmtRelative(h.joined)}</td>
+        <td class="num">${fmtNum(clicks)}</td>
+        <td class="num">${fmtNum(stats.count)}</td>
+        <td class="num" style="color: var(--accent);">${fmtMoney(stats.earnings)}</td>
+        <td class="num">${fmtMoney(stats.pending)}</td>
+        <td>${hasPayout ? '<span style="color:var(--accent);font-size:12px;">✓ Ready</span>' : '<span style="color:#DC2626;font-size:12px;">⚠️ No payout</span>'}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    $('#hostsTableWrap').innerHTML = html;
+  } catch (e) {
+    console.error('hosts failed:', e);
+    $('#hostsTableWrap').innerHTML = `<div class="empty"><div class="icon">❌</div><div>Failed to load hosts.</div></div>`;
+  }
+}
+
+async function loadBookings() {
+  try {
+    const { data: bookings, error } = await sb
+      .from('bookings')
+      .select('id, host_slug, fh_booking_uuid, activity, customer_name, amount, gross_amount, status, booking_date, created_at')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error) throw error;
+
+    $('#bookingsCount').textContent = (bookings || []).length;
+
+    if (!bookings || bookings.length === 0) {
+      $('#bookingsTableWrap').innerHTML = `<div class="empty"><div class="icon">📭</div><div>No bookings yet.</div></div>`;
+      return;
+    }
+
+    let html = `<table>
+      <thead><tr>
+        <th>Created</th>
+        <th>Host</th>
+        <th>Customer</th>
+        <th>Activity</th>
+        <th>Activity date</th>
+        <th class="num">Gross</th>
+        <th class="num">Commission</th>
+        <th class="center">Status</th>
+      </tr></thead><tbody>`;
+    bookings.forEach(b => {
+      html += `<tr>
+        <td class="muted">${fmtRelative(b.created_at)}</td>
+        <td><div class="slug">${escapeHtml(b.host_slug)}</div></td>
+        <td>${escapeHtml(b.customer_name || '—')}</td>
+        <td>${escapeHtml(b.activity || '—')}</td>
+        <td class="muted">${fmtDate(b.booking_date)}</td>
+        <td class="num">${b.gross_amount ? fmtMoney(b.gross_amount) : '—'}</td>
+        <td class="num" style="color: var(--accent);">${fmtMoney(b.amount)}</td>
+        <td class="center"><span class="badge-status ${b.status}">${b.status}</span></td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    $('#bookingsTableWrap').innerHTML = html;
+  } catch (e) {
+    console.error('bookings failed:', e);
+    $('#bookingsTableWrap').innerHTML = `<div class="empty"><div class="icon">❌</div><div>Failed to load bookings.</div></div>`;
+  }
+}
+
+// Tab switching
+$$('.tab-row button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    $$('.tab-row button').forEach(b => b.classList.toggle('on', b === btn));
+    $$('.tab-pane').forEach(p => p.classList.toggle('on', p.dataset.pane === tab));
+  });
+});
+
+// Logout
+$('#logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  location.href = '/dashboard.html';
+});
+
+init();
+</script>
+
+</body>
+</html>

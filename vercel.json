@@ -6,6 +6,7 @@
     { "src": "/r/(?<slug>[^/]+)/?$", "dest": "/r.html?slug=$slug" },
     { "src": "/g/(?<slug>[^/]+)/?$", "dest": "/g.html?slug=$slug" },
     { "src": "/dashboard/?$", "dest": "/dashboard.html" },
+    { "src": "/admin/?$", "dest": "/admin.html" },
     { "src": "/privacy/?$", "dest": "/privacy.html" },
     { "src": "/terms/?$", "dest": "/terms.html" },
     { "src": "/for-hosts/?$", "dest": "/for-hosts.html" },
