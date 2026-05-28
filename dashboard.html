@@ -975,6 +975,59 @@ The weather looks 🔥 the next few days. Worth checking 👀</textarea>
       <div class="topbar"><div><h1 data-i18n="dash.title.settings">Settings</h1><div class="sub">Profile, payouts, and notifications.</div></div></div>
 
       <div class="settings-grid">
+
+        <!-- ============ PAYOUTS CARD (priority: shown first) ============ -->
+        <div class="card" id="payoutsCard" style="grid-column: 1 / -1; background: linear-gradient(135deg, #FFFBF0 0%, #ECFDF5 100%); border: 1px solid #BBE5C9;">
+          <div class="card-head">
+            <div style="flex:1;">
+              <h3>💰 How you get paid</h3>
+              <div class="sub">Monthly payouts on the 5th. $25 minimum balance. No fees deducted.</div>
+            </div>
+            <button class="btn btn-primary" id="editPayoutBtn" type="button" style="white-space: nowrap;">Edit details</button>
+          </div>
+
+          <!-- Empty state (no payout method set) -->
+          <div id="payoutEmpty" style="display: none; padding: 18px; background: rgba(255,184,0,0.1); border: 1px dashed #FFB800; border-radius: 12px; margin-top: 14px;">
+            <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+              <div style="font-size: 28px;">⚠️</div>
+              <div style="flex: 1; min-width: 200px;">
+                <div style="font-weight: 700; margin-bottom: 4px;">No payout method yet</div>
+                <div class="sub" style="font-size: 13px; line-height: 1.5;">Add your PayPal or Zelle so we can send your earnings on the 5th of each month.</div>
+              </div>
+              <button class="btn btn-primary" id="addPayoutBtn" type="button" style="white-space: nowrap;">Add payout method →</button>
+            </div>
+          </div>
+
+          <!-- Configured state -->
+          <div id="payoutConfigured" style="display: none; margin-top: 14px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
+              <div>
+                <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; margin-bottom: 4px;">Method</div>
+                <div id="payoutMethodLabel" style="font-weight: 700; font-size: 15px;">—</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; margin-bottom: 4px;">Sending to</div>
+                <div id="payoutDestLabel" style="font-weight: 700; font-size: 15px; font-family: 'Space Grotesk', monospace;">—</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; margin-bottom: 4px;">Recipient</div>
+                <div id="payoutNameLabel" style="font-weight: 700; font-size: 15px;">—</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; margin-bottom: 4px;">Country</div>
+                <div id="payoutCountryLabel" style="font-weight: 700; font-size: 15px;">—</div>
+              </div>
+            </div>
+            <div id="payoutLastUpdated" style="margin-top: 16px; font-size: 12px; color: var(--muted);">Updated —</div>
+          </div>
+
+          <div style="display: flex; gap: 18px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(0,0,0,0.06); flex-wrap: wrap; font-size: 12px; color: var(--ink-2);">
+            <span style="display: inline-flex; align-items: center; gap: 6px;">🔒 Encrypted &amp; never shared</span>
+            <span style="display: inline-flex; align-items: center; gap: 6px;">📅 Next payout: <strong id="payoutNextDate" style="font-family: 'Space Grotesk';">Jun 5, 2026</strong></span>
+            <span style="display: inline-flex; align-items: center; gap: 6px;">💵 Zero fees</span>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-head">
             <div style="flex:1;">
@@ -1124,6 +1177,67 @@ The weather looks 🔥 the next few days. Worth checking 👀</textarea>
 </div>
 
 <div class="toast" id="toast"><div class="ic">✓</div><span id="toastMsg">Done!</span></div>
+
+<!-- ============ PAYOUT MODAL ============ -->
+<div class="qr-modal" id="payoutModal" role="dialog" aria-modal="true" aria-labelledby="payoutModalTitle">
+  <div class="qr-box" style="max-width: 480px;">
+    <button class="close" id="payoutCloseBtn" aria-label="Close">✕</button>
+    <div class="qr-title" id="payoutModalTitle">💰 Payout details</div>
+    <div class="qr-sub">We pay you on the 5th of every month if your balance is above $25. No fees, no minimums beyond that.</div>
+
+    <form id="payoutForm" onsubmit="return false;">
+      <div class="field">
+        <label>Payment method</label>
+        <select id="pmMethod" required style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 14px; background: white; color: var(--ink);">
+          <option value="">Choose a method…</option>
+          <option value="paypal">🅿️ PayPal (works internationally)</option>
+          <option value="zelle">⚡ Zelle (US only, instant, no fees)</option>
+        </select>
+      </div>
+
+      <div class="field" id="pmDestField" style="display:none;">
+        <label id="pmDestLabel">Destination</label>
+        <input type="text" id="pmDest" placeholder="" autocomplete="off" />
+        <div class="sub" style="font-size: 11px; margin-top: 4px;" id="pmDestHint">—</div>
+      </div>
+
+      <div class="field" id="pmNameField" style="display:none;">
+        <label>Recipient full name</label>
+        <input type="text" id="pmName" placeholder="As it appears on your payment account" maxlength="80" />
+        <div class="sub" style="font-size: 11px; margin-top: 4px;">Must match the account exactly — payments can fail if it doesn't.</div>
+      </div>
+
+      <div class="field" id="pmCountryField" style="display:none;">
+        <label>Country</label>
+        <select id="pmCountry" style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; font-family: inherit; font-size: 14px; background: white; color: var(--ink);">
+          <option value="US">🇺🇸 United States</option>
+          <option value="DO">🇩🇴 Dominican Republic</option>
+          <option value="MX">🇲🇽 Mexico</option>
+          <option value="CA">🇨🇦 Canada</option>
+          <option value="OTHER">🌎 Other</option>
+        </select>
+      </div>
+
+      <div id="pmConfirmField" style="display:none; margin: 14px 0; padding: 12px 14px; background: var(--bg); border-radius: 10px;">
+        <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+          <input type="checkbox" id="pmConfirm" style="margin-top: 3px; width: 18px; height: 18px; accent-color: var(--primary);" />
+          <span style="font-size: 13px; color: var(--ink-2); line-height: 1.5;">I confirm I own this account, the name matches, and I'm authorized to receive these funds.</span>
+        </label>
+      </div>
+
+      <div id="pmError" style="display:none; padding: 10px 14px; background: rgba(220, 38, 38, 0.08); border: 1px solid #FCA5A5; border-radius: 10px; color: #991B1B; font-size: 13px; font-weight: 600; margin: 14px 0;"></div>
+
+      <div style="display: flex; gap: 10px; margin-top: 14px;">
+        <button class="btn btn-primary" id="pmSaveBtn" type="button" style="flex: 1;">Save</button>
+        <button class="btn" id="pmCancelBtn" type="button" style="background: white; border: 1px solid var(--border); color: var(--ink);">Cancel</button>
+      </div>
+
+      <div class="qr-tip" style="margin-top: 14px;">
+        🔒 <strong>Your data is encrypted</strong> and never shared with operators, guests, or third parties. Only Refstay's payment team sees this info when sending your monthly payout.
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- ============ QR MODAL ============ -->
 <div class="qr-modal" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
@@ -1516,7 +1630,7 @@ async function fetchUserDataFromSupabase(authUserId) {
   // 1. Get host profile
   const { data: host, error: hostErr } = await sb
     .from('hosts')
-    .select('slug, name, email, listing, joined, payout_method, last_payout, next_payout, zone, favorites, onboarding_done, welcome_message')
+    .select('slug, name, email, listing, joined, payout_method, payout_destination, payout_recipient_name, payout_country, payout_updated_at, last_payout, next_payout, zone, favorites, onboarding_done, welcome_message')
     .eq('id', authUserId)
     .single();
 
@@ -1579,6 +1693,11 @@ async function fetchUserDataFromSupabase(authUserId) {
     favorites: Array.isArray(host.favorites) ? host.favorites : [],
     onboarding_done: Array.isArray(host.onboarding_done) ? host.onboarding_done : [],
     welcome_message: host.welcome_message || '',
+    payout_method: host.payout_method || null,                 // 'paypal' | 'zelle' | null
+    payout_destination: host.payout_destination || null,        // email or phone
+    payout_recipient_name: host.payout_recipient_name || null,
+    payout_country: host.payout_country || 'US',
+    payout_updated_at: host.payout_updated_at || null,
   };
 }
 
@@ -1962,6 +2081,9 @@ function hydrate(user) {
   // ---- Tracking links / aliases: fetch from Supabase + render list ----
   loadAliases();
 
+  // ---- Payouts: render the card (empty state or configured) ----
+  renderPayoutCard(user);
+
   // ---- Favorites: hydrate from user.favorites ----
   FAVORITES.clear();
   (Array.isArray(user.favorites) ? user.favorites : []).forEach(k => FAVORITES.add(String(k)));
@@ -1997,6 +2119,7 @@ $('#copyOverviewLink')?.addEventListener('click', () => {
   copy($('#linkInputOverview').value);
   showToast('Link copied!');
   track('Link Copy', { source: 'overview' });
+  maybeTriggerPayoutPrompt();
 });
 
 /* ============ QR MODAL ============ */
@@ -2499,6 +2622,7 @@ if (loadMoreBtn) {
 /* ============ LINK ACTIONS ============ */
 $('#copyMainLink').addEventListener('click', () => {
   copy($('#linkInput').value); showToast('Link copied!'); track('Link Copy', { source: 'dashboard' });
+  maybeTriggerPayoutPrompt();
 });
 
 $('#overviewShare').addEventListener('click', () => {
@@ -2524,6 +2648,258 @@ $$('.share-btn').forEach(b => b.addEventListener('click', () => {
   }
   track('Share Click', { channel: ch, source: 'dashboard' });
 }));
+
+/* ============ PAYOUTS (Settings tab + modal) ============ */
+// Mask sensitive payout details for display. Returns last 4 chars + asterisks
+// for the prefix. Examples:
+//   "jean@gmail.com"   -> "j***@gmail.com"
+//   "+13055551234"     -> "***-***-1234"
+function maskPayoutDest(value, method) {
+  if (!value) return '—';
+  if (method === 'zelle' && /^\+?\d/.test(value)) {
+    // Phone number — show only last 4 digits
+    const digits = value.replace(/\D/g, '');
+    if (digits.length >= 4) return '***-***-' + digits.slice(-4);
+  }
+  // Email — mask local part
+  const at = value.indexOf('@');
+  if (at > 1) {
+    return value[0] + '***' + value.slice(at);
+  }
+  return '***';
+}
+
+function fmtPayoutMethodLabel(m) {
+  if (m === 'paypal') return '🅿️ PayPal';
+  if (m === 'zelle') return '⚡ Zelle';
+  if (m === 'wise') return '🌍 Wise';
+  if (m === 'check') return '📮 Check';
+  return '—';
+}
+function fmtCountry(c) {
+  const map = { US: '🇺🇸 United States', DO: '🇩🇴 Dominican Republic', MX: '🇲🇽 Mexico', CA: '🇨🇦 Canada' };
+  return map[c] || (c === 'OTHER' ? '🌎 Other' : (c || '—'));
+}
+function fmtRelativeTime(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '—';
+  const diff = (Date.now() - d.getTime()) / 1000;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + ' min ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + ' hr ago';
+  if (diff < 86400 * 7) return Math.floor(diff / 86400) + ' days ago';
+  return fmtDate(iso.slice(0, 10));
+}
+
+function renderPayoutCard(user) {
+  if (!user) return;
+  const hasMethod = !!user.payout_method && !!user.payout_destination;
+  const emptyEl = $('#payoutEmpty');
+  const configuredEl = $('#payoutConfigured');
+  if (emptyEl) emptyEl.style.display = hasMethod ? 'none' : '';
+  if (configuredEl) configuredEl.style.display = hasMethod ? '' : 'none';
+
+  if (hasMethod) {
+    $('#payoutMethodLabel').textContent = fmtPayoutMethodLabel(user.payout_method);
+    $('#payoutDestLabel').textContent = maskPayoutDest(user.payout_destination, user.payout_method);
+    $('#payoutNameLabel').textContent = user.payout_recipient_name || '—';
+    $('#payoutCountryLabel').textContent = fmtCountry(user.payout_country);
+    $('#payoutLastUpdated').textContent = 'Updated ' + fmtRelativeTime(user.payout_updated_at);
+  }
+  if (user.nextPayout) $('#payoutNextDate').textContent = fmtDate(user.nextPayout);
+}
+
+/* ----- Modal control ----- */
+function openPayoutModal() {
+  const user = getUser();
+  if (!user) return;
+  // Pre-fill from current values
+  $('#pmMethod').value = user.payout_method || '';
+  $('#pmDest').value = user.payout_destination || '';
+  $('#pmName').value = user.payout_recipient_name || user.name || '';
+  $('#pmCountry').value = user.payout_country || 'US';
+  $('#pmConfirm').checked = false;
+  $('#pmError').style.display = 'none';
+  onMethodChange();
+  $('#payoutModal').classList.add('show');
+  document.addEventListener('keydown', _payoutEscapeHandler);
+  track('Payout Modal Open');
+}
+function _payoutEscapeHandler(e) { if (e.key === 'Escape') closePayoutModal(); }
+function closePayoutModal() {
+  $('#payoutModal').classList.remove('show');
+  document.removeEventListener('keydown', _payoutEscapeHandler);
+}
+
+function onMethodChange() {
+  const m = $('#pmMethod').value;
+  const show = !!m;
+  $('#pmDestField').style.display = show ? '' : 'none';
+  $('#pmNameField').style.display = show ? '' : 'none';
+  $('#pmCountryField').style.display = show ? '' : 'none';
+  $('#pmConfirmField').style.display = show ? '' : 'none';
+  // Customize label + placeholder per method
+  if (m === 'paypal') {
+    $('#pmDestLabel').textContent = 'PayPal email';
+    $('#pmDest').placeholder = 'your-email@example.com';
+    $('#pmDest').type = 'email';
+    $('#pmDestHint').textContent = 'The email tied to your PayPal account. Payouts arrive in 1-3 business days.';
+  } else if (m === 'zelle') {
+    $('#pmDestLabel').textContent = 'Zelle email OR phone';
+    $('#pmDest').placeholder = 'your-email@bank.com  OR  +1 305 555 1234';
+    $('#pmDest').type = 'text';
+    $('#pmDestHint').textContent = 'Whichever you have linked in your bank\'s Zelle settings. US accounts only. Payouts arrive instantly.';
+  }
+}
+
+function validatePayoutForm() {
+  const method = $('#pmMethod').value;
+  const dest = ($('#pmDest').value || '').trim();
+  const name = ($('#pmName').value || '').trim();
+  const country = $('#pmCountry').value;
+  const confirmed = $('#pmConfirm').checked;
+  const errEl = $('#pmError');
+
+  function show(msg) { errEl.textContent = msg; errEl.style.display = ''; return false; }
+  errEl.style.display = 'none';
+
+  if (!method) return show('Choose a payment method first');
+  if (!dest) return show('Enter where we should send the money');
+
+  if (method === 'paypal') {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dest)) {
+      return show('PayPal needs a valid email address');
+    }
+  } else if (method === 'zelle') {
+    // Either email OR US phone (10 digits, optionally with country code)
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dest);
+    const digits = dest.replace(/\D/g, '');
+    const isUsPhone = (digits.length === 10) || (digits.length === 11 && digits.startsWith('1'));
+    if (!isEmail && !isUsPhone) {
+      return show('Zelle needs either an email address or a US phone number (10 digits)');
+    }
+    if (country !== 'US') {
+      return show('Zelle is US-only. Pick PayPal if you have a non-US account.');
+    }
+  }
+
+  if (!name || name.length < 2) return show('Enter the recipient name');
+  if (name.length > 80) return show('Recipient name is too long');
+  if (!confirmed) return show('You must confirm you own this account');
+
+  return { method, dest, name, country };
+}
+
+async function savePayoutMethod() {
+  const valid = validatePayoutForm();
+  if (!valid) return;
+  const user = getUser();
+  if (!user || user.isDemo) {
+    showToast('Demo mode — log in to save payout details');
+    return;
+  }
+  if (!sb) {
+    showToast('Connection lost — refresh');
+    return;
+  }
+
+  const saveBtn = $('#pmSaveBtn');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving…';
+
+  try {
+    // Normalize phone to digits-only for storage (Zelle phone case)
+    let dest = valid.dest;
+    if (valid.method === 'zelle' && /^\+?\d/.test(dest)) {
+      const digits = dest.replace(/\D/g, '');
+      dest = digits.length === 11 && digits.startsWith('1') ? '+' + digits : (digits.length === 10 ? '+1' + digits : dest);
+    }
+    const { error } = await sb
+      .from('hosts')
+      .update({
+        payout_method: valid.method,
+        payout_destination: dest,
+        payout_recipient_name: valid.name,
+        payout_country: valid.country,
+      })
+      .eq('slug', user.slug);
+    if (error) throw error;
+
+    // Sync to in-memory user
+    user.payout_method = valid.method;
+    user.payout_destination = dest;
+    user.payout_recipient_name = valid.name;
+    user.payout_country = valid.country;
+    user.payout_updated_at = new Date().toISOString();
+    setUser(user);
+    renderPayoutCard(user);
+
+    closePayoutModal();
+    showToast('💰 Payout details saved!');
+    // Hide the soft prompt banner if it was showing
+    hidePayoutPrompt();
+    track('Payout Method Saved', { method: valid.method, country: valid.country });
+  } catch (e) {
+    console.error('Save payout failed:', e);
+    $('#pmError').textContent = e.message || 'Save failed — try again';
+    $('#pmError').style.display = '';
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save';
+  }
+}
+
+// Wire modal once on page load
+(function wirePayoutModal() {
+  $('#pmMethod')?.addEventListener('change', onMethodChange);
+  $('#pmSaveBtn')?.addEventListener('click', savePayoutMethod);
+  $('#pmCancelBtn')?.addEventListener('click', closePayoutModal);
+  $('#payoutCloseBtn')?.addEventListener('click', closePayoutModal);
+  $('#editPayoutBtn')?.addEventListener('click', openPayoutModal);
+  $('#addPayoutBtn')?.addEventListener('click', openPayoutModal);
+  $('#payoutModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'payoutModal') closePayoutModal();
+  });
+})();
+
+/* ----- Soft prompt banner: shown after first Copy Link click if no payout method ----- */
+function showPayoutPromptIfNeeded() {
+  const user = getUser();
+  if (!user || user.isDemo) return;
+  if (user.payout_method && user.payout_destination) return; // already set
+  if (localStorage.getItem('refstay_payout_prompt_dismissed') === '1') return;
+  // Show a toast that links to the modal
+  const t = $('#toast');
+  if (!t) return;
+  $('#toastMsg').innerHTML = '💰 Link copied! <a href="#" id="payoutPromptLink" style="color: white; text-decoration: underline; font-weight: 700;">Add your payout info →</a>';
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  // Don't auto-hide this one — let user click or dismiss
+  showToast._t = setTimeout(() => t.classList.remove('show'), 9000);
+  setTimeout(() => {
+    const link = document.getElementById('payoutPromptLink');
+    if (link) link.addEventListener('click', (e) => {
+      e.preventDefault();
+      t.classList.remove('show');
+      // Navigate to Settings tab + open modal
+      goToTab('settings');
+      setTimeout(openPayoutModal, 300);
+    });
+  }, 50);
+}
+
+function hidePayoutPrompt() {
+  try { localStorage.setItem('refstay_payout_prompt_dismissed', '1'); } catch (e) {}
+}
+
+// Trigger the soft prompt after the first time the host copies their link
+let _firstCopyTracked = false;
+function maybeTriggerPayoutPrompt() {
+  if (_firstCopyTracked) return;
+  _firstCopyTracked = true;
+  setTimeout(showPayoutPromptIfNeeded, 1200);
+}
 
 /* ============ WHATSAPP TEMPLATES ============ */
 // Each template's "Send via WhatsApp" replaces {GUEST_LINK} placeholder with the host's
