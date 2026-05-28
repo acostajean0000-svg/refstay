@@ -140,59 +140,52 @@ module.exports = async (req, res) => {
     updated_at: new Date().toISOString(),
   };
 
-  // DEBUG: force .select() so we get the inserted row back. If insert/upsert
-  // is silently dropping the row, this will reveal it (data will be empty).
+  // Upsert by fh_booking_uuid (idempotent). The .select() chain forces PostgREST
+  // to return the inserted row, so we can confirm the write succeeded and grab
+  // the new id. On error, we surface enough detail to debug from Vercel logs.
   let upsertResult;
   try {
     if (fhUuid) {
       upsertResult = await supabase
         .from('bookings')
         .upsert(payload, { onConflict: 'fh_booking_uuid' })
-        .select();
+        .select('id');
     } else {
       upsertResult = await supabase
         .from('bookings')
         .insert(payload)
-        .select();
+        .select('id');
     }
   } catch (e) {
     console.error('[webhook] Upsert threw:', e);
     return res.status(500).json({
       error: 'DB write threw',
       detail: String(e.message || e),
-      payload_keys: Object.keys(payload),
     });
   }
 
-  // Log everything for Vercel logs
-  console.log('[webhook] Upsert result:', JSON.stringify({
-    error: upsertResult.error,
-    status: upsertResult.status,
-    statusText: upsertResult.statusText,
-    data_length: Array.isArray(upsertResult.data) ? upsertResult.data.length : 'not-array',
-    data_first: Array.isArray(upsertResult.data) && upsertResult.data[0] ? upsertResult.data[0] : null,
-  }));
-
   if (upsertResult.error) {
+    console.error('[webhook] Upsert error:', upsertResult.error);
     return res.status(500).json({
       error: 'DB write failed',
-      detail: upsertResult.error.message || upsertResult.error,
+      detail: upsertResult.error.message || String(upsertResult.error),
       code: upsertResult.error.code,
       hint: upsertResult.error.hint,
-      pg_status: upsertResult.status,
     });
   }
 
   const insertedRow = Array.isArray(upsertResult.data) && upsertResult.data[0];
 
+  // Log a compact line for Vercel logs (audit trail without spamming)
+  console.log(`[webhook] OK host=${hostSlug} uuid=${fhUuid} commission=${commission} status=${dbStatus} id=${insertedRow ? insertedRow.id : 'n/a'}`);
+
+  // Concise success response (FareHarbor only needs to know we accepted it).
   return res.status(200).json({
     ok: true,
     host_slug: hostSlug,
     commission,
     status: dbStatus,
-    inserted_id: insertedRow ? insertedRow.id : null,
-    inserted_row: insertedRow || null,
-    debug_pg_status: upsertResult.status,
+    booking_id: insertedRow ? insertedRow.id : null,
   });
 };
 
