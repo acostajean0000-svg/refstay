@@ -6,7 +6,7 @@
 <title>Dashboard — Refstay</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 
 <!-- Privacy-friendly analytics by Plausible (site: refstay.com) -->
 <script async src="https://plausible.io/js/pa-91gKqq-hi7bdalS3B80Ak.js"></script>
@@ -986,6 +986,26 @@ The weather looks 🔥 the next few days. Worth checking 👀</textarea>
           </div>
         </div>
 
+        <div class="card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #FFFBF0 0%, #FFF1E6 100%); border: 1px solid #F4D58E;">
+          <div class="card-head">
+            <div style="flex:1;">
+              <h3>✍️ Welcome message for guests</h3>
+              <div class="sub">A short personal note that appears on your guest landing page (<code id="welcomeLandingUrl" style="background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px;font-size:13px;">refstay.com/g/…</code>) above your starred picks. Optional — keep it human.</div>
+            </div>
+          </div>
+          <textarea id="welcomeMessage" maxlength="500" rows="4" placeholder="Hola! Soy Jean — these are the operators I trust personally. Any questions during your stay, WhatsApp me at +1-305-xxx-xxxx 🌴" style="width:100%;border:1px solid var(--border);border-radius:12px;padding:14px 16px;font-family:'Caveat', cursive;font-size:20px;line-height:1.4;background:white;resize:vertical;min-height:100px;color:var(--ink);"></textarea>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:12px;flex-wrap:wrap;">
+            <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+              <span style="font-size:12px;color:var(--muted);"><span id="welcomeCharCount">0</span> / 500</span>
+              <a id="welcomePreviewLink" href="#" target="_blank" rel="noopener" style="font-size:13px;color:var(--primary);font-weight:600;">Preview on your /g/ page →</a>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span id="welcomeSavedStatus" style="font-size:12px;color:var(--accent);font-weight:600;display:none;">✓ Saved</span>
+              <button class="btn btn-primary" id="welcomeSaveBtn" type="button">Save message</button>
+            </div>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-head"><h3>Notifications</h3></div>
           <div class="toggle">
@@ -1411,7 +1431,7 @@ async function fetchUserDataFromSupabase(authUserId) {
   // 1. Get host profile
   const { data: host, error: hostErr } = await sb
     .from('hosts')
-    .select('slug, name, email, listing, joined, payout_method, last_payout, next_payout, zone, favorites, onboarding_done')
+    .select('slug, name, email, listing, joined, payout_method, last_payout, next_payout, zone, favorites, onboarding_done, welcome_message')
     .eq('id', authUserId)
     .single();
 
@@ -1467,6 +1487,7 @@ async function fetchUserDataFromSupabase(authUserId) {
     payoutMethod: host.payout_method,
     favorites: Array.isArray(host.favorites) ? host.favorites : [],
     onboarding_done: Array.isArray(host.onboarding_done) ? host.onboarding_done : [],
+    welcome_message: host.welcome_message || '',
   };
 }
 
@@ -1822,6 +1843,13 @@ function hydrate(user) {
 
   // ---- Click stats: fetch from Supabase + render chart + sources ----
   loadClickStats(user);
+
+  // ---- Welcome message: populate textarea, update preview link + char counter ----
+  const wmTa = $('#welcomeMessage');
+  if (wmTa) wmTa.value = user.welcome_message || '';
+  updateWelcomeCount();
+  const wmUrl = $('#welcomeLandingUrl'); if (wmUrl) wmUrl.textContent = `refstay.com/g/${slug}`;
+  const wmPreview = $('#welcomePreviewLink'); if (wmPreview) wmPreview.href = `https://refstay.com/g/${slug}`;
 
   // ---- Favorites: hydrate from user.favorites ----
   FAVORITES.clear();
@@ -2448,6 +2476,61 @@ $('#favGoToActivities')?.addEventListener('click', () => {
 
 $('#requestSlugBtn')?.addEventListener('click', () => track('Slug Change Request'));
 $('#requestUpdate')?.addEventListener('click', () => track('Profile Update Request'));
+
+/* ============ WELCOME MESSAGE (Settings tab) ============ */
+function updateWelcomeCount() {
+  const ta = $('#welcomeMessage');
+  const counter = $('#welcomeCharCount');
+  if (!ta || !counter) return;
+  counter.textContent = (ta.value || '').length;
+}
+$('#welcomeMessage')?.addEventListener('input', () => {
+  updateWelcomeCount();
+  // Hide "saved" indicator when the host edits the text again
+  const status = $('#welcomeSavedStatus');
+  if (status) status.style.display = 'none';
+});
+
+$('#welcomeSaveBtn')?.addEventListener('click', async () => {
+  const ta = $('#welcomeMessage');
+  const saveBtn = $('#welcomeSaveBtn');
+  const status = $('#welcomeSavedStatus');
+  const user = getUser();
+  if (!ta || !user) return;
+
+  const value = (ta.value || '').trim().slice(0, 500);
+  if (user.isDemo) {
+    showToast('Demo mode — log in to save your message');
+    return;
+  }
+  if (!sb) {
+    showToast('Connection lost — refresh the page');
+    return;
+  }
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving…';
+  try {
+    const { error } = await sb
+      .from('hosts')
+      .update({ welcome_message: value || null })
+      .eq('slug', user.slug);
+    if (error) throw error;
+    user.welcome_message = value;
+    if (status) {
+      status.style.display = '';
+      setTimeout(() => { if (status) status.style.display = 'none'; }, 3500);
+    }
+    showToast('Welcome message saved');
+    track('Welcome Message Saved', { length: value.length });
+  } catch (e) {
+    console.error('Save welcome message failed:', e);
+    showToast('Save failed — try again');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save message';
+  }
+});
 
 /* ============ PRINT ASSETS ============ */
 // Each "Open print preview" button opens the matching print page in a new tab,

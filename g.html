@@ -157,6 +157,43 @@
   }
   .card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(15,23,42,.1); }
   .card.fav { border-color: var(--gold); box-shadow: 0 4px 14px rgba(244,185,66,0.22); }
+  .welcome-note {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px 22px 24px;
+    margin: 24px 0 8px;
+    position: relative;
+    box-shadow: 0 4px 14px rgba(15,23,42,.06);
+  }
+  .welcome-note::before {
+    content: '"';
+    position: absolute;
+    top: 4px;
+    left: 18px;
+    font-family: 'Caveat', cursive;
+    font-size: 60px;
+    line-height: 1;
+    color: var(--primary);
+    opacity: 0.4;
+  }
+  .welcome-note .body {
+    font-family: 'Caveat', cursive;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--ink);
+    padding-left: 24px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .welcome-note .from {
+    margin-top: 14px;
+    padding-left: 24px;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .welcome-note .from strong { color: var(--ink); }
   .card.fav .star-ribbon {
     position: absolute; top: 10px; right: 10px;
     background: var(--gold); color: white;
@@ -474,6 +511,17 @@ function renderActivities() {
 
   let html = '';
 
+  // WELCOME NOTE (only when host has set a personal message)
+  if (HOST.welcome_message && typeof HOST.welcome_message === 'string' && HOST.welcome_message.trim()) {
+    const firstName = (HOST.name || 'your host').split(' ')[0];
+    html += `
+      <div class="welcome-note">
+        <div class="body">${escapeHtml(HOST.welcome_message.trim())}</div>
+        <div class="from">— <strong>${escapeHtml(firstName)}</strong></div>
+      </div>
+    `;
+  }
+
   // FAVORITES SECTION (only when host has favorites AND we're not filtered, OR favs match filter)
   // Show favs even when filtered? Yes — they're hand-picked, deserve persistent visibility.
   if (favItems.length > 0) {
@@ -550,7 +598,7 @@ async function init() {
   } catch (err) {
     console.warn('Host lookup failed, using fallback:', err);
     // Fallback: use slug-only with miami as default zone
-    HOST = { slug, name: 'your host', zone: 'miami', favorites: [] };
+    HOST = { slug, name: 'your host', zone: 'miami', favorites: [], welcome_message: null };
   }
 
   // Fetch activities catalog
