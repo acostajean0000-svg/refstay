@@ -21,9 +21,22 @@ const COMMISSION_RATE = 0.05;          // 5% to host
 const REF_PREFIX = 'miamistylerentals-'; // strip this to get the host slug
 
 module.exports = async (req, res) => {
+  // CORS — allow any origin to POST. Security comes from the secret in the URL,
+  // NOT from origin checking (FareHarbor servers won't send a meaningful Origin
+  // anyway). This lets the standalone webhook-tester.html work from file:// too.
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-refstay-secret');
+  res.setHeader('Access-Control-Max-Age', '86400');
+
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+
   // 1. Method guard
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
+    res.setHeader('Allow', 'POST, OPTIONS');
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
@@ -127,29 +140,59 @@ module.exports = async (req, res) => {
     updated_at: new Date().toISOString(),
   };
 
+  // DEBUG: force .select() so we get the inserted row back. If insert/upsert
+  // is silently dropping the row, this will reveal it (data will be empty).
+  let upsertResult;
   try {
-    let result;
     if (fhUuid) {
-      // Upsert by unique fh_booking_uuid
-      result = await supabase
+      upsertResult = await supabase
         .from('bookings')
-        .upsert(payload, { onConflict: 'fh_booking_uuid' });
+        .upsert(payload, { onConflict: 'fh_booking_uuid' })
+        .select();
     } else {
-      // No UUID — fall back to plain insert
-      result = await supabase.from('bookings').insert(payload);
+      upsertResult = await supabase
+        .from('bookings')
+        .insert(payload)
+        .select();
     }
-    if (result.error) throw result.error;
   } catch (e) {
-    console.error('[webhook] Upsert failed:', e);
-    return res.status(500).json({ error: 'DB write failed', detail: String(e.message || e) });
+    console.error('[webhook] Upsert threw:', e);
+    return res.status(500).json({
+      error: 'DB write threw',
+      detail: String(e.message || e),
+      payload_keys: Object.keys(payload),
+    });
   }
 
-  // Always 200 OK so FareHarbor doesn't keep retrying
+  // Log everything for Vercel logs
+  console.log('[webhook] Upsert result:', JSON.stringify({
+    error: upsertResult.error,
+    status: upsertResult.status,
+    statusText: upsertResult.statusText,
+    data_length: Array.isArray(upsertResult.data) ? upsertResult.data.length : 'not-array',
+    data_first: Array.isArray(upsertResult.data) && upsertResult.data[0] ? upsertResult.data[0] : null,
+  }));
+
+  if (upsertResult.error) {
+    return res.status(500).json({
+      error: 'DB write failed',
+      detail: upsertResult.error.message || upsertResult.error,
+      code: upsertResult.error.code,
+      hint: upsertResult.error.hint,
+      pg_status: upsertResult.status,
+    });
+  }
+
+  const insertedRow = Array.isArray(upsertResult.data) && upsertResult.data[0];
+
   return res.status(200).json({
     ok: true,
     host_slug: hostSlug,
     commission,
     status: dbStatus,
+    inserted_id: insertedRow ? insertedRow.id : null,
+    inserted_row: insertedRow || null,
+    debug_pg_status: upsertResult.status,
   });
 };
 
