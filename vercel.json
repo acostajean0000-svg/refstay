@@ -12,6 +12,8 @@
     { "src": "/for-hosts/?$", "dest": "/for-hosts.html" },
     { "src": "/para-anfitriones/?$", "dest": "/para-anfitriones.html" },
     { "src": "/blog/?$", "dest": "/blog/index.html" },
+    { "src": "/blog/es/?$", "dest": "/blog/es/index.html" },
+    { "src": "/blog/es/([a-z0-9-]+)/?$", "dest": "/blog/es/$1.html" },
     { "src": "/blog/([a-z0-9-]+)/?$", "dest": "/blog/$1.html" },
     { "src": "/hosts/?$", "headers": { "Location": "/for-hosts" }, "status": 301 },
     { "src": "/earn/?$", "headers": { "Location": "/for-hosts" }, "status": 301 },
