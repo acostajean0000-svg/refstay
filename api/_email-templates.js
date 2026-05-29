@@ -246,9 +246,44 @@ function paymentSent({ name, amount, method, destination, booking_count }) {
   };
 }
 
+// ============================================================================
+// 4. NEW MESSAGE EMAIL — sent when host writes to admin OR admin replies to host
+// ============================================================================
+function newMessage({ recipient_name, from_label, body, is_admin_reply }) {
+  const firstName = (recipient_name || 'friend').split(' ')[0];
+  const ctaText = is_admin_reply ? 'Read & reply →' : 'Read & reply in admin →';
+  const ctaUrl = is_admin_reply ? `${BRAND.url}/dashboard.html` : `${BRAND.url}/admin`;
+  const title = is_admin_reply
+    ? `New reply from ${from_label || 'the Refstay team'}`
+    : `New message from ${from_label || 'a host'}`;
+
+  const html_body = `
+    <div style="font-size:36px;margin-bottom:6px;">💬</div>
+    <h1 style="font-size:24px;font-weight:800;letter-spacing:-0.02em;margin:0 0 12px;color:${BRAND.ink};">${escape(title)}</h1>
+    <p style="font-size:15px;color:${BRAND.ink2};margin:0 0 18px;">Hi ${escape(firstName)} — you have a new message:</p>
+
+    <div style="background:${BRAND.bgSoft};border-left:4px solid ${BRAND.primary};border-radius:0 10px 10px 0;padding:16px 20px;margin:0 0 22px;font-size:15px;color:${BRAND.ink};line-height:1.6;white-space:pre-wrap;">
+      ${escape((body || '').slice(0, 1000))}${body && body.length > 1000 ? '…' : ''}
+    </div>
+
+    ${ctaButton(ctaText, ctaUrl)}
+
+    <p style="font-size:13px;color:${BRAND.muted};margin:18px 0 0;line-height:1.5;">Reply by opening the conversation in your ${is_admin_reply ? 'dashboard' : 'admin panel'}.</p>
+  `;
+
+  return {
+    subject: title,
+    html: wrap({
+      preview: (body || '').slice(0, 140),
+      body: html_body,
+    }),
+  };
+}
+
 module.exports = {
   welcome,
   newBooking,
   paymentSent,
+  newMessage,
   BRAND,
 };
