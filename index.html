@@ -1200,6 +1200,17 @@ form.addEventListener('submit', async e => {
       fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: fd });
     } catch (notifyErr) { /* non-fatal */ }
 
+    // Fire-and-forget: send welcome email via Resend. The host row is auto-created
+    // by the Supabase trigger within ~1s, so we wait briefly before sending so
+    // /api/email-welcome can look up the slug from hosts table.
+    setTimeout(() => {
+      fetch('/api/email-welcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name }),
+      }).catch(() => {}); // silent failure — email is non-critical
+    }, 1500);
+
     // Show success state
     $('#welcomeName').textContent = name.split(' ')[0];
     $('#successEmail').textContent = email;

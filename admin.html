@@ -433,7 +433,7 @@ async function loadPayoutQueue() {
         <td class="num" style="color: var(--accent); font-size: 16px;">${fmtMoney(h.total)}</td>
         <td class="center">
           ${methodOk ? `
-            <button class="btn success btn-sm" data-mark-paid="${escapeHtml(h.host_id)}" data-amount="${h.total}" data-slug="${escapeHtml(h.host_slug)}">✓ Mark paid</button>
+            <button class="btn success btn-sm" data-mark-paid="${escapeHtml(h.host_id)}" data-amount="${h.total}" data-count="${h.count}" data-slug="${escapeHtml(h.host_slug)}">✓ Mark paid</button>
           ` : `<span style="font-size:11px;color:var(--muted);">need payout info</span>`}
         </td>
       </tr>`;
@@ -473,6 +473,7 @@ async function markPaid(btn) {
   const hostId = btn.dataset.markPaid;
   const amount = Number(btn.dataset.amount);
   const slug = btn.dataset.slug;
+  const bookingCount = Number(btn.dataset.count) || null;
   if (!confirm(`Mark all pending bookings for ${slug} as PAID? This sends ${fmtMoney(amount)} from their balance to paid status. Make sure you've already sent the payment.`)) return;
 
   btn.disabled = true;
@@ -480,8 +481,23 @@ async function markPaid(btn) {
   try {
     const { data, error } = await sb.rpc('admin_mark_paid', { target_host_id: hostId });
     if (error) throw error;
-    showToast(`✓ Marked ${slug} as paid — ${fmtMoney(amount)}`, 'success');
-    // Reload payout queue + overview
+
+    // Fire-and-forget: send "payment sent" email to the host
+    (async () => {
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        const token = session && session.access_token;
+        if (!token) return;
+        const res = await fetch('/api/email-paid', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ host_id: hostId, amount, booking_count: bookingCount }),
+        });
+        if (res.ok) console.log('[admin] paid email sent');
+      } catch (e) { console.warn('[admin] paid email failed:', e); }
+    })();
+
+    showToast(`✓ Marked ${slug} as paid — ${fmtMoney(amount)} (email sent)`, 'success');
     loadPayoutQueue();
     loadOverview();
   } catch (e) {

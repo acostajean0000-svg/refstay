@@ -182,6 +182,21 @@ module.exports = async (req, res) => {
   // Log a compact line for Vercel logs (audit trail without spamming)
   console.log(`[webhook] OK host=${hostSlug} uuid=${fhUuid} commission=${commission} status=${dbStatus} id=${insertedRow ? insertedRow.id : 'n/a'}`);
 
+  // Fire-and-forget: send "new booking" email to the host. We don't await it
+  // or block the response — even if Resend is down, FareHarbor gets 200 OK
+  // and the booking row is safe in Supabase. Emails can be re-sent later.
+  if (hostId && dbStatus === 'pending') {
+    sendNewBookingEmail({
+      supabase,
+      hostId,
+      customer_name: customerFirst,
+      activity,
+      gross_amount: grossAmount,
+      commission,
+      booking_date: bookingDate,
+    }).catch(e => console.warn('[webhook] email send failed (non-blocking):', e.message || e));
+  }
+
   // Concise success response (FareHarbor only needs to know we accepted it).
   return res.status(200).json({
     ok: true,
@@ -191,6 +206,38 @@ module.exports = async (req, res) => {
     booking_id: insertedRow ? insertedRow.id : null,
   });
 };
+
+// Fire-and-forget email notification: looks up the host's email + name, then
+// sends the "new booking" template via Resend. Failures are logged but never
+// block the webhook response.
+async function sendNewBookingEmail({ supabase, hostId, customer_name, activity, gross_amount, commission, booking_date }) {
+  try {
+    const { data: host } = await supabase
+      .from('hosts')
+      .select('email, name')
+      .eq('id', hostId)
+      .maybeSingle();
+    if (!host || !host.email) {
+      console.log('[webhook] no host email found, skipping notification');
+      return;
+    }
+    const { sendEmail } = require('./_email-client');
+    const templates = require('./_email-templates');
+    const { subject, html } = templates.newBooking({
+      name: host.name,
+      customer_name,
+      activity,
+      gross_amount,
+      commission,
+      booking_date,
+    });
+    const result = await sendEmail({ to: host.email, subject, html });
+    if (result.ok) console.log('[webhook] booking email sent id=' + result.id);
+    else console.warn('[webhook] booking email failed:', result.error);
+  } catch (e) {
+    console.warn('[webhook] booking email threw:', e.message || e);
+  }
+}
 
 // ----- helpers -----
 
