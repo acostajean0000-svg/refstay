@@ -66,6 +66,38 @@
     <priority>0.85</priority>
     <lastmod>2026-05-28</lastmod>
   </url>
+  <!-- ====== ZONES (EN) ====== -->
+  <url><loc>https://refstay.com/zones</loc><changefreq>weekly</changefreq><priority>0.9</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/miami</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/fort-lauderdale</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/palm-beach</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/florida-keys</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/gulf-coast</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/space-coast</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/jacksonville</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/central-florida</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/northeast-florida</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/orlando</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/hawaii</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/cancun</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/zones/punta-cana</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+
+  <!-- ====== DESTINOS (ES) ====== -->
+  <url><loc>https://refstay.com/destinos</loc><changefreq>weekly</changefreq><priority>0.9</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/miami</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/fort-lauderdale</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/palm-beach</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/florida-keys</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/gulf-coast</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/space-coast</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/jacksonville</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/central-florida</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/northeast-florida</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/orlando</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/hawaii</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/cancun</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+  <url><loc>https://refstay.com/destinos/punta-cana</loc><changefreq>monthly</changefreq><priority>0.85</priority><lastmod>2026-05-30</lastmod></url>
+
   <url>
     <loc>https://refstay.com/dashboard.html</loc>
     <changefreq>monthly</changefreq>

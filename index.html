@@ -227,6 +227,19 @@
   .step-illu { position: absolute; bottom: -20px; right: -20px; font-size: 96px; opacity: 0.06; }
   @media (max-width: 800px) { .steps { grid-template-columns: 1fr; } }
 
+  /* ============ COVERAGE ============ */
+  .zone-card {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; background: white; border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 14px; text-decoration: none; color: var(--ink); text-align: center;
+    font-weight: 700; font-size: 14px; line-height: 1.2;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .zone-card:hover {
+    transform: translateY(-3px); box-shadow: 0 10px 24px rgba(15,23,42,.08);
+    border-color: var(--primary);
+  }
+
   /* ============ CALCULATOR ============ */
   .calc-section { background: linear-gradient(180deg, var(--bg-soft) 0%, white 100%); }
   .calculator {
@@ -581,6 +594,37 @@
   </div>
 </section>
 
+<!-- ============ COVERAGE ============ -->
+<section class="section" id="coverage" style="background:linear-gradient(180deg,#FFFCFA 0%,#F0FAFC 100%);">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow" data-i18n="coverage.eyebrow">Where Refstay works</div>
+      <h2 data-i18n="coverage.title.html" data-i18n-html>From Miami to Maui — <span class="grad">13 destinations covered</span></h2>
+      <p class="section-sub" data-i18n="coverage.sub">Wherever your guests vacation, Refstay has activity partners ready. Florida's hottest beaches, Hawaii's islands, and the Caribbean's top resort zones.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:36px;max-width:1100px;margin-left:auto;margin-right:auto;">
+      <a href="https://miamijetskiboatrentals.com/miami-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🏖️</span><span>Miami</span></a>
+      <a href="https://miamijetskiboatrentals.com/broward-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">⚓</span><span>Fort Lauderdale</span></a>
+      <a href="https://miamijetskiboatrentals.com/palm-beach-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🌴</span><span>Palm Beach</span></a>
+      <a href="https://miamijetskiboatrentals.com/keys-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🏝️</span><span>Florida Keys</span></a>
+      <a href="https://miamijetskiboatrentals.com/gulf-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🌊</span><span>Gulf Coast</span></a>
+      <a href="https://miamijetskiboatrentals.com/space-coast-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🚀</span><span>Space Coast</span></a>
+      <a href="https://miamijetskiboatrentals.com/jacksonville-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🏙️</span><span>Jacksonville</span></a>
+      <a href="https://miamijetskiboatrentals.com/central-florida-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🏞️</span><span>Central FL</span></a>
+      <a href="https://miamijetskiboatrentals.com/northeast-florida-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🌊</span><span>Northeast FL</span></a>
+      <a href="https://miamijetskiboatrentals.com/orlando-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🎢</span><span>Orlando</span></a>
+      <a href="https://miamijetskiboatrentals.com/hawaii-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🌺</span><span>Hawaii</span></a>
+      <a href="https://miamijetskiboatrentals.com/cancun-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🇲🇽</span><span>Cancún</span></a>
+      <a href="https://miamijetskiboatrentals.com/punta-cana-activities" target="_blank" rel="noopener" class="zone-card"><span style="font-size:30px;line-height:1;">🇩🇴</span><span>Punta Cana</span></a>
+    </div>
+
+    <p style="text-align:center;margin-top:32px;font-size:14px;color:#64748B;" data-i18n-html="coverage.add">
+      Don't see your zone? <a href="mailto:support@refstay.com" style="color:#FF385C;font-weight:600;text-decoration:none;">Drop us a line</a> — new regions added every month.
+    </p>
+  </div>
+</section>
+
 <!-- ============ CALCULATOR ============ -->
 <section class="section calc-section" id="calculator">
   <div class="container">
@@ -898,21 +942,30 @@
         </ul>
       </div>
       <div>
-        <h5>Company</h5>
+        <h5>Hosts</h5>
         <ul>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Blog</a></li>
-          <li><a href="#">Press</a></li>
-          <li><a href="#">Careers</a></li>
+          <li><a href="/for-hosts">For hosts (EN)</a></li>
+          <li><a href="/para-anfitriones">Para anfitriones (ES)</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/zones">All zones</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Zones</h5>
+        <ul>
+          <li><a href="/zones/miami">Miami</a></li>
+          <li><a href="/zones/florida-keys">Florida Keys</a></li>
+          <li><a href="/zones/hawaii">Hawaii</a></li>
+          <li><a href="/zones/punta-cana">Punta Cana</a></li>
+          <li><a href="/zones">+ 9 more →</a></li>
         </ul>
       </div>
       <div>
         <h5>Legal</h5>
         <ul>
-          <li><a href="#">Terms</a></li>
-          <li><a href="#">Privacy</a></li>
-          <li><a href="#">Cookies</a></li>
-          <li><a href="#">Contact</a></li>
+          <li><a href="/terms">Terms</a></li>
+          <li><a href="/privacy">Privacy</a></li>
+          <li><a href="mailto:support@refstay.com">Contact</a></li>
         </ul>
       </div>
     </div>

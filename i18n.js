@@ -41,6 +41,12 @@
     'how.step2.title':      { en: 'Drop it where guests look',   es: 'Colócalo donde miran tus huéspedes' },
     'how.step3.title':      { en: 'Get paid every month',        es: 'Cobra cada mes' },
 
+    // ----- Coverage -----
+    'coverage.eyebrow':     { en: 'Where Refstay works',         es: 'Dónde funciona Refstay' },
+    'coverage.title.html':  { en: 'From Miami to Maui — <span class="grad">13 destinations covered</span>', es: 'De Miami a Maui — <span class="grad">13 destinos cubiertos</span>' },
+    'coverage.sub':         { en: "Wherever your guests vacation, Refstay has activity partners ready. Florida's hottest beaches, Hawaii's islands, and the Caribbean's top resort zones.", es: 'Donde sea que tus huéspedes vacacionen, Refstay tiene operadores listos. Las mejores playas de Florida, las islas de Hawaii, y las zonas turísticas top del Caribe.' },
+    'coverage.add':         { en: "Don't see your zone? <a href=\"mailto:support@refstay.com\" style=\"color:#FF385C;font-weight:600;text-decoration:none;\">Drop us a line</a> — new regions added every month.", es: '¿No ves tu zona? <a href="mailto:support@refstay.com" style="color:#FF385C;font-weight:600;text-decoration:none;">Escríbenos</a> — agregamos zonas nuevas cada mes.' },
+
     // ----- Calculator -----
     'calc.title':           { en: 'Punch in your numbers.',     es: 'Pon tus números.' },
     'calc.title2':          { en: 'See your payout.',           es: 'Mira lo que ganas.' },
