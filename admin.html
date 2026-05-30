@@ -368,6 +368,54 @@
 
 </main>
 
+<!-- ============ HOST DETAIL MODAL ============ -->
+<div id="hostModal" style="display:none; position:fixed; inset:0; z-index:300; background:rgba(11,16,32,0.55); backdrop-filter:blur(6px); align-items:flex-start; justify-content:center; padding:24px; overflow-y:auto;">
+  <div style="background:white; border-radius:18px; max-width:820px; width:100%; max-height:92vh; overflow-y:auto; position:relative; box-shadow:0 24px 80px rgba(0,0,0,0.25); margin:auto;">
+    <button id="hostCloseBtn" style="position:absolute; top:16px; right:16px; background:var(--bg-soft); border:none; width:34px; height:34px; border-radius:999px; cursor:pointer; font-size:18px; color:var(--ink-2); display:grid; place-items:center; z-index:2;">✕</button>
+    <div id="hostDetailContent">
+      <div class="empty"><div class="icon">⏳</div><div>Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hd-section { padding: 22px 28px; border-bottom: 1px solid var(--border); }
+  .hd-section:last-child { border-bottom: none; }
+  .hd-section h4 { font-size: 13px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 14px; }
+  .hd-header { padding: 28px 28px 20px; background: linear-gradient(135deg, #FFF8F4 0%, #ECFDF5 100%); border-bottom: 1px solid var(--border); }
+  .hd-header .slug { font-family: 'Space Grotesk', monospace; font-size: 13px; color: var(--muted); font-weight: 700; }
+  .hd-header h2 { font-size: 26px; font-weight: 800; margin: 4px 0 6px; }
+  .hd-header .email { font-size: 14px; color: var(--ink-2); }
+  .hd-header .badges { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+  .hd-header .badge { background: var(--bg); border: 1px solid var(--border); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; color: var(--ink-2); }
+  .hd-header .badge.admin { background: var(--gold,#F4B942); color: white; border-color: var(--gold,#F4B942); }
+  .hd-header .badge.active { background: rgba(0,217,126,0.12); color: #047857; border-color: rgba(0,217,126,0.3); }
+  .hd-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; padding: 20px 28px; background: var(--bg-soft); }
+  .hd-kpi { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .hd-kpi .lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; margin-bottom: 4px; }
+  .hd-kpi .val { font-family: 'Space Grotesk'; font-weight: 800; font-size: 18px; line-height: 1; color: var(--ink); }
+  .hd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .hd-field .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; margin-bottom: 4px; }
+  .hd-field .val { font-size: 14px; font-weight: 600; color: var(--ink); word-break: break-word; }
+  .hd-field .val.muted { color: var(--muted); font-weight: 500; font-style: italic; }
+  .hd-msg { background: var(--bg-soft); border-radius: 8px; padding: 10px 12px; margin-bottom: 6px; font-size: 13px; line-height: 1.5; }
+  .hd-msg.host { border-left: 3px solid var(--ink); }
+  .hd-msg.admin { border-left: 3px solid var(--primary); }
+  .hd-msg .meta { font-size: 11px; color: var(--muted); font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .hd-event-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13px; border-bottom: 1px solid var(--border); }
+  .hd-event-row:last-child { border-bottom: none; }
+  .hd-event-row .icon { font-size: 16px; width: 22px; text-align: center; }
+  .hd-event-row .label { flex: 1; color: var(--ink); font-weight: 600; }
+  .hd-event-row .time { font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .hd-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .hd-actions .btn { padding: 8px 14px; font-size: 12px; }
+  .clickable-row { cursor: pointer; }
+  .clickable-row:hover { background: var(--bg-soft) !important; }
+  @media (max-width: 600px) {
+    .hd-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
 <div class="toast" id="toast"><span id="toastMsg">Done!</span></div>
 
 <script>
@@ -670,7 +718,7 @@ async function loadHosts() {
       const stats = bookingsByHost.get(h.id) || { count: 0, earnings: 0, pending: 0 };
       const clicks = clicksBySlug.get(h.slug) || 0;
       const hasPayout = !!h.payout_method;
-      html += `<tr>
+      html += `<tr class="clickable-row" data-host-id="${escapeHtml(h.id)}" data-host-slug="${escapeHtml(h.slug)}">
         <td>
           <div class="slug">${escapeHtml(h.slug)}${h.is_admin ? ' <span style="background:var(--gold);color:white;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:800;">ADMIN</span>' : ''}</div>
           <div class="email">${escapeHtml(h.name || '—')} · ${escapeHtml(h.email || '')}</div>
@@ -686,6 +734,10 @@ async function loadHosts() {
     });
     html += '</tbody></table>';
     $('#hostsTableWrap').innerHTML = html;
+    // Wire row clicks
+    $('#hostsTableWrap').querySelectorAll('.clickable-row').forEach(row => {
+      row.addEventListener('click', () => openHostDetail(row.dataset.hostId, row.dataset.hostSlug));
+    });
   } catch (e) {
     console.error('hosts failed:', e);
     $('#hostsTableWrap').innerHTML = `<div class="empty"><div class="icon">❌</div><div>Failed to load hosts.</div></div>`;
@@ -835,7 +887,7 @@ async function loadScorecard() {
     scores.forEach(s => {
       const tick = b => b ? '<span style="color:var(--accent);">✓</span>' : '<span style="color:#DC2626;">—</span>';
       const scoreColor = s.activation_score >= 75 ? 'var(--accent)' : s.activation_score >= 40 ? 'var(--gold,#F4B942)' : '#DC2626';
-      html += `<tr>
+      html += `<tr class="clickable-row" data-host-id="${escapeHtml(s.host_id)}" data-host-slug="${escapeHtml(s.slug)}">
         <td><div class="slug">${escapeHtml(s.slug)}</div><div class="email">${escapeHtml(s.name || '—')}</div></td>
         <td class="center">${tick(s.has_listing)}</td>
         <td class="center">${tick(s.has_payout)}</td>
@@ -850,6 +902,10 @@ async function loadScorecard() {
     });
     html += '</tbody></table>';
     $('#scorecardWrap').innerHTML = html;
+    // Wire row clicks
+    $('#scorecardWrap').querySelectorAll('.clickable-row').forEach(row => {
+      row.addEventListener('click', () => openHostDetail(row.dataset.hostId, row.dataset.hostSlug));
+    });
   } catch (e) {
     console.error('scorecard failed:', e);
     $('#scorecardWrap').innerHTML = `<div class="empty"><div class="icon">❌</div><div>Failed to load scorecard</div></div>`;
@@ -920,6 +976,240 @@ async function loadPrintActivity() {
     console.error('print activity failed:', e);
     $('#printWrap').innerHTML = `<div class="empty"><div class="icon">❌</div><div>Failed to load print activity</div></div>`;
   }
+}
+
+/* ============ PER-HOST DETAIL MODAL ============ */
+const EVENT_LABELS = {
+  'print_opened':   { icon: '🖨️', label: 'Opened print asset' },
+  'link_copied':    { icon: '🔗', label: 'Copied link' },
+  'qr_downloaded':  { icon: '📷', label: 'Downloaded QR' },
+  'login':          { icon: '🔑', label: 'Logged in' },
+  'favorite_added': { icon: '⭐', label: 'Added favorite' },
+  'welcome_set':    { icon: '✍️', label: 'Set welcome message' },
+  'payout_added':   { icon: '💰', label: 'Added payout method' },
+  'whatsapp_share': { icon: '📱', label: 'Shared on WhatsApp' },
+  'alias_created':  { icon: '🔗', label: 'Created tracking alias' },
+};
+
+function _hostEscapeHandler(e) { if (e.key === 'Escape') closeHostDetail(); }
+
+function closeHostDetail() {
+  $('#hostModal').style.display = 'none';
+  document.removeEventListener('keydown', _hostEscapeHandler);
+}
+
+$('#hostCloseBtn')?.addEventListener('click', closeHostDetail);
+$('#hostModal')?.addEventListener('click', (e) => {
+  if (e.target.id === 'hostModal') closeHostDetail();
+});
+
+async function openHostDetail(hostId, slug) {
+  const modal = $('#hostModal');
+  modal.style.display = 'flex';
+  $('#hostDetailContent').innerHTML = `<div class="empty" style="padding:60px 20px;"><div class="icon">⏳</div><div>Loading…</div></div>`;
+  document.addEventListener('keydown', _hostEscapeHandler);
+
+  try {
+    const [hostRes, bookingsRes, clicksRes, activityRes, aliasesRes, messagesRes] = await Promise.all([
+      sb.from('hosts').select('id, slug, name, email, listing, zone, joined, payout_method, payout_destination, payout_recipient_name, payout_country, welcome_message, favorites, onboarding_done, is_admin').eq('id', hostId).single(),
+      sb.from('bookings').select('fh_booking_uuid, activity, customer_name, amount, gross_amount, status, booking_date, created_at').eq('host_id', hostId).order('created_at', { ascending: false }).limit(20),
+      sb.from('clicks').select('kind, ts, referrer').eq('host_slug', slug).order('ts', { ascending: false }).limit(100),
+      sb.from('host_activity').select('event_type, event_data, created_at').eq('host_slug', slug).order('created_at', { ascending: false }).limit(20),
+      sb.from('host_aliases').select('alias, label, created_at').eq('host_id', hostId).order('created_at', { ascending: true }),
+      sb.from('messages').select('id, from_role, body, created_at').eq('host_id', hostId).order('created_at', { ascending: false }).limit(3),
+    ]);
+
+    if (hostRes.error) throw hostRes.error;
+    renderHostDetail(hostRes.data, bookingsRes.data || [], clicksRes.data || [], activityRes.data || [], aliasesRes.data || [], messagesRes.data || []);
+  } catch (e) {
+    console.error('host detail failed:', e);
+    $('#hostDetailContent').innerHTML = `<div class="empty" style="padding:60px 20px;"><div class="icon">❌</div><div>Failed to load host details</div></div>`;
+  }
+}
+
+function renderHostDetail(host, bookings, clicks, activity, aliases, messages) {
+  const totalEarned = bookings.reduce((s, b) => s + (Number(b.amount) || 0), 0);
+  const pendingEarned = bookings.filter(b => b.status === 'pending').reduce((s, b) => s + (Number(b.amount) || 0), 0);
+  const paidEarned = bookings.filter(b => b.status === 'paid').reduce((s, b) => s + (Number(b.amount) || 0), 0);
+  const lastActive = activity[0] ? activity[0].created_at : null;
+  const referralLink = `https://refstay.com/r/${host.slug}`;
+  const guestLink = `https://refstay.com/g/${host.slug}`;
+
+  // Compact masked payout destination
+  function maskDest(value, method) {
+    if (!value) return '—';
+    if (method === 'zelle' && /^\+?\d/.test(value)) {
+      const digits = value.replace(/\D/g, '');
+      if (digits.length >= 4) return '***-***-' + digits.slice(-4);
+    }
+    const at = value.indexOf('@');
+    if (at > 1) return value[0] + '***' + value.slice(at);
+    return '***';
+  }
+
+  // Clicks last 14d for chart
+  const days = [];
+  const buckets = {};
+  clicks.forEach(c => {
+    const day = (c.ts || '').slice(0, 10);
+    if (!day) return;
+    buckets[day] = (buckets[day] || 0) + 1;
+  });
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000);
+    const key = d.toISOString().slice(0, 10);
+    days.push({ key, label: (d.getMonth() + 1) + '/' + d.getDate(), n: buckets[key] || 0 });
+  }
+  const maxN = Math.max(1, ...days.map(d => d.n));
+  const chartHtml = days.map(d => {
+    const h = d.n > 0 ? (d.n / maxN) * 100 : 0;
+    return `<div style="display:flex;flex-direction:column-reverse;align-items:center;gap:3px;height:60px;" title="${d.label}: ${d.n}">
+      ${d.n > 0 ? `<div style="width:100%;height:${h}%;background:var(--grad-hero);border-radius:3px 3px 0 0;min-height:3px;"></div>` : '<div style="width:100%;height:3px;background:var(--border);border-radius:2px;"></div>'}
+    </div>`;
+  }).join('');
+
+  const html = `
+    <!-- HEADER -->
+    <div class="hd-header">
+      <div class="slug">refstay.com/r/${escapeHtml(host.slug)}</div>
+      <h2>${escapeHtml(host.name || host.slug)}</h2>
+      <div class="email">${escapeHtml(host.email || '')}</div>
+      <div class="badges">
+        ${host.is_admin ? '<span class="badge admin">⚡ ADMIN</span>' : ''}
+        ${host.payout_method ? '<span class="badge active">✓ Payout ready</span>' : '<span class="badge" style="background:rgba(220,38,38,0.08);color:#991B1B;border-color:#FCA5A5;">⚠ No payout</span>'}
+        <span class="badge">📍 ${escapeHtml(host.zone || '—')}</span>
+        <span class="badge">Joined ${fmtDate(host.joined ? host.joined.slice(0,10) : null)}</span>
+      </div>
+    </div>
+
+    <!-- KPI strip -->
+    <div class="hd-kpi-grid">
+      <div class="hd-kpi"><div class="lbl">Clicks (lifetime)</div><div class="val">${fmtNum(clicks.length)}</div></div>
+      <div class="hd-kpi"><div class="lbl">Bookings</div><div class="val">${fmtNum(bookings.length)}</div></div>
+      <div class="hd-kpi"><div class="lbl">Total earned</div><div class="val" style="color:var(--accent);">${fmtMoney(totalEarned)}</div></div>
+      <div class="hd-kpi"><div class="lbl">Pending</div><div class="val">${fmtMoney(pendingEarned)}</div></div>
+      <div class="hd-kpi"><div class="lbl">Paid out</div><div class="val">${fmtMoney(paidEarned)}</div></div>
+      <div class="hd-kpi"><div class="lbl">Last active</div><div class="val" style="font-size:13px;">${fmtRelative(lastActive)}</div></div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="hd-section">
+      <h4>Quick actions</h4>
+      <div class="hd-actions">
+        <button class="btn primary" data-hd-message="${escapeHtml(host.id)}" data-hd-slug="${escapeHtml(host.slug)}" data-hd-name="${escapeHtml(host.name || host.slug)}" data-hd-email="${escapeHtml(host.email || '')}">💬 Open conversation</button>
+        <button class="btn btn-ghost" data-copy="${escapeHtml(referralLink)}">🔗 Copy /r/ link</button>
+        <button class="btn btn-ghost" data-copy="${escapeHtml(guestLink)}">🌴 Copy /g/ link</button>
+        <a class="btn btn-ghost" href="${escapeHtml(guestLink)}" target="_blank" rel="noopener">↗ View /g/ page</a>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="hd-section">
+      <h4>Profile</h4>
+      <div class="hd-grid">
+        <div class="hd-field"><div class="lbl">Listing URL</div><div class="val ${host.listing ? '' : 'muted'}">${host.listing ? `<a href="${escapeHtml(host.listing)}" target="_blank" rel="noopener" style="color:var(--primary);font-weight:600;">${escapeHtml(host.listing)}</a>` : 'Not set'}</div></div>
+        <div class="hd-field"><div class="lbl">Zone</div><div class="val">${escapeHtml(host.zone || '—')}</div></div>
+        <div class="hd-field" style="grid-column:1/-1;"><div class="lbl">Welcome message</div><div class="val ${host.welcome_message ? '' : 'muted'}" style="font-family:'Caveat',cursive;font-size:18px;line-height:1.4;">${host.welcome_message ? '"' + escapeHtml(host.welcome_message) + '"' : 'Not set'}</div></div>
+      </div>
+    </div>
+
+    <!-- PAYOUT -->
+    <div class="hd-section">
+      <h4>Payout details</h4>
+      <div class="hd-grid">
+        <div class="hd-field"><div class="lbl">Method</div><div class="val ${host.payout_method ? '' : 'muted'}">${host.payout_method ? methodLabel(host.payout_method) : 'Not configured'}</div></div>
+        <div class="hd-field"><div class="lbl">Recipient</div><div class="val ${host.payout_recipient_name ? '' : 'muted'}">${escapeHtml(host.payout_recipient_name || 'Not set')}</div></div>
+        <div class="hd-field"><div class="lbl">Sending to</div><div class="val" style="font-family:'Space Grotesk',monospace;">${escapeHtml(maskDest(host.payout_destination, host.payout_method))}</div></div>
+        <div class="hd-field"><div class="lbl">Country</div><div class="val">${escapeHtml(host.payout_country || '—')}</div></div>
+      </div>
+    </div>
+
+    <!-- ALIASES -->
+    ${aliases.length > 0 ? `<div class="hd-section">
+      <h4>Tracking aliases (${aliases.length})</h4>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        ${aliases.map(a => `<span class="badge-method" style="font-family:'Space Grotesk',monospace;">refstay.com/r/${escapeHtml(a.alias)}${a.label ? ' · ' + escapeHtml(a.label) : ''}</span>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <!-- CLICKS CHART -->
+    <div class="hd-section">
+      <h4>Click activity (last 14 days)</h4>
+      <div style="display:grid;grid-template-columns:repeat(14,1fr);gap:6px;align-items:end;">${chartHtml}</div>
+      <div style="display:grid;grid-template-columns:repeat(14,1fr);gap:6px;text-align:center;font-size:10px;color:var(--muted);margin-top:6px;font-weight:600;">
+        ${days.map((d, i) => `<div>${i % 2 === 0 ? d.label : ''}</div>`).join('')}
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="hd-section">
+      <h4>Recent bookings (${bookings.length})</h4>
+      ${bookings.length === 0 ? '<div style="color:var(--muted);font-size:14px;padding:14px 0;">No bookings yet.</div>' : `
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="border-bottom:2px solid var(--border);text-align:left;">
+          <th style="padding:8px 6px;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Date</th>
+          <th style="padding:8px 6px;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Activity</th>
+          <th style="padding:8px 6px;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;text-align:right;">Amount</th>
+          <th style="padding:8px 6px;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;text-align:center;">Status</th>
+        </tr></thead><tbody>
+        ${bookings.map(b => `<tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:10px 6px;color:var(--ink-2);">${fmtDate(b.booking_date)}</td>
+          <td style="padding:10px 6px;font-weight:600;">${escapeHtml(b.customer_name ? b.customer_name + ' · ' : '')}${escapeHtml(b.activity || '—')}</td>
+          <td style="padding:10px 6px;text-align:right;font-family:'Space Grotesk';font-weight:700;color:var(--accent);">${fmtMoney(b.amount)}</td>
+          <td style="padding:10px 6px;text-align:center;"><span class="badge-status ${b.status}">${b.status}</span></td>
+        </tr>`).join('')}
+        </tbody></table>
+      `}
+    </div>
+
+    <!-- ACTIVITY TIMELINE -->
+    <div class="hd-section">
+      <h4>Recent activity (${activity.length})</h4>
+      ${activity.length === 0 ? '<div style="color:var(--muted);font-size:14px;padding:8px 0;">No activity logged yet.</div>' : activity.slice(0, 12).map(a => {
+        const meta = EVENT_LABELS[a.event_type] || { icon: '•', label: a.event_type };
+        const extra = a.event_data && a.event_data.asset ? ' · ' + a.event_data.asset : '';
+        return `<div class="hd-event-row">
+          <span class="icon">${meta.icon}</span>
+          <span class="label">${escapeHtml(meta.label)}${escapeHtml(extra)}</span>
+          <span class="time">${fmtRelative(a.created_at)}</span>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- MESSAGES PREVIEW -->
+    ${messages.length > 0 ? `<div class="hd-section">
+      <h4>Recent messages (${messages.length})</h4>
+      ${messages.map(m => `<div class="hd-msg ${m.from_role}">
+        <div class="meta">${m.from_role === 'admin' ? 'You (admin)' : escapeHtml(host.name || host.slug)} · ${fmtRelative(m.created_at)}</div>
+        <div>${escapeHtml((m.body || '').slice(0, 200))}${(m.body || '').length > 200 ? '…' : ''}</div>
+      </div>`).join('')}
+      <button class="btn primary" style="margin-top:10px;" data-hd-message="${escapeHtml(host.id)}" data-hd-slug="${escapeHtml(host.slug)}" data-hd-name="${escapeHtml(host.name || host.slug)}" data-hd-email="${escapeHtml(host.email || '')}">💬 Open full conversation →</button>
+    </div>` : ''}
+  `;
+
+  $('#hostDetailContent').innerHTML = html;
+
+  // Wire action buttons
+  document.querySelectorAll('#hostDetailContent [data-copy]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      copy(btn.dataset.copy);
+      const orig = btn.textContent;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    });
+  });
+  document.querySelectorAll('#hostDetailContent [data-hd-message]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      closeHostDetail();
+      // Switch to Messages tab + open thread
+      $$('.tab-row button').forEach(b => b.classList.toggle('on', b.dataset.tab === 'messages'));
+      $$('.tab-pane').forEach(p => p.classList.toggle('on', p.dataset.pane === 'messages'));
+      loadInbox();
+      setTimeout(() => {
+        openThread(btn.dataset.hdMessage, btn.dataset.hdSlug, btn.dataset.hdName, btn.dataset.hdEmail);
+      }, 400);
+    });
+  });
 }
 
 // Tab switching
