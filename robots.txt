@@ -1,5 +1,11 @@
 User-agent: *
 Allow: /
 Disallow: /dashboard
+Disallow: /admin
+Disallow: /api/
+Disallow: /verify
+Disallow: /reset-password
+Disallow: /print/
+Disallow: /r/
 
 Sitemap: https://refstay.com/sitemap.xml
