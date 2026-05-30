@@ -1103,6 +1103,24 @@ function renderHostDetail(host, bookings, clicks, activity, aliases, messages) {
       </div>
     </div>
 
+    <!-- MANUAL EMAIL PUSH -->
+    <div class="hd-section">
+      <h4>📧 Send manual email</h4>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <select id="hdEmailType" style="flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:white;font-size:13px;color:var(--ink);font-family:inherit;cursor:pointer;">
+          <option value="welcome">👋 Welcome (re-send)</option>
+          <option value="onboarding_day3">🚀 Day 3 — first booking nudge</option>
+          <option value="onboarding_day7">⭐ Day 7 — pick favorites</option>
+          <option value="onboarding_day14">💰 Day 14 — welcome book trick</option>
+          <option value="monthly_digest">📊 Monthly digest (last month)</option>
+        </select>
+        <button class="btn primary" id="hdSendEmailBtn" data-hd-host-id="${escapeHtml(host.id)}" data-hd-host-email="${escapeHtml(host.email || '')}">Send →</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px;">
+        Will send to <strong>${escapeHtml(host.email || '—')}</strong>. If host already received this email type, the previous log entry will be replaced (no duplicate prevention).
+      </div>
+    </div>
+
     <!-- PROFILE -->
     <div class="hd-section">
       <h4>Profile</h4>
@@ -1210,6 +1228,59 @@ function renderHostDetail(host, bookings, clicks, activity, aliases, messages) {
       }, 400);
     });
   });
+
+  // Wire manual email send button
+  const sendBtn = document.getElementById('hdSendEmailBtn');
+  if (sendBtn) {
+    sendBtn.addEventListener('click', async () => {
+      const hostId = sendBtn.dataset.hdHostId;
+      const hostEmail = sendBtn.dataset.hdHostEmail;
+      const select = document.getElementById('hdEmailType');
+      const emailType = select.value;
+      if (!hostEmail) {
+        toast('❌ Host has no email on file', 'err');
+        return;
+      }
+      const labelMap = {
+        'welcome': 'Welcome',
+        'onboarding_day3': 'Day 3 nudge',
+        'onboarding_day7': 'Day 7 nudge',
+        'onboarding_day14': 'Day 14 nudge',
+        'monthly_digest': 'Monthly digest',
+      };
+      if (!confirm(`Send "${labelMap[emailType]}" email to ${hostEmail}?\n\nThis will be a real email delivered via Resend.`)) return;
+
+      const origText = sendBtn.textContent;
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending…';
+
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        const token = session && session.access_token;
+        if (!token) throw new Error('No session token');
+
+        const res = await fetch('/api/admin-send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ host_id: hostId, email_type: emailType }),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.ok) {
+          throw new Error(json.error || `HTTP ${res.status}`);
+        }
+        toast(`✅ ${labelMap[emailType]} email sent to ${hostEmail}`);
+      } catch (e) {
+        console.error('manual send failed:', e);
+        toast('❌ Send failed: ' + (e.message || e), 'err');
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = origText;
+      }
+    });
+  }
 }
 
 // Tab switching
