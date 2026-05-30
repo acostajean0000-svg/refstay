@@ -333,6 +333,12 @@
     if (!error && data && data.length > 0) {
       host = data[0];
     }
+    sb.from('host_activity').insert({
+      host_slug: slug,
+      event_type: 'print_opened',
+      event_data: { asset: 'wall-poster' },
+      user_agent: (navigator.userAgent || '').slice(0, 200),
+    }).then(() => {}, () => {});
   } catch (e) { console.error('Supabase fetch failed:', e); }
 
   if (!host) host = { slug, name: 'your host' };

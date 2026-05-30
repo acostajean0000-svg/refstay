@@ -323,6 +323,13 @@
     if (!error && data && data.length > 0) {
       host = data[0];
     }
+    // Log print open event (fire-and-forget for admin metrics)
+    sb.from('host_activity').insert({
+      host_slug: slug,
+      event_type: 'print_opened',
+      event_data: { asset: 'welcome-card' },
+      user_agent: (navigator.userAgent || '').slice(0, 200),
+    }).then(() => {}, () => {});
   } catch (e) { console.error('Supabase fetch failed:', e); }
 
   // Fallback if host not found
