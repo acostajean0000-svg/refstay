@@ -280,10 +280,220 @@ function newMessage({ recipient_name, from_label, body, is_admin_reply }) {
   };
 }
 
+// ============================================================================
+// 5. ONBOARDING DAY 3 — nudge hosts who haven't copied their link yet
+// ============================================================================
+function onboardingDay3({ name, slug }) {
+  const firstName = (name || 'friend').split(' ')[0];
+  const link = `${BRAND.url}/r/${slug}`;
+  const guestPage = `${BRAND.url}/g/${slug}`;
+
+  const body = `
+    <h1 style="font-size:26px;font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;color:${BRAND.ink};">3 days in — let's get your first booking, ${escape(firstName)} 🚀</h1>
+    <p style="font-size:16px;color:${BRAND.ink2};margin:0 0 18px;">Welcome again! Most hosts get their first booking within 2 weeks of sharing their link. Here's the fastest path:</p>
+
+    <h2 style="font-size:18px;font-weight:700;margin:24px 0 12px;color:${BRAND.ink};">The 5-minute first-booking checklist</h2>
+
+    <div style="background:${BRAND.bgSoft};border-radius:12px;padding:18px 22px;margin:0 0 18px;">
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
+        <div style="font-size:22px;line-height:1;">1️⃣</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;color:${BRAND.ink};margin-bottom:2px;">Add your link to Airbnb's "House manual"</div>
+          <div style="font-size:13px;color:${BRAND.muted};">One line under "Things to do nearby" — guests read it before arrival.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;">
+        <div style="font-size:22px;line-height:1;">2️⃣</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;color:${BRAND.ink};margin-bottom:2px;">Send the WhatsApp template at check-in</div>
+          <div style="font-size:13px;color:${BRAND.muted};">Copy from the dashboard. This is your highest-converting channel.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;">
+        <div style="font-size:22px;line-height:1;">3️⃣</div>
+        <div>
+          <div style="font-weight:700;font-size:15px;color:${BRAND.ink};margin-bottom:2px;">Print a welcome card and leave it on the table</div>
+          <div style="font-size:13px;color:${BRAND.muted};">Free templates in your dashboard — letter-size, color print.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:${BRAND.bgSoft};border:1px solid ${BRAND.border};border-radius:12px;padding:18px 20px;margin:0 0 24px;">
+      <div style="font-size:11px;color:${BRAND.muted};text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:6px;">Your link</div>
+      <div style="font-family:'SF Mono','Monaco','Menlo',monospace;font-size:15px;font-weight:600;color:${BRAND.primary};word-break:break-all;">${escape(link)}</div>
+      <div style="font-size:13px;color:${BRAND.muted};margin-top:8px;">Preview the page guests see: <a href="${guestPage}" style="color:${BRAND.primary};font-weight:600;text-decoration:none;">${escape(guestPage)}</a></div>
+    </div>
+
+    ${ctaButton('Copy my link from dashboard →', `${BRAND.url}/dashboard.html`)}
+
+    <p style="font-size:14px;color:${BRAND.muted};margin:22px 0 0;line-height:1.6;">Stuck on anything? Just reply — we'll personally help you get set up.</p>
+  `;
+
+  return {
+    subject: `${escape(firstName)}, your first booking is 1 link share away 🌴`,
+    html: wrap({
+      preview: `3 quick wins to get your first Refstay booking this week. Most hosts earn their first commission within 14 days.`,
+      body,
+    }),
+  };
+}
+
+// ============================================================================
+// 6. ONBOARDING DAY 7 — nudge hosts who haven't favorited or printed yet
+// ============================================================================
+function onboardingDay7({ name, slug }) {
+  const firstName = (name || 'friend').split(' ')[0];
+  const guestPage = `${BRAND.url}/g/${slug}`;
+
+  const body = `
+    <h1 style="font-size:26px;font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;color:${BRAND.ink};">Make your page yours, ${escape(firstName)} ⭐</h1>
+    <p style="font-size:16px;color:${BRAND.ink2};margin:0 0 18px;">A week ago you joined Refstay — thank you! Now the page guests see (<a href="${guestPage}" style="color:${BRAND.primary};font-weight:600;text-decoration:none;">${escape(guestPage.replace('https://', ''))}</a>) is using our default order.</p>
+
+    <p style="font-size:16px;color:${BRAND.ink2};margin:0 0 22px;">Hosts who pick <strong>5–10 favorites</strong> get 2x more clicks per guest. It takes 90 seconds.</p>
+
+    <h2 style="font-size:18px;font-weight:700;margin:24px 0 12px;color:${BRAND.ink};">Why favorites matter</h2>
+    <ul style="font-size:15px;color:${BRAND.ink2};padding-left:22px;margin:0 0 22px;line-height:1.7;">
+      <li><strong>Curated = trusted.</strong> Guests don't want 400 options. They want yours.</li>
+      <li><strong>Your favorites bubble to the top</strong> of the guest page, ahead of everything else.</li>
+      <li><strong>You can write a short note</strong> on each favorite ("Best sunset cruise — leaves from Bayside") that shows under the activity.</li>
+    </ul>
+
+    ${ctaButton('Star my 5 favorites →', `${BRAND.url}/dashboard.html?tab=direct`)}
+
+    <h2 style="font-size:18px;font-weight:700;margin:32px 0 12px;color:${BRAND.ink};">Bonus: print a welcome asset</h2>
+    <p style="font-size:15px;color:${BRAND.ink2};margin:0 0 18px;line-height:1.6;">A printed card or fridge magnet in your Airbnb converts ~30% of guests. We made 4 free designs you can print at home in 5 minutes — no tools needed.</p>
+
+    ${ctaButton('See print templates →', `${BRAND.url}/dashboard.html?tab=print`)}
+
+    <p style="font-size:14px;color:${BRAND.muted};margin:22px 0 0;line-height:1.6;">Reply if you'd like help picking favorites for your zone — we know which activities convert best in each area.</p>
+  `;
+
+  return {
+    subject: `${escape(firstName)}, pick your 5 favorites (2x more clicks)`,
+    html: wrap({
+      preview: `Hosts who curate 5–10 favorites get 2x more guest engagement. Takes 90 seconds.`,
+      body,
+    }),
+  };
+}
+
+// ============================================================================
+// 7. ONBOARDING DAY 14 — for hosts who still have zero bookings
+// ============================================================================
+function onboardingDay14({ name, slug, clicks_total }) {
+  const firstName = (name || 'friend').split(' ')[0];
+  const hasClicks = (clicks_total || 0) > 0;
+
+  const body = `
+    <h1 style="font-size:26px;font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;color:${BRAND.ink};">Two weeks in — let's make your first commission, ${escape(firstName)} 💰</h1>
+    ${hasClicks
+      ? `<p style="font-size:16px;color:${BRAND.ink2};margin:0 0 22px;">Good news: you've already had <strong>${clicks_total} click${clicks_total === 1 ? '' : 's'}</strong> on your link. That means guests are seeing it — now we just need to convert them.</p>`
+      : `<p style="font-size:16px;color:${BRAND.ink2};margin:0 0 22px;">No clicks yet on your link — that means guests haven't seen it where they'd actually use it. Let's fix that.</p>`}
+
+    <h2 style="font-size:18px;font-weight:700;margin:24px 0 12px;color:${BRAND.ink};">The #1 thing that gets bookings</h2>
+
+    <div style="background:linear-gradient(135deg, #FFF8F4 0%, #FFFCFA 100%);border:1px solid ${BRAND.border};border-radius:12px;padding:22px 24px;margin:0 0 22px;">
+      <div style="font-size:14px;font-weight:700;color:${BRAND.primary};text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">The Welcome Book trick</div>
+      <p style="font-size:15px;color:${BRAND.ink2};margin:0 0 12px;line-height:1.6;">Open Airbnb → Listings → Your listing → Guest resources → House manual. Paste this exact line under "Things to do":</p>
+      <div style="background:white;border:1px solid ${BRAND.border};border-radius:8px;padding:12px 14px;font-family:'SF Mono','Monaco','Menlo',monospace;font-size:13px;color:${BRAND.ink};margin:0 0 12px;line-height:1.5;">
+        🌴 Best activities I'd recommend (jet skis, boats, sunset cruises):<br>
+        ${escape(`${BRAND.url}/g/${slug}`)}
+      </div>
+      <div style="font-size:13px;color:${BRAND.muted};">Takes 30 seconds. Guests see it the moment they book the stay.</div>
+    </div>
+
+    <h2 style="font-size:18px;font-weight:700;margin:28px 0 12px;color:${BRAND.ink};">Other quick channels</h2>
+    <ul style="font-size:15px;color:${BRAND.ink2};padding-left:22px;margin:0 0 22px;line-height:1.7;">
+      <li><strong>Auto-reply on Airbnb</strong> — set it so every check-in message includes the link.</li>
+      <li><strong>WhatsApp on check-in</strong> — copy the template from your dashboard.</li>
+      <li><strong>Fridge magnet</strong> — print one, stick it on the fridge, guests see it daily.</li>
+    </ul>
+
+    ${ctaButton('Open my dashboard →', `${BRAND.url}/dashboard.html`)}
+
+    <p style="font-size:14px;color:${BRAND.muted};margin:22px 0 0;line-height:1.6;">Honest question: what's stopping you from sharing the link more? Reply and we'll fix it together. We genuinely want you to make money on this.</p>
+  `;
+
+  return {
+    subject: `${escape(firstName)} — 30 seconds to your first commission`,
+    html: wrap({
+      preview: `The one thing that gets Refstay hosts their first booking: a single line in the Airbnb welcome book.`,
+      body,
+    }),
+  };
+}
+
+// ============================================================================
+// 8. MONTHLY DIGEST — sent on the 1st of every month to all active hosts
+// ============================================================================
+function monthlyDigest({ name, slug, period_label, clicks, bookings, earnings, top_activity }) {
+  const firstName = (name || 'friend').split(' ')[0];
+  const hadActivity = (clicks || 0) > 0 || (bookings || 0) > 0;
+
+  const body = `
+    <div style="font-size:11px;color:${BRAND.muted};text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:8px;">Your ${escape(period_label || 'monthly')} report</div>
+    <h1 style="font-size:28px;font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;color:${BRAND.ink};">${hadActivity ? `Here's your month, ${escape(firstName)} 📊` : `Quiet month — let's change that, ${escape(firstName)}`}</h1>
+
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 24px;">
+      <tr>
+        <td style="padding:6px;">
+          <div style="background:${BRAND.bgSoft};border:1px solid ${BRAND.border};border-radius:12px;padding:18px 16px;text-align:center;">
+            <div style="font-size:11px;color:${BRAND.muted};text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:4px;">Clicks</div>
+            <div style="font-size:30px;font-weight:800;color:${BRAND.ink};font-family:'SF Mono','Monaco','Menlo',monospace;">${clicks || 0}</div>
+          </div>
+        </td>
+        <td style="padding:6px;">
+          <div style="background:${BRAND.bgSoft};border:1px solid ${BRAND.border};border-radius:12px;padding:18px 16px;text-align:center;">
+            <div style="font-size:11px;color:${BRAND.muted};text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:4px;">Bookings</div>
+            <div style="font-size:30px;font-weight:800;color:${BRAND.ink};font-family:'SF Mono','Monaco','Menlo',monospace;">${bookings || 0}</div>
+          </div>
+        </td>
+        <td style="padding:6px;">
+          <div style="background:linear-gradient(135deg, #ECFDF5 0%, #FFFFFF 100%);border:1px solid #6EE7B7;border-radius:12px;padding:18px 16px;text-align:center;">
+            <div style="font-size:11px;color:${BRAND.muted};text-transform:uppercase;letter-spacing:0.08em;font-weight:700;margin-bottom:4px;">Earned</div>
+            <div style="font-size:24px;font-weight:800;color:${BRAND.accent};font-family:'SF Mono','Monaco','Menlo',monospace;">${fmtMoney(earnings || 0)}</div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    ${top_activity ? `
+      <div style="background:${BRAND.bgSoft};border-radius:12px;padding:16px 20px;margin:0 0 22px;">
+        <div style="font-size:12px;color:${BRAND.muted};font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Top activity your guests booked</div>
+        <div style="font-size:16px;font-weight:700;color:${BRAND.ink};">${escape(top_activity)}</div>
+      </div>
+    ` : ''}
+
+    ${hadActivity
+      ? `<p style="font-size:15px;color:${BRAND.ink2};margin:0 0 18px;line-height:1.6;">Want to grow next month? The single highest-leverage thing is making sure every guest sees your link before they arrive. <strong>Auto-replies and welcome books</strong> are doing the heavy lifting for top hosts.</p>`
+      : `<p style="font-size:15px;color:${BRAND.ink2};margin:0 0 18px;line-height:1.6;">Hosts often have quiet months when they only share their link in person. Try adding it to your Airbnb welcome book this week — 80% of bookings come from there.</p>`}
+
+    ${ctaButton('See full analytics →', `${BRAND.url}/dashboard.html`)}
+
+    <p style="font-size:14px;color:${BRAND.muted};margin:22px 0 0;line-height:1.6;">Anything we can help with? Reply to this email — we read everything.</p>
+  `;
+
+  return {
+    subject: hadActivity
+      ? `📊 ${escape(period_label || 'Your month')}: ${bookings || 0} booking${bookings === 1 ? '' : 's'}, ${fmtMoney(earnings || 0)} earned`
+      : `📊 Your ${escape(period_label || 'monthly')} Refstay report`,
+    html: wrap({
+      preview: hadActivity
+        ? `${clicks || 0} clicks · ${bookings || 0} bookings · ${fmtMoney(earnings || 0)} earned this period.`
+        : `Quiet month on your link. Quick fix inside — takes 30 seconds.`,
+      body,
+    }),
+  };
+}
+
 module.exports = {
   welcome,
   newBooking,
   paymentSent,
   newMessage,
+  onboardingDay3,
+  onboardingDay7,
+  onboardingDay14,
+  monthlyDigest,
   BRAND,
 };

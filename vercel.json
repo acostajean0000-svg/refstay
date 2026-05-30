@@ -1,5 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    { "path": "/api/cron-onboarding", "schedule": "0 14 * * *" }
+  ],
   "routes": [
     { "src": "/login", "headers": { "Location": "/dashboard" }, "status": 307 },
     { "src": "/app", "headers": { "Location": "/dashboard" }, "status": 307 },
