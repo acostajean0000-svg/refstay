@@ -76,6 +76,23 @@ module.exports = async (req, res) => {
         const result = await sendEmail({ to: admin.email, subject, html });
         if (result.ok) sent++;
       }
+
+      // Fire-and-forget Slack/Discord ping (host → admin)
+      try {
+        const { notifyWebhook, COLOR } = require('./_slack-client');
+        notifyWebhook({
+          text: `💬 Message from ${fromLabel}`,
+          title: `💬 New message from ${fromLabel}`,
+          body: '> ' + messageText.slice(0, 500).replace(/\n/g, '\n> ') + (messageText.length > 500 ? '\n…' : ''),
+          color: COLOR.message,
+          fields: [
+            { label: 'Host', value: `/r/${body.host_slug || '—'}`, short: true },
+            { label: 'Email', value: body.host_email || '—', short: true },
+          ],
+          url: 'https://refstay.com/admin',
+        }).catch(() => {});
+      } catch (_) { /* non-fatal */ }
+
       return res.status(200).json({ ok: true, sent });
     }
   } catch (e) {

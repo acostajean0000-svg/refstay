@@ -195,6 +195,17 @@ module.exports = async (req, res) => {
       commission,
       booking_date: bookingDate,
     }).catch(e => console.warn('[webhook] email send failed (non-blocking):', e.message || e));
+
+    // Fire-and-forget: ping Slack/Discord
+    pingSlackOnBooking({
+      supabase,
+      hostId,
+      hostSlug,
+      customer_name: customerFirst,
+      activity,
+      gross_amount: grossAmount,
+      commission,
+    }).catch(e => console.warn('[webhook] slack notify failed (non-blocking):', e.message || e));
   }
 
   // Concise success response (FareHarbor only needs to know we accepted it).
@@ -236,6 +247,29 @@ async function sendNewBookingEmail({ supabase, hostId, customer_name, activity, 
     else console.warn('[webhook] booking email failed:', result.error);
   } catch (e) {
     console.warn('[webhook] booking email threw:', e.message || e);
+  }
+}
+
+// Fire-and-forget Slack/Discord notification for new booking
+async function pingSlackOnBooking({ supabase, hostId, hostSlug, customer_name, activity, gross_amount, commission }) {
+  try {
+    const { data: host } = await supabase.from('hosts').select('name').eq('id', hostId).maybeSingle();
+    const { notifyWebhook, COLOR } = require('./_slack-client');
+    await notifyWebhook({
+      text: `💸 New booking — $${commission} commission for ${host && host.name ? host.name : hostSlug}`,
+      title: `💸 New booking — $${commission} commission`,
+      body: `*${activity || 'Activity'}* booked by ${customer_name || 'a guest'} via ${host && host.name ? host.name : hostSlug}'s link.`,
+      color: COLOR.booking,
+      fields: [
+        { label: 'Host', value: `/r/${hostSlug}`, short: true },
+        { label: 'Activity', value: activity || '—', short: true },
+        { label: 'Gross', value: `$${gross_amount || 0}`, short: true },
+        { label: 'Commission (5%)', value: `$${commission || 0}`, short: true },
+      ],
+      url: 'https://refstay.com/admin',
+    });
+  } catch (e) {
+    console.warn('[webhook] slack threw:', e.message || e);
   }
 }
 

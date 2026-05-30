@@ -1262,6 +1262,15 @@ form.addEventListener('submit', async e => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, name }),
       }).catch(() => {}); // silent failure — email is non-critical
+
+      // Fire-and-forget: Slack ping to admin
+      if (data.user?.id) {
+        fetch('/api/notify-new-signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ host_id: data.user.id }),
+        }).catch(() => {});
+      }
     }, 1500);
 
     // Show success state
