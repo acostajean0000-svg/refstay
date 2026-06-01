@@ -1177,6 +1177,24 @@ $('#dash-copy').addEventListener('click', () => {
 const form = $('#signupForm');
 const success = $('#signupSuccess');
 
+// Persist invite source — if visitor arrived from an invite link, remember it
+// across page reloads. Cleared when signup successfully registers the referral.
+try {
+  const _p = new URLSearchParams(window.location.search);
+  const _ib = _p.get('invited_by');
+  if (_ib) {
+    const cleanIb = _ib.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 60);
+    if (cleanIb) {
+      localStorage.setItem('refstay_invited_by', cleanIb);
+      // Show a soft banner so visitor knows there's a referral
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#FF385C,#FF7A45);color:white;text-align:center;padding:10px 16px;font-size:13px;font-weight:600;';
+      banner.innerHTML = `🤝 You were invited by <strong>${cleanIb}</strong> — when you get your first booking, both of you earn a $25 bonus. <a href="#signup" style="color:white;text-decoration:underline;">Sign up now →</a>`;
+      document.body.insertBefore(banner, document.body.firstChild);
+    }
+  }
+} catch(_) {}
+
 // Supabase credentials — refstay-prod project
 const SUPABASE_URL = 'https://nexsrqqoqerajjquoiqk.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5leHNycXFvcWVyYWpqcXVvaXFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjU0NTYsImV4cCI6MjA5NTMwMTQ1Nn0.xBTu_YuVlLmdgb74yfOeBvwbsLFX4uNVjbmpILgEiTo';
@@ -1290,6 +1308,22 @@ form.addEventListener('submit', async e => {
           body: JSON.stringify({ host_id: data.user.id }),
         }).catch(() => {});
       }
+
+      // Fire-and-forget: register referral if signup came via invite link
+      // Looks for ?invited_by=<slug> in URL OR localStorage (set on initial page load).
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const invitedBy = params.get('invited_by') || localStorage.getItem('refstay_invited_by');
+        if (invitedBy && data.user?.id) {
+          fetch('/api/register-referral', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ host_id: data.user.id, inviter_slug: invitedBy }),
+          }).then(() => {
+            try { localStorage.removeItem('refstay_invited_by'); } catch(_) {}
+          }).catch(() => {});
+        }
+      } catch(_) { /* non-fatal */ }
     }, 1500);
 
     // Show success state

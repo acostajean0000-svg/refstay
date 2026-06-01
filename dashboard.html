@@ -418,6 +418,7 @@
       <button data-tab="favorites"><span class="ic">⭐</span> <span data-i18n="dash.nav.favorites">Favorites</span> <span id="favBadge" style="margin-left:auto;background:var(--gold,#F4B942);color:white;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;display:none;">0</span></button>
       <button data-tab="print"><span class="ic">🖨️</span> <span data-i18n="dash.nav.print">Print assets</span></button>
       <button data-tab="messages"><span class="ic">💬</span> <span data-i18n="dash.nav.messages">Messages</span> <span id="msgBadge" style="margin-left:auto;background:var(--primary);color:white;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;display:none;">0</span></button>
+      <button data-tab="invite"><span class="ic">🤝</span> <span data-i18n="dash.nav.invite">Invite friends</span></button>
       <button data-tab="settings"><span class="ic">⚙️</span> <span data-i18n="dash.nav.settings">Settings</span></button>
       <button data-tab="help"><span class="ic">❓</span> <span data-i18n="dash.nav.help">Help</span></button>
     </nav>
@@ -1059,6 +1060,83 @@ The weather looks 🔥 the next few days. Worth checking 👀</textarea>
             Click "Open print preview" → scan the QR with your phone's camera before hitting print. It should open <code style="background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px;" id="qrCheckUrl">refstay.com/r/your-slug</code>. If it doesn't, refresh the preview.
           </p>
         </details>
+      </div>
+    </div>
+
+    <!-- ============ INVITE FRIENDS ============ -->
+    <div class="tab-pane" data-pane="invite">
+      <div class="topbar">
+        <div>
+          <h1 data-i18n="dash.title.invite">🤝 Invite a fellow host</h1>
+          <div class="sub" data-i18n="invite.sub">When they get their first paid booking, you both earn $25 — added to your next payout.</div>
+        </div>
+      </div>
+
+      <!-- Hero invite card -->
+      <div class="card" style="margin-bottom:18px;background:linear-gradient(135deg,#FFF8F4 0%,#F0FAFC 100%);border:1px solid #FEE4DC;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:center;">
+          <div>
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:var(--primary);margin-bottom:6px;">🤝 Your invite link</div>
+            <div style="font-family:'Space Grotesk',monospace;font-size:14px;font-weight:700;color:var(--ink);word-break:break-all;line-height:1.4;" id="inviteLinkText">refstay.com/?invited_by=…</div>
+            <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+              <button class="btn btn-primary" id="copyInviteBtn">📋 <span data-i18n="invite.copy">Copy link</span></button>
+              <button class="btn btn-ghost" id="shareInviteWA">📱 <span data-i18n="invite.whatsapp">WhatsApp</span></button>
+              <button class="btn btn-ghost" id="shareInviteEmail">✉️ <span data-i18n="invite.email">Email</span></button>
+            </div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:54px;line-height:1;margin-bottom:6px;">🎁</div>
+            <div style="font-size:13px;color:var(--ink);font-weight:700;line-height:1.4;" data-i18n="invite.reward.title">$25 × 2 = $50 unlocked</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4;" data-i18n="invite.reward.sub">when your friend gets their first paid booking</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="kpi-grid" id="inviteStatsGrid" style="margin-bottom:18px;">
+        <div class="kpi">
+          <div class="kpi-head"><div class="lbl">Invited</div><div class="ic-bg b">🤝</div></div>
+          <div class="val" id="invTotalInvited">0</div>
+          <div class="delta" style="color:var(--muted);">Total signups via your link</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head"><div class="lbl">Qualifying</div><div class="ic-bg a">⏳</div></div>
+          <div class="val" id="invQualifying">0</div>
+          <div class="delta" style="color:var(--muted);">Waiting for first booking</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head"><div class="lbl">Pending bonus</div><div class="ic-bg c">💰</div></div>
+          <div class="val" id="invPendingBonus">$0</div>
+          <div class="delta" style="color:var(--muted);">Adds to next payout</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head"><div class="lbl">Total earned</div><div class="ic-bg d">🎉</div></div>
+          <div class="val" id="invTotalEarned">$0</div>
+          <div class="delta" style="color:var(--muted);">From referrals</div>
+        </div>
+      </div>
+
+      <!-- Invitees list -->
+      <div class="card">
+        <h3>👥 <span data-i18n="invite.list.title">Your invitees</span></h3>
+        <div class="sub" data-i18n="invite.list.sub">Everyone who signed up via your invite link.</div>
+        <div id="inviteesList" style="margin-top:16px;">
+          <div class="empty" style="text-align:center;padding:32px 16px;color:var(--muted);">
+            <div style="font-size:34px;margin-bottom:8px;">🌱</div>
+            <div style="font-weight:700;color:var(--ink);" data-i18n="invite.empty.title">No invitees yet</div>
+            <div style="font-size:13px;margin-top:4px;" data-i18n="invite.empty.sub">Share your invite link with another Airbnb host. When they get their first paid booking, you both earn $25.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How it works -->
+      <div class="card" style="margin-top:18px;">
+        <h3 data-i18n="invite.how.title">How it works</h3>
+        <div style="display:grid;gap:14px;margin-top:14px;">
+          <div class="help-step"><div class="num">1</div><div><strong data-i18n="invite.how.s1.t">Share your invite link</strong><div class="sub" data-i18n="invite.how.s1.b">Copy and send via WhatsApp, email, or DM. Anyone who signs up via that link is "yours".</div></div></div>
+          <div class="help-step"><div class="num">2</div><div><strong data-i18n="invite.how.s2.t">They sign up + add their link to their welcome book</strong><div class="sub" data-i18n="invite.how.s2.b">Standard onboarding. We email them tips automatically.</div></div></div>
+          <div class="help-step"><div class="num">3</div><div><strong data-i18n="invite.how.s3.t">Their first guest books an activity → bonus unlocks</strong><div class="sub" data-i18n="invite.how.s3.b">When the booking is marked paid, both of you get $25 added to your next monthly payout.</div></div></div>
+        </div>
       </div>
     </div>
 
@@ -2441,6 +2519,7 @@ $$('.sidebar nav button').forEach(b => b.addEventListener('click', () => {
   $$('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === tab));
   track('Tab View', { tab });
   if (tab === 'messages') loadMessages();
+  if (tab === 'invite') loadInviteTab();
 }));
 
 /* ============ OVERVIEW ACTIONS ============ */
@@ -3434,6 +3513,96 @@ $('#saveGoalBtn')?.addEventListener('click', async () => {
     btn.textContent = orig;
   }
 });
+
+// ============ INVITE FRIENDS ============
+let _inviteInited = false;
+async function loadInviteTab() {
+  const user = getUser();
+  if (!user) return;
+  const inviteUrl = `https://refstay.com/?invited_by=${user.slug}`;
+  const linkEl = $('#inviteLinkText');
+  if (linkEl) linkEl.textContent = inviteUrl;
+
+  // Wire copy/share buttons once
+  if (!_inviteInited) {
+    _inviteInited = true;
+    $('#copyInviteBtn')?.addEventListener('click', () => {
+      navigator.clipboard.writeText(inviteUrl);
+      showToast('🤝 Invite link copied');
+      track('Invite Link Copied');
+    });
+    $('#shareInviteWA')?.addEventListener('click', () => {
+      const msg = encodeURIComponent(`Hey! I've been earning passive commission from my Airbnb guests through Refstay. You should check it out — if you sign up via my link and get a booking, we BOTH get $25: ${inviteUrl}`);
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+      track('Invite Shared', { channel: 'whatsapp' });
+    });
+    $('#shareInviteEmail')?.addEventListener('click', () => {
+      const subject = encodeURIComponent('You should try Refstay — we both earn $25');
+      const body = encodeURIComponent(`Hi,\n\nI've been earning 5% commission when my Airbnb guests book activities through Refstay. Pretty easy: I share one link and get paid monthly.\n\nIf you sign up via my link (below) and get your first booking, we BOTH earn $25 bonus:\n\n${inviteUrl}\n\nLet me know if you have questions.\n\n— ${user.name || user.slug}`);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      track('Invite Shared', { channel: 'email' });
+    });
+  }
+
+  // Fetch stats + list
+  try {
+    const [statsRes, listRes] = await Promise.all([
+      sb.rpc('my_referral_stats'),
+      sb.rpc('my_referrals_list'),
+    ]);
+
+    const stats = (statsRes.data && statsRes.data[0]) || {};
+    $('#invTotalInvited').textContent = stats.total_invited || 0;
+    $('#invQualifying').textContent = stats.pending_count || 0;
+    $('#invPendingBonus').textContent = fmtMoney(Number(stats.pending_earned) || 0);
+    $('#invTotalEarned').textContent = fmtMoney(Number(stats.total_earned) || 0);
+
+    const rows = listRes.data || [];
+    const listEl = $('#inviteesList');
+    if (rows.length === 0) {
+      // keep empty state
+      return;
+    }
+    let html = '<div style="display:grid;gap:10px;">';
+    rows.forEach(r => {
+      const status = r.status;
+      const statusColor = status === 'paid_out' ? '#10B981' : status === 'qualified' ? '#F59E0B' : 'var(--muted)';
+      const statusLabel = status === 'paid_out' ? '✅ Paid out' : status === 'qualified' ? '⏳ Qualified — pending payout' : '⌛ Waiting for first booking';
+      const joinedAgo = r.joined ? fmtRelativeShort(r.joined) : '—';
+      html += `
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-soft);border-radius:10px;padding:14px 18px;border:1px solid var(--border);">
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;color:var(--ink);">${escapeHtml(r.referred_name || r.referred_slug)}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">/r/${escapeHtml(r.referred_slug)} · joined ${joinedAgo}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:800;color:${statusColor};font-size:13px;">${statusLabel}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;">$${Number(r.bonus_amount).toFixed(0)} bonus</div>
+          </div>
+        </div>`;
+    });
+    html += '</div>';
+    listEl.innerHTML = html;
+  } catch (e) {
+    console.error('invite stats failed:', e);
+  }
+}
+
+function fmtRelativeShort(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const days = Math.floor((Date.now() - d) / 86400000);
+  if (days === 0) return 'today';
+  if (days === 1) return 'yesterday';
+  if (days < 30) return days + ' days ago';
+  if (days < 365) return Math.floor(days / 30) + ' mo ago';
+  return Math.floor(days / 365) + ' yr ago';
+}
+
+// Escape helper (in case not already defined elsewhere)
+if (typeof escapeHtml === 'undefined') {
+  window.escapeHtml = s => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
 // ============ HELP SEARCH ============
 $('#helpSearch')?.addEventListener('input', (e) => {
