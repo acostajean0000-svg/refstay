@@ -120,6 +120,20 @@
   /* ============ KPIs ============ */
   .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
   .kpi { background: white; border-radius: var(--radius); padding: 22px; border: 1px solid var(--border); position: relative; overflow: hidden; }
+
+  /* Help tab */
+  .help-step { display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .help-step:last-child { border-bottom: none; }
+  .help-step .num { background: linear-gradient(135deg, #FF385C, #FF7A45); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; flex-shrink: 0; }
+  .help-step .sub { font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+  .help-step code { background: rgba(0,0,0,0.06); padding: 2px 7px; border-radius: 5px; font-size: 12px; }
+  .help-q { padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .help-q:last-child { border-bottom: none; }
+  .help-q strong { display: block; font-size: 14px; color: var(--ink); margin-bottom: 6px; }
+  .help-q p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6; }
+  .help-q code { background: rgba(0,0,0,0.06); padding: 2px 7px; border-radius: 5px; font-size: 11px; color: var(--primary); }
+  .help-q em { color: var(--ink); font-style: normal; font-weight: 600; background: linear-gradient(180deg, transparent 60%, #FFE4DC 60%); padding: 0 2px; }
+  .help-q.hide { display: none; }
   .kpi-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
   .kpi .lbl { font-size: 13px; color: var(--muted); font-weight: 600; }
   .kpi .ic-bg { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 16px; }
@@ -405,6 +419,7 @@
       <button data-tab="print"><span class="ic">🖨️</span> <span data-i18n="dash.nav.print">Print assets</span></button>
       <button data-tab="messages"><span class="ic">💬</span> <span data-i18n="dash.nav.messages">Messages</span> <span id="msgBadge" style="margin-left:auto;background:var(--primary);color:white;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;display:none;">0</span></button>
       <button data-tab="settings"><span class="ic">⚙️</span> <span data-i18n="dash.nav.settings">Settings</span></button>
+      <button data-tab="help"><span class="ic">❓</span> <span data-i18n="dash.nav.help">Help</span></button>
     </nav>
     <div class="bottom">
       <div class="lang-toggle" aria-label="Language">
@@ -1273,6 +1288,135 @@ The weather looks 🔥 the next few days. Worth checking 👀</textarea>
           <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
             <div><div style="font-weight: 600;">Delete account</div><div style="font-size: 13px; color: var(--muted);">Permanently delete your profile and referral history. This can't be undone.</div></div>
             <button class="btn btn-danger" id="deleteAcc">Delete account</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ HELP ============ -->
+    <div class="tab-pane" data-pane="help">
+      <div class="topbar">
+        <div>
+          <h1 data-i18n="help.title">❓ Help & FAQs</h1>
+          <div class="sub" data-i18n="help.sub">Quick guides, FAQs, and troubleshooting. Most questions are answered below.</div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="card" style="margin-bottom:18px;">
+        <input type="search" id="helpSearch" placeholder="Search help…" data-i18n-placeholder="help.search.placeholder" style="width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:15px;color:var(--ink);" />
+      </div>
+
+      <!-- Quick start cards -->
+      <div class="card">
+        <h3 data-i18n="help.quickstart.title">🚀 Quick start (5 steps)</h3>
+        <div class="sub" data-i18n="help.quickstart.sub">Most hosts get their first booking within 2 weeks of completing these.</div>
+        <div style="display:grid;gap:12px;margin-top:16px;">
+          <div class="help-step"><div class="num">1</div><div><strong data-i18n="help.qs.s1.title">Copy your link from the "Your link" tab</strong><div class="sub" data-i18n="help.qs.s1.body">Your unique link is <code>refstay.com/r/your-slug</code>. Click Copy in the dashboard.</div></div></div>
+          <div class="help-step"><div class="num">2</div><div><strong data-i18n="help.qs.s2.title">Paste it in your Airbnb welcome book</strong><div class="sub" data-i18n="help.qs.s2.body">Airbnb → Listings → House manual → add one line: "Best activities I'd recommend: refstay.com/r/your-slug". Takes 30 sec.</div></div></div>
+          <div class="help-step"><div class="num">3</div><div><strong data-i18n="help.qs.s3.title">Send the WhatsApp template at check-in</strong><div class="sub" data-i18n="help.qs.s3.body">Highest-converting channel by far. Click 📱 WhatsApp on Overview to get the auto-formatted message.</div></div></div>
+          <div class="help-step"><div class="num">4</div><div><strong data-i18n="help.qs.s4.title">Print a welcome card or fridge magnet</strong><div class="sub" data-i18n="help.qs.s4.body">Go to "Print assets" → pick a design → print. Free templates, designed for letter-size paper.</div></div></div>
+          <div class="help-step"><div class="num">5</div><div><strong data-i18n="help.qs.s5.title">Add your payout info in Settings</strong><div class="sub" data-i18n="help.qs.s5.body">PayPal or Zelle. We pay on the 5th of every month if your balance is $25+.</div></div></div>
+        </div>
+      </div>
+
+      <!-- Topic cards -->
+      <div class="settings-grid" style="margin-top:18px;">
+        <div class="card">
+          <h3 data-i18n="help.topic.share.title">🔗 Sharing your link</h3>
+          <div class="help-q" data-q="share-welcome-book">
+            <strong data-i18n="help.share.q1">Where exactly do I paste it in Airbnb?</strong>
+            <p data-i18n="help.share.a1">Airbnb host dashboard → Listings → your listing → "Guest resources" → "House manual" → "Things to do" section. Paste a single line: <code>Best activities: refstay.com/r/your-slug</code>. Guests see this when they book the stay.</p>
+          </div>
+          <div class="help-q" data-q="share-whatsapp">
+            <strong data-i18n="help.share.q2">What's the best WhatsApp message?</strong>
+            <p data-i18n="help.share.a2">From Overview → click 📱 WhatsApp → it auto-fills: <em>"Welcome to Miami! 🌴 Here's a curated list of activities your guests love: refstay.com/r/your-slug — let me know if you need help picking!"</em></p>
+          </div>
+          <div class="help-q" data-q="share-qr">
+            <strong data-i18n="help.share.q3">Can I use a QR code?</strong>
+            <p data-i18n="help.share.a3">Yes. Click 📷 QR code on Overview to download it, or use any print asset (welcome card, fridge magnet, poster) — all include your unique QR.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 data-i18n="help.topic.earn.title">💰 Earnings & payouts</h3>
+          <div class="help-q" data-q="earn-when">
+            <strong data-i18n="help.earn.q1">When do I get paid?</strong>
+            <p data-i18n="help.earn.a1">On the 5th of each month, for all <strong>confirmed completed</strong> bookings from the prior month. Minimum payout: $25. If below $25, it rolls to the next month.</p>
+          </div>
+          <div class="help-q" data-q="earn-how">
+            <strong data-i18n="help.earn.q2">How is my commission calculated?</strong>
+            <p data-i18n="help.earn.a2">Flat 5% of the gross booking amount (before tax). Example: $200 jet ski rental → you earn $10. No tiers, no fees deducted from your 5%.</p>
+          </div>
+          <div class="help-q" data-q="earn-cancel">
+            <strong data-i18n="help.earn.q3">What if a guest cancels?</strong>
+            <p data-i18n="help.earn.a3">Cancellations before the activity date are removed from your pending balance. Already-paid commissions stay yours — we never claw back paid earnings.</p>
+          </div>
+          <div class="help-q" data-q="earn-tax">
+            <strong data-i18n="help.earn.q4">Do I owe taxes on commissions?</strong>
+            <p data-i18n="help.earn.a4">If you earn $600+ in a calendar year, you'll receive a 1099 (US) or equivalent. Refstay is not a tax advisor — consult yours for specifics on reporting referral income.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 data-i18n="help.topic.track.title">📊 Tracking & metrics</h3>
+          <div class="help-q" data-q="track-clicks">
+            <strong data-i18n="help.track.q1">What counts as a "click"?</strong>
+            <p data-i18n="help.track.a1">Any visit to your /r/ or /g/ link. Your dashboard splits them: /r/ = direct referral redirects, /g/ = guest landing page (Refstay-branded). Both lead to bookings.</p>
+          </div>
+          <div class="help-q" data-q="track-attribution">
+            <strong data-i18n="help.track.q2">How is a booking attributed to me?</strong>
+            <p data-i18n="help.track.a2">When a guest clicks your /r/ link, we tag the booking with your slug via FareHarbor's marketing_source parameter. When they complete a booking — even days later — we receive a webhook with your slug, automatically credit you.</p>
+          </div>
+          <div class="help-q" data-q="track-conversion">
+            <strong data-i18n="help.track.q3">What's a good conversion rate?</strong>
+            <p data-i18n="help.track.a3">Active hosts: 30-50% of guests who click your link complete a booking. New hosts: 10-20%. If yours is below 10%, you're likely sharing the link in the wrong place — try the welcome book + WhatsApp combo.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 data-i18n="help.topic.fh.title">🎟️ FareHarbor & bookings</h3>
+          <div class="help-q" data-q="fh-what">
+            <strong data-i18n="help.fh.q1">What's FareHarbor?</strong>
+            <p data-i18n="help.fh.a1">FareHarbor is the booking platform 95% of Miami activity operators use. It's the same one Airbnb Experiences runs on. When your guest books through Refstay, they book directly with the operator via FareHarbor — instant confirmation, standard cancellation policy.</p>
+          </div>
+          <div class="help-q" data-q="fh-confirm">
+            <strong data-i18n="help.fh.q2">How does my guest know a booking is confirmed?</strong>
+            <p data-i18n="help.fh.a2">FareHarbor sends a confirmation email immediately after checkout. They also get reminders 24h before the activity. Your guest can manage / cancel directly with the operator.</p>
+          </div>
+          <div class="help-q" data-q="fh-issue">
+            <strong data-i18n="help.fh.q3">What if my guest has an issue at the activity?</strong>
+            <p data-i18n="help.fh.a3">Operators handle on-site issues directly (refunds, reschedules). If something goes wrong on the operator's end, your guest can contact the operator via FareHarbor or reply to their confirmation email. You don't need to mediate.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 data-i18n="help.topic.tshoot.title">🔧 Troubleshooting</h3>
+          <div class="help-q" data-q="ts-noclicks">
+            <strong data-i18n="help.ts.q1">Why are my click counts at zero?</strong>
+            <p data-i18n="help.ts.a1">Most likely you haven't shared your link yet, or you shared it but guests haven't visited. Sometimes clicks take a few minutes to appear. Try this: open your link in an incognito tab — within 60 sec it should show in your Overview.</p>
+          </div>
+          <div class="help-q" data-q="ts-nobooking">
+            <strong data-i18n="help.ts.q2">Clicks but no bookings — why?</strong>
+            <p data-i18n="help.ts.a2">Common reasons: (1) guests are browsing but haven't decided; (2) prices on the landing don't match what you mentioned; (3) wrong zone — your link shows Miami activities but guests are in Orlando. Check your zone in Settings.</p>
+          </div>
+          <div class="help-q" data-q="ts-pending">
+            <strong data-i18n="help.ts.q3">Why is a booking "pending" so long?</strong>
+            <p data-i18n="help.ts.a3">Bookings stay pending until the activity date passes (we don't want to pay you for a future cancellation). Once the activity completes, it auto-converts to confirmed and joins your next payout cycle.</p>
+          </div>
+          <div class="help-q" data-q="ts-link">
+            <strong data-i18n="help.ts.q4">My link says "Host not found" — what happened?</strong>
+            <p data-i18n="help.ts.a4">Likely your slug was changed and the old link is cached. Always check your current link in Overview. If shared via printed asset, regenerate from the Print assets tab.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 data-i18n="help.topic.contact.title">💬 Still stuck?</h3>
+          <p data-i18n="help.contact.body">We reply within 24 hours, usually faster. Three ways to reach us:</p>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">
+            <a href="#" data-go-tab="messages" class="btn btn-primary" style="text-align:center;"><span data-i18n="help.contact.dm">💬 Message us in-app (fastest)</span></a>
+            <a href="mailto:support@refstay.com" class="btn btn-ghost" style="text-align:center;"><span data-i18n="help.contact.email">📧 Email support@refstay.com</span></a>
+            <a href="https://refstay.com/blog" target="_blank" rel="noopener" class="btn btn-ghost" style="text-align:center;"><span data-i18n="help.contact.blog">📚 Read in-depth guides on the blog</span></a>
           </div>
         </div>
       </div>
@@ -3289,6 +3433,22 @@ $('#saveGoalBtn')?.addEventListener('click', async () => {
     btn.disabled = false;
     btn.textContent = orig;
   }
+});
+
+// ============ HELP SEARCH ============
+$('#helpSearch')?.addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase().trim();
+  document.querySelectorAll('[data-pane="help"] .help-q').forEach(item => {
+    if (!q) { item.classList.remove('hide'); return; }
+    const txt = item.textContent.toLowerCase();
+    item.classList.toggle('hide', !txt.includes(q));
+  });
+  // Hide topic cards where all questions are filtered out
+  document.querySelectorAll('[data-pane="help"] .settings-grid .card').forEach(card => {
+    if (!q) { card.style.display = ''; return; }
+    const visible = card.querySelectorAll('.help-q:not(.hide)').length;
+    card.style.display = visible > 0 ? '' : 'none';
+  });
 });
 
 // Wire "[data-go-tab]" anchors (e.g. goal card → Settings)
