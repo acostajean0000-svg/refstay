@@ -443,6 +443,26 @@
         </div>
       </div>
 
+      <!-- Earnings goal progress -->
+      <div id="goalCard" class="card" style="margin-bottom:20px;background:linear-gradient(135deg,#FFFAF0 0%,#FFFCFA 100%);border:1px solid #FEE4DC;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+          <div>
+            <div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:4px;">🎯 This month's goal</div>
+            <h3 id="goalTitle" style="margin:0;font-size:22px;">$<span id="goalEarned">0</span> <span style="color:var(--muted);font-weight:600;">of $<span id="goalTarget">200</span></span></h3>
+          </div>
+          <div style="text-align:right;">
+            <div id="goalPctText" style="font-family:'Space Grotesk',monospace;font-weight:800;font-size:28px;color:var(--primary);">0%</div>
+            <div id="goalRemaining" style="font-size:12px;color:var(--muted);">—</div>
+          </div>
+        </div>
+        <div style="height:14px;background:white;border-radius:999px;overflow:hidden;border:1px solid var(--border);position:relative;">
+          <div id="goalBar" style="height:100%;background:linear-gradient(90deg,#FF385C 0%,#FF7A45 50%,#7C3AED 100%);border-radius:999px;width:0%;transition:width .6s cubic-bezier(0.2,0.8,0.2,1);box-shadow:0 2px 8px rgba(255,56,92,.3);"></div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:var(--muted);">
+          💡 Adjust your goal in <a href="#" data-go-tab="settings" style="color:var(--primary);font-weight:700;">Settings</a>
+        </div>
+      </div>
+
       <!-- KPIs: real numbers from Supabase bookings table (refreshed each load) -->
       <div class="kpi-grid" id="kpiGrid">
         <div class="kpi">
@@ -484,6 +504,21 @@
 
         <!-- Step list -->
         <div id="onbSteps" style="display:grid;gap:10px;"></div>
+      </div>
+
+      <!-- Achievements + Streak -->
+      <div class="card" id="achievementsCard">
+        <div class="card-head" style="margin-bottom:14px;">
+          <div>
+            <h3>🏆 Your achievements</h3>
+            <div class="sub">Unlock badges as you grow. Earn them by sharing your link and getting bookings.</div>
+          </div>
+          <div id="streakBadge" style="background:linear-gradient(135deg,#FF385C,#FF7A45);color:white;padding:8px 16px;border-radius:999px;font-weight:800;font-size:13px;display:flex;align-items:center;gap:6px;">
+            <span style="font-size:18px;">🔥</span>
+            <span><span id="streakCount">0</span> month streak</span>
+          </div>
+        </div>
+        <div id="badgesGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;"></div>
       </div>
 
       <!-- Click activity (14-day mini chart + top sources) -->
@@ -1017,6 +1052,33 @@ The weather looks 🔥 the next few days. Worth checking 👀</textarea>
       <div class="topbar"><div><h1 data-i18n="dash.title.settings">Settings</h1><div class="sub">Profile, payouts, and notifications.</div></div></div>
 
       <div class="settings-grid">
+
+        <!-- ============ EARNINGS GOAL CARD ============ -->
+        <div class="card" id="goalSettingsCard" style="grid-column: 1 / -1; background: linear-gradient(135deg, #FFFAF0 0%, #FFFCFA 100%); border: 1px solid #FEE4DC;">
+          <div class="card-head">
+            <div style="flex:1;">
+              <h3>🎯 Monthly earnings goal</h3>
+              <div class="sub">Set your target. We'll show your progress in Overview each time you log in.</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end;margin-top:10px;max-width:480px;">
+            <div>
+              <label for="goalInput" style="display:block;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Goal ($/month)</label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;font-size:16px;">$</span>
+                <input type="number" id="goalInput" min="25" max="50000" step="25" placeholder="200" style="width:100%;padding:10px 14px 10px 28px;border:1px solid var(--border);border-radius:8px;font-size:16px;font-family:inherit;font-weight:700;color:var(--ink);" />
+              </div>
+            </div>
+            <button class="btn btn-primary" id="saveGoalBtn" type="button">Save goal</button>
+          </div>
+          <div id="goalSaveMsg" style="font-size:13px;color:var(--muted);margin-top:8px;"></div>
+          <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-ghost" data-goal-preset="100" style="font-size:12px;padding:6px 12px;">$100 (casual)</button>
+            <button type="button" class="btn btn-ghost" data-goal-preset="200" style="font-size:12px;padding:6px 12px;">$200 (typical)</button>
+            <button type="button" class="btn btn-ghost" data-goal-preset="500" style="font-size:12px;padding:6px 12px;">$500 (active)</button>
+            <button type="button" class="btn btn-ghost" data-goal-preset="1500" style="font-size:12px;padding:6px 12px;">$1,500 (manager)</button>
+          </div>
+        </div>
 
         <!-- ============ PAYOUTS CARD (priority: shown first) ============ -->
         <div class="card" id="payoutsCard" style="grid-column: 1 / -1; background: linear-gradient(135deg, #FFFBF0 0%, #ECFDF5 100%); border: 1px solid #BBE5C9;">
@@ -1672,7 +1734,7 @@ async function fetchUserDataFromSupabase(authUserId) {
   // 1. Get host profile
   const { data: host, error: hostErr } = await sb
     .from('hosts')
-    .select('slug, name, email, listing, joined, payout_method, payout_destination, payout_recipient_name, payout_country, payout_updated_at, last_payout, next_payout, zone, favorites, onboarding_done, welcome_message')
+    .select('slug, name, email, listing, joined, payout_method, payout_destination, payout_recipient_name, payout_country, payout_updated_at, last_payout, next_payout, zone, favorites, onboarding_done, welcome_message, monthly_goal')
     .eq('id', authUserId)
     .single();
 
@@ -1696,22 +1758,48 @@ async function fetchUserDataFromSupabase(authUserId) {
     .select('amount, status, booking_date, created_at')
     .eq('host_id', authUserId);
 
-  let earningsTotal = 0, earningsPaid = 0, earningsPending = 0, bookingsMonth = 0;
+  let earningsTotal = 0, earningsPaid = 0, earningsPending = 0, earningsMonth = 0, bookingsMonth = 0;
   // Use the host's LOCAL month (e.g. EDT) rather than UTC. A booking made at
   // Apr 30 11pm EDT is still April from the host's perspective even though
   // the UTC timestamp says May 1.
   const now = new Date();
   const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  // Track which months have bookings — for streak calculation
+  const monthsWithBookings = new Set();
   (allBookings || []).forEach(b => {
-    earningsTotal += Number(b.amount) || 0;
-    if (b.status === 'paid') earningsPaid += Number(b.amount) || 0;
-    else if (b.status === 'pending') earningsPending += Number(b.amount) || 0;
-    // "Bookings this month" counts when the BOOKING WAS MADE, not when the
-    // activity happens. Matches host intuition: "how many sales did I close
-    // this month" — even if the guest is going kayaking 6 months from now.
+    const amt = Number(b.amount) || 0;
+    earningsTotal += amt;
+    if (b.status === 'paid') earningsPaid += amt;
+    else if (b.status === 'pending') earningsPending += amt;
     const ts = b.created_at || b.booking_date || '';
-    if (ts && ts.startsWith(thisMonth)) bookingsMonth++;
+    if (ts && ts.startsWith(thisMonth)) {
+      bookingsMonth++;
+      earningsMonth += amt;
+    }
+    if (ts && ts.length >= 7) monthsWithBookings.add(ts.slice(0, 7));
   });
+
+  // Streak: consecutive months back from current month with at least 1 booking
+  let streak = 0;
+  let cur = new Date(now.getFullYear(), now.getMonth(), 1);
+  while (true) {
+    const key = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, '0')}`;
+    if (!monthsWithBookings.has(key)) break;
+    streak++;
+    cur.setMonth(cur.getMonth() - 1);
+    if (streak > 60) break; // safety
+  }
+
+  // Achievement counts: max bookings in any month, lifetime totals
+  const monthBookingCounts = {};
+  (allBookings || []).forEach(b => {
+    const ts = b.created_at || b.booking_date || '';
+    if (ts && ts.length >= 7) {
+      const k = ts.slice(0, 7);
+      monthBookingCounts[k] = (monthBookingCounts[k] || 0) + 1;
+    }
+  });
+  const maxBookingsInAnyMonth = Object.values(monthBookingCounts).reduce((m, v) => Math.max(m, v), 0);
 
   return {
     slug: host.slug,
@@ -1721,7 +1809,8 @@ async function fetchUserDataFromSupabase(authUserId) {
     zone: host.zone || 'miami',
     referralLink: `https://refstay.com/r/${host.slug}`,
     joinedAt: host.joined,
-    stats: { clicksMonth: 0, bookingsMonth, earningsTotal, earningsPaid, earningsPending },
+    monthly_goal: Number(host.monthly_goal) || 200,
+    stats: { clicksMonth: 0, bookingsMonth, earningsTotal, earningsPaid, earningsPending, earningsMonth, streak, maxBookingsInAnyMonth },
     recent: (bookings || []).map(b => ({
       date: b.booking_date || (b.created_at ? b.created_at.slice(0, 10) : null),
       activity: b.activity,
@@ -2033,6 +2122,7 @@ function hydrate(user) {
   $('#linkInputOverview').value = user.referralLink;
   $('#setName').value = user.name || '';
   $('#setEmail').value = user.email || '';
+  if ($('#goalInput')) $('#goalInput').value = user.monthly_goal || 200;
   $('#setListing').value = user.listing || '';
   // Zone selector — pre-select the host's current zone
   const zoneSelect = $('#setZone');
@@ -2067,6 +2157,56 @@ function hydrate(user) {
   } else {
     $('#kpiPendingSub').textContent = 'No payout scheduled';
   }
+
+  // ---- Earnings goal widget ----
+  const goal = Number(user.monthly_goal) || 200;
+  const earnedMonth = s.earningsMonth || 0;
+  const pct = Math.min(100, Math.round((earnedMonth / goal) * 100));
+  const remaining = Math.max(0, goal - earnedMonth);
+  $('#goalEarned').textContent = fmtMoney(earnedMonth).replace('$', '');
+  $('#goalTarget').textContent = goal.toFixed(0);
+  $('#goalPctText').textContent = pct + '%';
+  $('#goalRemaining').textContent = pct >= 100 ? '🎉 Goal hit!' : `${fmtMoney(remaining).replace('$', '')} to go`;
+  setTimeout(() => { $('#goalBar').style.width = pct + '%'; }, 100);
+  if (pct >= 100) {
+    $('#goalCard').style.background = 'linear-gradient(135deg, #ECFDF5 0%, #FFFCFA 100%)';
+    $('#goalCard').style.borderColor = '#6EE7B7';
+    $('#goalPctText').style.color = 'var(--accent)';
+  }
+
+  // ---- Streak ----
+  const streak = s.streak || 0;
+  $('#streakCount').textContent = streak;
+  const streakBadge = $('#streakBadge');
+  if (streak === 0) {
+    streakBadge.style.background = '#F1F5F9';
+    streakBadge.style.color = 'var(--muted)';
+    streakBadge.querySelector('span:first-child').textContent = '○';
+  }
+
+  // ---- Achievements (5 badges, computed client-side) ----
+  const badges = [
+    { id: 'first', icon: '🎯', label: 'First booking', unlocked: (allBookingsCount = (Array.isArray(user.recent) || (user.stats && (user.stats.earningsTotal > 0)))) },
+    { id: 'h100', icon: '💯', label: '$100+ earned', unlocked: (s.earningsTotal || 0) >= 100 },
+    { id: 'h500', icon: '💎', label: '$500 lifetime', unlocked: (s.earningsTotal || 0) >= 500 },
+    { id: 'h5m', icon: '🔥', label: '5 in one month', unlocked: (s.maxBookingsInAnyMonth || 0) >= 5 },
+    { id: 'streak3', icon: '⭐', label: '3-month streak', unlocked: streak >= 3 },
+  ];
+  // Recompute first-booking: just check if any booking exists
+  badges[0].unlocked = (s.earningsTotal || 0) > 0 || (Array.isArray(user.recent) && user.recent.length > 0);
+
+  let bHtml = '';
+  badges.forEach(b => {
+    const unlocked = !!b.unlocked;
+    bHtml += `
+      <div style="background:${unlocked ? 'linear-gradient(135deg,#FFFAF0 0%,#FFFCFA 100%)' : '#F8FAFC'};border:1px solid ${unlocked ? '#FEE4DC' : 'var(--border)'};border-radius:12px;padding:16px 12px;text-align:center;${unlocked ? '' : 'opacity:0.55;filter:grayscale(0.6);'}">
+        <div style="font-size:34px;line-height:1;margin-bottom:6px;">${b.icon}</div>
+        <div style="font-weight:700;font-size:12px;color:${unlocked ? 'var(--ink)' : 'var(--muted)'};line-height:1.3;">${b.label}</div>
+        ${unlocked ? '<div style="font-size:10px;color:var(--accent);font-weight:800;margin-top:4px;">✓ UNLOCKED</div>' : '<div style="font-size:10px;color:var(--muted);font-weight:700;margin-top:4px;">LOCKED</div>'}
+      </div>
+    `;
+  });
+  $('#badgesGrid').innerHTML = bHtml;
 
   // ---- Recent bookings table ----
   const recent = Array.isArray(user.recent) ? user.recent.slice(0, 5) : [];
@@ -3097,6 +3237,70 @@ $$('#setName, #setListing, #setZone').forEach(el => {
     const s = $('#profileSavedStatus');
     if (s) s.style.display = 'none';
   });
+});
+
+// ============ EARNINGS GOAL ============
+function syncGoalInput() {
+  const user = getUser();
+  if (!user) return;
+  const goal = Number(user.monthly_goal) || 200;
+  const inp = $('#goalInput');
+  if (inp) inp.value = goal;
+}
+
+// Preset buttons (quick-pick goals)
+$$('button[data-goal-preset]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    $('#goalInput').value = btn.dataset.goalPreset;
+    $('#goalInput').focus();
+  });
+});
+
+$('#saveGoalBtn')?.addEventListener('click', async () => {
+  const input = $('#goalInput');
+  const newGoal = Math.round(Number(input.value) || 0);
+  const msgEl = $('#goalSaveMsg');
+  if (newGoal < 25 || newGoal > 50000) {
+    msgEl.innerHTML = '<span style="color:#DC2626;">⚠️ Goal must be between $25 and $50,000.</span>';
+    return;
+  }
+  const btn = $('#saveGoalBtn');
+  const orig = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  msgEl.textContent = '';
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const authUserId = session && session.user && session.user.id;
+    if (!authUserId) throw new Error('Not signed in');
+    const { error } = await sb.from('hosts').update({ monthly_goal: newGoal }).eq('id', authUserId);
+    if (error) throw error;
+    // Update local user object so Overview reflects immediately
+    const user = getUser() || {};
+    user.monthly_goal = newGoal;
+    setUser(user);
+    msgEl.innerHTML = '<span style="color:var(--accent);font-weight:700;">✓ Goal saved. Refresh Overview to see updated progress.</span>';
+    showToast('🎯 Goal set to $' + newGoal + '/mo');
+    track('Goal Saved', { goal: newGoal });
+  } catch (e) {
+    console.error('Save goal failed:', e);
+    msgEl.innerHTML = '<span style="color:#DC2626;">Save failed — ' + (e.message || 'try again') + '</span>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = orig;
+  }
+});
+
+// Wire "[data-go-tab]" anchors (e.g. goal card → Settings)
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-go-tab]');
+  if (!t) return;
+  e.preventDefault();
+  const tab = t.dataset.goTab;
+  $$('.tab-row button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  $$('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === tab));
+  if (tab === 'settings') syncGoalInput();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 $$('#setZone').forEach(el => {
   el?.addEventListener('change', () => {
