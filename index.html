@@ -55,6 +55,16 @@
 <!-- Privacy-friendly analytics by Plausible (site: refstay.com) -->
 <script async src="https://plausible.io/js/pa-91gKqq-hi7bdalS3B80Ak.js"></script>
 
+<!-- Google tag (GA4 + Google Ads conversions) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-16509204378"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-G8YS030HVQ');
+  gtag('config', 'AW-16509204378');
+</script>
+
 <!-- Supabase JS client (signup + auth) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -1308,6 +1318,20 @@ form.addEventListener('submit', async e => {
           body: JSON.stringify({ host_id: data.user.id }),
         }).catch(() => {});
       }
+
+      // Fire-and-forget: Google Ads conversion tracking
+      // Fires ONLY on successful signup — gives Google Ads the data it needs
+      // to optimize bidding toward keywords/ads that produce real signups.
+      try {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'conversion', {
+            'send_to': 'AW-16509204378/YKK-CK-JsrccEJrvmcA9',
+            'value': 50.0,
+            'currency': 'USD',
+            'transaction_id': data.user?.id || '',
+          });
+        }
+      } catch (_) { /* non-fatal */ }
 
       // Fire-and-forget: register referral if signup came via invite link
       // Looks for ?invited_by=<slug> in URL OR localStorage (set on initial page load).
