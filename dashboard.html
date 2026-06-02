@@ -479,6 +479,35 @@
         </div>
       </div>
 
+      <!-- 🔮 Earnings forecast for end-of-month -->
+      <div id="forecastCard" class="card" style="margin-bottom:20px;display:none;background:linear-gradient(135deg,#FFFCFA 0%,#F0FAFC 100%);border:1px solid #C7E5EC;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:14px;">
+          <div>
+            <div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:4px;">🔮 End-of-month forecast</div>
+            <h3 id="forecastTitle" style="margin:0;font-size:22px;line-height:1.25;">
+              <span id="forecastTotal" style="background:linear-gradient(135deg,#00C8B8,#7C3AED);-webkit-background-clip:text;background-clip:text;color:transparent;">$0</span>
+              <span style="color:var(--muted);font-weight:600;font-size:16px;">projected</span>
+            </h3>
+            <div style="font-size:13px;color:var(--ink-2);margin-top:6px;line-height:1.4;" id="forecastRange">Range: $0 – $0 · based on $0/day current pace</div>
+          </div>
+          <div style="text-align:right;min-width:160px;">
+            <div id="forecastDaysLeft" style="font-family:'Space Grotesk',monospace;font-weight:800;font-size:24px;color:var(--ink);">— days left</div>
+            <div id="forecastPace" style="font-size:12px;color:var(--muted);margin-top:2px;">— pace</div>
+          </div>
+        </div>
+        <!-- Pace bar showing projected vs goal -->
+        <div id="forecastBarWrap" style="position:relative;height:10px;background:white;border-radius:999px;overflow:hidden;border:1px solid var(--border);">
+          <div id="forecastBar" style="height:100%;background:linear-gradient(90deg,#00C8B8 0%,#7C3AED 100%);border-radius:999px;width:0%;transition:width .6s cubic-bezier(0.2,0.8,0.2,1);"></div>
+          <!-- Goal line marker at 100% -->
+          <div style="position:absolute;top:-3px;bottom:-3px;left:100%;width:2px;background:var(--ink);transform:translateX(-1px);"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:11px;color:var(--muted);font-weight:600;">
+          <span>$0</span>
+          <span id="forecastGoalMark" style="color:var(--ink);font-weight:800;">Goal: $200</span>
+        </div>
+        <div id="forecastHint" style="margin-top:12px;padding:10px 14px;background:white;border-radius:8px;font-size:12px;color:var(--ink-2);line-height:1.5;border-left:3px solid var(--accent);"></div>
+      </div>
+
       <!-- KPIs: real numbers from Supabase bookings table (refreshed each load) -->
       <div class="kpi-grid" id="kpiGrid">
         <div class="kpi">
@@ -2405,6 +2434,77 @@ function hydrate(user) {
     streakBadge.style.color = 'var(--muted)';
     streakBadge.querySelector('span:first-child').textContent = '○';
   }
+
+  // ---- 🔮 End-of-month forecast ----
+  // Hidden by default; shown if forecast is meaningful (>day 2 of month or has earnings).
+  try {
+    const today = new Date();
+    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+    const dayOfMonth = today.getDate();
+    const daysPassed = dayOfMonth;
+    const daysRemaining = Math.max(0, daysInMonth - dayOfMonth);
+    const monthEarned = Number(s.earningsMonth) || 0;
+
+    let projected = monthEarned;
+    let dailyRate = 0;
+    let confidenceRange = 0.2; // ±20% by default
+
+    if (daysPassed > 0) {
+      dailyRate = monthEarned / daysPassed;
+      projected = monthEarned + (dailyRate * daysRemaining);
+    }
+
+    // Show forecast if EITHER: at least day 3 of month, OR already earning anything
+    const shouldShow = (dayOfMonth >= 3) || (monthEarned > 0);
+    const card = $('#forecastCard');
+    if (!card) { /* element not present */ }
+    else if (shouldShow) {
+      card.style.display = '';
+      $('#forecastTotal').textContent = fmtMoney(Math.round(projected));
+      const low = Math.max(0, projected * (1 - confidenceRange));
+      const high = projected * (1 + confidenceRange);
+      $('#forecastRange').innerHTML =
+        `Range: <strong>${fmtMoney(Math.round(low))} – ${fmtMoney(Math.round(high))}</strong>` +
+        ` · current pace <strong>${fmtMoney(dailyRate)}/day</strong>`;
+
+      $('#forecastDaysLeft').textContent = daysRemaining === 0
+        ? '🏁 Final day!'
+        : `${daysRemaining} ${daysRemaining === 1 ? 'day' : 'days'} left`;
+
+      // Pace as % of goal
+      const goalPace = goal > 0 ? (projected / goal) * 100 : 0;
+      const paceClampedForBar = Math.min(120, goalPace); // cap bar at 120% (shows over-goal)
+      const paceWidthOnBar = (paceClampedForBar / 120) * 100; // map 0-120% to 0-100% of bar
+      setTimeout(() => { $('#forecastBar').style.width = paceWidthOnBar + '%'; }, 200);
+
+      let paceLabel = '';
+      let paceColor = 'var(--muted)';
+      if (goalPace >= 100) { paceLabel = `🎯 ${Math.round(goalPace)}% of goal`; paceColor = 'var(--accent)'; }
+      else if (goalPace >= 75) { paceLabel = `🔥 ${Math.round(goalPace)}% of goal`; paceColor = 'var(--gold,#F4B942)'; }
+      else if (goalPace >= 40) { paceLabel = `📈 ${Math.round(goalPace)}% of goal`; paceColor = 'var(--ink-2)'; }
+      else { paceLabel = `${Math.round(goalPace)}% of goal`; paceColor = 'var(--muted)'; }
+      $('#forecastPace').textContent = paceLabel;
+      $('#forecastPace').style.color = paceColor;
+      $('#forecastGoalMark').textContent = `Goal: ${fmtMoney(goal)}`;
+
+      // Smart hint based on situation
+      let hint = '';
+      if (daysRemaining === 0) {
+        hint = `🏁 You ended the month at ${fmtMoney(monthEarned)}. New month resets tomorrow — keep sharing your link!`;
+      } else if (monthEarned === 0) {
+        hint = `💡 You haven't earned anything yet this month. Share your link via WhatsApp at check-in — it's the fastest path to your first commission.`;
+      } else if (goalPace >= 100) {
+        hint = `🎉 You're on track to hit your goal! Want to raise it? <button type="button" data-go-tab="settings" style="background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:inherit;color:var(--primary);font-weight:700;text-decoration:underline;">Edit in Settings →</button>`;
+      } else if (goalPace >= 50) {
+        hint = `📈 At your current pace you'll hit <strong>${Math.round(goalPace)}%</strong> of your monthly goal. ${fmtMoney(Math.round((goal - projected) / Math.max(1, daysRemaining)))}/day more would close the gap.`;
+      } else {
+        hint = `💪 Your forecast is below goal. Adding the link to your Airbnb welcome book often 2x conversion — most income leaks happen there.`;
+      }
+      $('#forecastHint').innerHTML = hint;
+    } else {
+      card.style.display = 'none';
+    }
+  } catch (e) { console.warn('forecast widget failed:', e); }
 
   // ---- Achievements (5 badges, computed client-side) ----
   const badges = [
