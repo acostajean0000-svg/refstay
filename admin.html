@@ -719,7 +719,7 @@ async function loadHosts() {
   try {
     const { data: hosts, error } = await sb
       .from('hosts')
-      .select('id, slug, name, email, zone, joined, payout_method, is_admin')
+      .select('id, slug, name, email, zone, joined, payout_method, is_admin, is_active')
       .order('joined', { ascending: false });
     if (error) throw error;
 
@@ -763,9 +763,9 @@ async function loadHosts() {
       const stats = bookingsByHost.get(h.id) || { count: 0, earnings: 0, pending: 0 };
       const clicks = clicksBySlug.get(h.slug) || 0;
       const hasPayout = !!h.payout_method;
-      html += `<tr class="clickable-row" data-host-id="${escapeHtml(h.id)}" data-host-slug="${escapeHtml(h.slug)}">
+      html += `<tr class="clickable-row" data-host-id="${escapeHtml(h.id)}" data-host-slug="${escapeHtml(h.slug)}" ${h.is_active === false ? 'style="opacity:0.55;background:#FAFAFA;"' : ''}>
         <td>
-          <div class="slug">${escapeHtml(h.slug)}${h.is_admin ? ' <span style="background:var(--gold);color:white;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:800;">ADMIN</span>' : ''}</div>
+          <div class="slug">${escapeHtml(h.slug)}${h.is_admin ? ' <span style="background:var(--gold);color:white;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:800;">ADMIN</span>' : ''}${h.is_active === false ? ' <span style="background:#9CA3AF;color:white;padding:1px 6px;border-radius:4px;font-size:9px;font-weight:800;">INACTIVE</span>' : ''}</div>
           <div class="email">${escapeHtml(h.name || '—')} · ${escapeHtml(h.email || '')}</div>
         </td>
         <td>${escapeHtml(h.zone || '—')}</td>
@@ -1056,7 +1056,7 @@ async function openHostDetail(hostId, slug) {
 
   try {
     const [hostRes, bookingsRes, clicksRes, activityRes, aliasesRes, messagesRes] = await Promise.all([
-      sb.from('hosts').select('id, slug, name, email, listing, zone, joined, payout_method, payout_destination, payout_recipient_name, payout_country, welcome_message, favorites, onboarding_done, is_admin').eq('id', hostId).single(),
+      sb.from('hosts').select('id, slug, name, email, listing, zone, joined, payout_method, payout_destination, payout_recipient_name, payout_country, welcome_message, favorites, onboarding_done, is_admin, is_active').eq('id', hostId).single(),
       sb.from('bookings').select('fh_booking_uuid, activity, customer_name, amount, gross_amount, status, booking_date, created_at').eq('host_id', hostId).order('created_at', { ascending: false }).limit(20),
       sb.from('clicks').select('kind, ts, referrer').eq('host_slug', slug).order('ts', { ascending: false }).limit(100),
       sb.from('host_activity').select('event_type, event_data, created_at').eq('host_slug', slug).order('created_at', { ascending: false }).limit(20),
@@ -1115,12 +1115,13 @@ function renderHostDetail(host, bookings, clicks, activity, aliases, messages) {
 
   const html = `
     <!-- HEADER -->
-    <div class="hd-header">
+    <div class="hd-header" ${host.is_active === false ? 'style="background:linear-gradient(135deg,#F3F4F6 0%,#E5E7EB 100%);opacity:0.85;"' : ''}>
       <div class="slug">refstay.com/r/${escapeHtml(host.slug)}</div>
-      <h2>${escapeHtml(host.name || host.slug)}</h2>
+      <h2>${escapeHtml(host.name || host.slug)} ${host.is_active === false ? '<span style="font-size:13px;color:#DC2626;font-weight:700;">(DEACTIVATED)</span>' : ''}</h2>
       <div class="email">${escapeHtml(host.email || '')}</div>
       <div class="badges">
         ${host.is_admin ? '<span class="badge admin">⚡ ADMIN</span>' : ''}
+        ${host.is_active === false ? '<span class="badge" style="background:rgba(220,38,38,0.12);color:#991B1B;border-color:#FCA5A5;">🚫 Inactive</span>' : ''}
         ${host.payout_method ? '<span class="badge active">✓ Payout ready</span>' : '<span class="badge" style="background:rgba(220,38,38,0.08);color:#991B1B;border-color:#FCA5A5;">⚠ No payout</span>'}
         <span class="badge">📍 ${escapeHtml(host.zone || '—')}</span>
         <span class="badge">Joined ${fmtDate(host.joined ? host.joined.slice(0,10) : null)}</span>
@@ -1248,6 +1249,39 @@ function renderHostDetail(host, bookings, clicks, activity, aliases, messages) {
       </div>`).join('')}
       <button class="btn primary" style="margin-top:10px;" data-hd-message="${escapeHtml(host.id)}" data-hd-slug="${escapeHtml(host.slug)}" data-hd-name="${escapeHtml(host.name || host.slug)}" data-hd-email="${escapeHtml(host.email || '')}">💬 Open full conversation →</button>
     </div>` : ''}
+
+    <!-- DANGER ZONE — admin only -->
+    ${host.is_admin ? '' : `
+    <div class="hd-section" style="background:linear-gradient(135deg,#FEF2F2 0%,#FFFCFA 100%);border:1px solid #FCA5A5;border-radius:14px;padding:18px;margin-top:24px;">
+      <h4 style="color:#991B1B;">⚠️ Danger zone</h4>
+      <p style="font-size:13px;color:#7F1D1D;margin:6px 0 14px;line-height:1.5;">
+        These actions affect this host's access and data. Deactivating is reversible. Deletion is permanent and wipes bookings, clicks, messages, referrals, and the auth user.
+      </p>
+      <div class="hd-actions">
+        <button class="btn" id="hdToggleActiveBtn"
+          data-hd-host-id="${escapeHtml(host.id)}"
+          data-hd-host-slug="${escapeHtml(host.slug)}"
+          data-hd-host-name="${escapeHtml(host.name || host.slug)}"
+          data-hd-active="${host.is_active === false ? 'false' : 'true'}"
+          style="background:${host.is_active === false ? 'linear-gradient(135deg,#10B981,#059669)' : 'linear-gradient(135deg,#F59E0B,#D97706)'};color:white;border:none;font-weight:700;">
+          ${host.is_active === false ? '🔓 Reactivate host' : '🚫 Deactivate host'}
+        </button>
+        <button class="btn" id="hdDeleteBtn"
+          data-hd-host-id="${escapeHtml(host.id)}"
+          data-hd-host-slug="${escapeHtml(host.slug)}"
+          data-hd-host-name="${escapeHtml(host.name || host.slug)}"
+          data-hd-bookings="${bookings.length}"
+          data-hd-clicks="${clicks.length}"
+          data-hd-messages="${messages.length}"
+          style="background:linear-gradient(135deg,#DC2626,#7F1D1D);color:white;border:none;font-weight:700;">
+          🗑️ Delete permanently
+        </button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5;">
+        💡 <strong>Deactivate</strong>: host stays in DB but is marked inactive (use for paused / under review).<br>
+        ⛔ <strong>Delete</strong>: irreversible. Cascades to all related data.
+      </div>
+    </div>`}
   `;
 
   $('#hostDetailContent').innerHTML = html;
@@ -1323,6 +1357,92 @@ function renderHostDetail(host, bookings, clicks, activity, aliases, messages) {
       } finally {
         sendBtn.disabled = false;
         sendBtn.textContent = origText;
+      }
+    });
+  }
+
+  // Wire deactivate / reactivate button
+  const toggleBtn = document.getElementById('hdToggleActiveBtn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', async () => {
+      const hostId = toggleBtn.dataset.hdHostId;
+      const hostName = toggleBtn.dataset.hdHostName;
+      const currentlyActive = toggleBtn.dataset.hdActive === 'true';
+      const newState = !currentlyActive;
+      const verb = newState ? 'reactivate' : 'deactivate';
+
+      if (!confirm(`${verb === 'deactivate' ? '🚫 Deactivate' : '🔓 Reactivate'} ${hostName}?\n\n${newState ? 'They will be able to log in and receive emails again.' : 'They will be marked inactive. Their data stays but they will be excluded from default queries. Reversible anytime.'}`)) return;
+
+      const origText = toggleBtn.textContent;
+      toggleBtn.disabled = true;
+      toggleBtn.textContent = newState ? 'Reactivating…' : 'Deactivating…';
+
+      try {
+        const { data, error } = await sb.rpc('admin_set_host_active', {
+          p_host_id: hostId, p_active: newState
+        });
+        if (error) throw error;
+        toast(`✅ ${hostName} ${newState ? 'reactivated' : 'deactivated'}`);
+        // Refresh the modal with new data
+        const slug = toggleBtn.dataset.hdHostSlug;
+        setTimeout(() => openHostDetail(hostId, slug), 800);
+      } catch (e) {
+        console.error(`${verb} failed:`, e);
+        toast(`❌ ${verb} failed: ` + (e.message || e), 'err');
+        toggleBtn.disabled = false;
+        toggleBtn.textContent = origText;
+      }
+    });
+  }
+
+  // Wire delete host button
+  const deleteBtn = document.getElementById('hdDeleteBtn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+      const hostId = deleteBtn.dataset.hdHostId;
+      const hostSlug = deleteBtn.dataset.hdHostSlug;
+      const hostName = deleteBtn.dataset.hdHostName;
+      const bookings = parseInt(deleteBtn.dataset.hdBookings || '0', 10);
+      const clicks = parseInt(deleteBtn.dataset.hdClicks || '0', 10);
+      const messages = parseInt(deleteBtn.dataset.hdMessages || '0', 10);
+
+      // First confirm with details
+      const confirmMsg = `⛔ PERMANENTLY DELETE ${hostName}?\n\n` +
+        `This will wipe:\n` +
+        `  • host record (slug: ${hostSlug})\n` +
+        `  • ${bookings} booking(s)\n` +
+        `  • ${clicks} click(s)\n` +
+        `  • ${messages} message(s)\n` +
+        `  • auth.users row (email can be re-registered later)\n\n` +
+        `This is IRREVERSIBLE. Are you sure?`;
+      if (!confirm(confirmMsg)) return;
+
+      // Second confirm — type the slug to confirm
+      const typed = prompt(`Type the slug "${hostSlug}" exactly to confirm deletion:`);
+      if (typed !== hostSlug) {
+        toast('Cancelled — slug did not match', 'err');
+        return;
+      }
+
+      const origText = deleteBtn.textContent;
+      deleteBtn.disabled = true;
+      deleteBtn.textContent = 'Deleting…';
+
+      try {
+        const { data, error } = await sb.rpc('admin_delete_host', { p_host_id: hostId });
+        if (error) throw error;
+        toast(`✅ ${hostName} deleted permanently`);
+        // Close modal + refresh hosts list / scorecard
+        closeHostDetail();
+        setTimeout(() => {
+          if (typeof loadHosts === 'function') loadHosts();
+          if (typeof loadScorecard === 'function') loadScorecard();
+        }, 400);
+      } catch (e) {
+        console.error('delete failed:', e);
+        toast('❌ Delete failed: ' + (e.message || e), 'err');
+        deleteBtn.disabled = false;
+        deleteBtn.textContent = origText;
       }
     });
   }
