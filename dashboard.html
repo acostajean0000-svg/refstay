@@ -385,7 +385,7 @@
         <div class="field-error" id="lf-password-msg">Password is required.</div>
       </div>
       <div style="text-align: right; margin-top: -10px; margin-bottom: 14px;">
-        <a href="#" id="forgotPwBtn" style="font-size: 13px; color: var(--primary); font-weight: 600;">Forgot password?</a>
+        <button type="button" id="forgotPwBtn" style="background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:13px;color:var(--primary);font-weight:600;text-decoration:underline;">Forgot password?</button>
       </div>
       <button class="btn btn-primary" type="submit" id="loginSubmit">Log in →</button>
     </form>
@@ -475,7 +475,7 @@
           <div id="goalBar" style="height:100%;background:linear-gradient(90deg,#FF385C 0%,#FF7A45 50%,#7C3AED 100%);border-radius:999px;width:0%;transition:width .6s cubic-bezier(0.2,0.8,0.2,1);box-shadow:0 2px 8px rgba(255,56,92,.3);"></div>
         </div>
         <div style="margin-top:10px;font-size:12px;color:var(--muted);">
-          💡 Adjust your goal in <a href="#" data-go-tab="settings" style="color:var(--primary);font-weight:700;">Settings</a>
+          💡 Adjust your goal in <button type="button" data-go-tab="settings" style="background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:inherit;color:var(--primary);font-weight:700;text-decoration:underline;">Settings</button>
         </div>
       </div>
 
@@ -1332,7 +1332,7 @@ The weather looks 🔥 the next few days. Worth checking 👀</textarea>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:12px;flex-wrap:wrap;">
             <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
               <span style="font-size:12px;color:var(--muted);"><span id="welcomeCharCount">0</span> / 500</span>
-              <a id="welcomePreviewLink" href="#" target="_blank" rel="noopener" style="font-size:13px;color:var(--primary);font-weight:600;">Preview on your /g/ page →</a>
+              <a id="welcomePreviewLink" href="javascript:void(0)" target="_blank" rel="noopener" style="font-size:13px;color:var(--primary);font-weight:600;">Preview on your /g/ page →</a>
             </div>
             <div style="display:flex;gap:8px;align-items:center;">
               <span id="welcomeSavedStatus" style="font-size:12px;color:var(--accent);font-weight:600;display:none;">✓ Saved</span>
@@ -1492,7 +1492,7 @@ The weather looks 🔥 the next few days. Worth checking 👀</textarea>
           <h3 data-i18n="help.topic.contact.title">💬 Still stuck?</h3>
           <p data-i18n="help.contact.body">We reply within 24 hours, usually faster. Three ways to reach us:</p>
           <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">
-            <a href="#" data-go-tab="messages" class="btn btn-primary" style="text-align:center;"><span data-i18n="help.contact.dm">💬 Message us in-app (fastest)</span></a>
+            <a href="javascript:void(0)" data-go-tab="messages" class="btn btn-primary" style="text-align:center;"><span data-i18n="help.contact.dm">💬 Message us in-app (fastest)</span></a>
             <a href="mailto:support@refstay.com" class="btn btn-ghost" style="text-align:center;"><span data-i18n="help.contact.email">📧 Email support@refstay.com</span></a>
             <a href="https://refstay.com/blog" target="_blank" rel="noopener" class="btn btn-ghost" style="text-align:center;"><span data-i18n="help.contact.blog">📚 Read in-depth guides on the blog</span></a>
           </div>
@@ -3281,7 +3281,7 @@ function showPayoutPromptIfNeeded() {
   // Show a toast that links to the modal
   const t = $('#toast');
   if (!t) return;
-  $('#toastMsg').innerHTML = '💰 Link copied! <a href="#" id="payoutPromptLink" style="color: white; text-decoration: underline; font-weight: 700;">Add your payout info →</a>';
+  $('#toastMsg').innerHTML = '💰 Link copied! <a href="javascript:void(0)" id="payoutPromptLink" style="color: white; text-decoration: underline; font-weight: 700;">Add your payout info →</a>';
   t.classList.add('show');
   clearTimeout(showToast._t);
   // Don't auto-hide this one — let user click or dismiss

@@ -3,9 +3,45 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Miami activity picks — Refstay</title>
-<meta name="description" content="Personally recommended Miami activities — jet ski, boats, sunset cruises, and more. Hand-picked by your host." />
+<title>Activity picks — Refstay</title>
+<meta name="description" content="Personally recommended activities — jet ski, boats, sunset cruises, and more. Hand-picked by your host." />
 <meta name="robots" content="noindex,nofollow" />
+
+<!-- Canonical (updated to /g/<actual-slug> once host loads) -->
+<link rel="canonical" id="canonicalLink" href="https://refstay.com/" />
+
+<!-- Favicon -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+<!-- OpenGraph + Twitter (updated dynamically once host loads) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Refstay" />
+<meta property="og:title" id="ogTitle" content="Activity picks — Refstay" />
+<meta property="og:description" id="ogDesc" content="Personally recommended activities hand-picked by your Airbnb host." />
+<meta property="og:url" id="ogUrl" content="https://refstay.com/" />
+<meta property="og:image" content="https://refstay.com/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" id="twTitle" content="Activity picks — Refstay" />
+<meta name="twitter:description" id="twDesc" content="Personally recommended activities hand-picked by your Airbnb host." />
+<meta name="twitter:image" content="https://refstay.com/og-image.png" />
+
+<!-- JSON-LD placeholder — populated by JS once host data loads -->
+<script type="application/ld+json" id="guestPageLd">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Activity picks — Refstay",
+  "url": "https://refstay.com/",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Refstay",
+    "url": "https://refstay.com",
+    "logo": "https://refstay.com/og-image.png"
+  }
+}
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -415,7 +451,7 @@
   <div class="browse-all" id="browseAll" style="display:none;">
     <h3>Want to see all <span id="totalCount">—</span> activities?</h3>
     <p>Browse the full catalog of verified Miami operators.</p>
-    <a id="browseLink" href="#" target="_blank" rel="noopener">See all activities →</a>
+    <a id="browseLink" href="javascript:void(0)" target="_blank" rel="noopener">See all activities →</a>
   </div>
 </div>
 
@@ -640,6 +676,60 @@ async function init() {
   $('#hostFooter').textContent = firstName;
   $('#badgeFrom').style.display = 'inline-flex';
   document.title = `${firstName}'s ${zoneLabel} picks — Refstay`;
+
+  // SEO: update canonical, og tags, and JSON-LD with the actual host slug
+  try {
+    const pageUrl = `https://refstay.com/g/${HOST.slug}`;
+    const pageTitle = `${firstName}'s ${zoneLabel} activity picks — Refstay`;
+    const pageDesc = `${firstName}'s personally recommended ${zoneLabel} activities — jet skis, boats, sunset cruises, and more. Book direct.`;
+
+    const setAttr = (id, attr, val) => { const el = document.getElementById(id); if (el) el.setAttribute(attr, val); };
+    setAttr('canonicalLink', 'href', pageUrl);
+    setAttr('ogTitle',  'content', pageTitle);
+    setAttr('ogDesc',   'content', pageDesc);
+    setAttr('ogUrl',    'content', pageUrl);
+    setAttr('twTitle',  'content', pageTitle);
+    setAttr('twDesc',   'content', pageDesc);
+
+    // Update JSON-LD structured data
+    const ld = document.getElementById('guestPageLd');
+    if (ld) {
+      const data = {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": pageUrl + "#webpage",
+            "url": pageUrl,
+            "name": pageTitle,
+            "description": pageDesc,
+            "inLanguage": "en-US",
+            "isPartOf": { "@type": "WebSite", "@id": "https://refstay.com/#website" },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Refstay",
+              "url": "https://refstay.com",
+              "logo": "https://refstay.com/og-image.png"
+            }
+          },
+          {
+            "@type": "Person",
+            "name": HOST.name || firstName,
+            "url": pageUrl,
+            "jobTitle": "Airbnb host",
+            "memberOf": { "@type": "Organization", "name": "Refstay" }
+          },
+          {
+            "@type": "ItemList",
+            "name": `${firstName}'s ${zoneLabel} activity picks`,
+            "description": `Curated activities in ${zoneLabel} recommended by ${firstName}.`,
+            "numberOfItems": (HOST.favorites || []).length || (ACTIVITIES.filter(a => (a.z || 'miami') === HOST.zone).length)
+          }
+        ]
+      };
+      ld.textContent = JSON.stringify(data);
+    }
+  } catch (_) { /* non-fatal */ }
 
   // Render activities
   renderActivities();
