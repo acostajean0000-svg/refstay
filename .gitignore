@@ -1,0 +1,40 @@
+# ─── Secrets ───────────────────────────────────────────────
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+
+# ─── Vercel ────────────────────────────────────────────────
+.vercel/
+
+# ─── macOS ─────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# ─── Editor / IDE ──────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ─── Node ──────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── Python ────────────────────────────────────────────────
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# ─── Backups / temp ────────────────────────────────────────
+*.bak
+*.tmp
+Thumbs.db
