@@ -115,4 +115,388 @@
     <priority>0.4</priority>
     <lastmod>2026-05-26</lastmod>
   </url>
+  <url>
+    <loc>https://refstay.com/zones/bar-harbor</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/bar-harbor"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/bar-harbor"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/bar-harbor"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/bar-harbor</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/bar-harbor"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/bar-harbor"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/bar-harbor"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/cabo-san-lucas</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/cabo-san-lucas"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/cabo-san-lucas"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/cabo-san-lucas"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/cabo-san-lucas</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/cabo-san-lucas"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/cabo-san-lucas"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/cabo-san-lucas"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/cape-cod</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/cape-cod"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/cape-cod"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/cape-cod"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/cape-cod</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/cape-cod"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/cape-cod"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/cape-cod"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/cape-may</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/cape-may"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/cape-may"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/cape-may"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/cape-may</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/cape-may"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/cape-may"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/cape-may"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/catalina-island</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/catalina-island"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/catalina-island"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/catalina-island"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/catalina-island</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/catalina-island"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/catalina-island"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/catalina-island"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/charleston</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/charleston"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/charleston"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/charleston"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/charleston</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/charleston"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/charleston"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/charleston"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/cozumel</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/cozumel"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/cozumel"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/cozumel"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/cozumel</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/cozumel"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/cozumel"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/cozumel"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/galveston</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/galveston"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/galveston"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/galveston"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/galveston</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/galveston"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/galveston"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/galveston"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/hilton-head</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/hilton-head"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/hilton-head"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/hilton-head"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/hilton-head</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/hilton-head"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/hilton-head"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/hilton-head"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/isla-mujeres</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/isla-mujeres"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/isla-mujeres"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/isla-mujeres"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/isla-mujeres</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/isla-mujeres"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/isla-mujeres"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/isla-mujeres"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/lake-tahoe</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/lake-tahoe"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/lake-tahoe"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/lake-tahoe"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/lake-tahoe</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/lake-tahoe"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/lake-tahoe"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/lake-tahoe"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/naples</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/naples"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/naples"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/naples"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/naples</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/naples"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/naples"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/naples"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/newport-beach</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/newport-beach"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/newport-beach"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/newport-beach"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/newport-beach</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/newport-beach"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/newport-beach"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/newport-beach"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/newport-ri</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/newport-ri"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/newport-ri"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/newport-ri"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/newport-ri</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/newport-ri"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/newport-ri"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/newport-ri"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/outer-banks</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/outer-banks"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/outer-banks"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/outer-banks"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/outer-banks</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/outer-banks"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/outer-banks"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/outer-banks"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/park-city</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/park-city"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/park-city"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/park-city"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/park-city</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/park-city"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/park-city"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/park-city"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/playa-del-carmen</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/playa-del-carmen"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/playa-del-carmen"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/playa-del-carmen"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/playa-del-carmen</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/playa-del-carmen"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/playa-del-carmen"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/playa-del-carmen"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/puerto-rico</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/puerto-rico"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/puerto-rico"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/puerto-rico"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/puerto-rico</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/puerto-rico"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/puerto-rico"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/puerto-rico"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/salt-lake-city</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/salt-lake-city"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/salt-lake-city"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/salt-lake-city"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/salt-lake-city</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/salt-lake-city"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/salt-lake-city"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/salt-lake-city"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/san-diego</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/san-diego"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/san-diego"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/san-diego"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/san-diego</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/san-diego"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/san-diego"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/san-diego"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/savannah</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/savannah"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/savannah"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/savannah"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/savannah</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/savannah"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/savannah"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/savannah"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/seattle</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/seattle"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/seattle"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/seattle"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/seattle</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/seattle"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/seattle"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/seattle"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/south-padre-island</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/south-padre-island"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/south-padre-island"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/south-padre-island"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/south-padre-island</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/south-padre-island"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/south-padre-island"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/south-padre-island"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/zones/tulum</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/tulum"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/tulum"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/tulum"/>
+  </url>
+  <url>
+    <loc>https://refstay.com/destinos/tulum</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://refstay.com/zones/tulum"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://refstay.com/destinos/tulum"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://refstay.com/zones/tulum"/>
+  </url>
 </urlset>
